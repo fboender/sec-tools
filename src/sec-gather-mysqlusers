@@ -1,0 +1,122 @@
+#!/usr/bin/env python
+
+import argparse
+import sys
+import json
+from mako.template import Template
+import tools
+
+import re
+import copy
+
+
+html_tpl = """\
+<table>
+    <tr>
+        <th>User</th>
+        <th>From</th>
+        <th>Database</th>
+        <th>Rights</th>
+    </tr>
+    % for username in sorted(mysqlusers.keys()):
+        <%
+        mysqluser = mysqlusers[username]
+        %>
+
+        % if mysqluser["rights_all_dbs"] != "":
+            <tr class="">
+                <td>${username}</td>
+                <td>${", ".join(mysqluser["from_hosts"])}</td>
+                <td><b>ALL</b></td>
+                <td>${mysqluser["rights_all_dbs"]}</td>
+            </tr>
+        % endif
+        % for db_name, db_rights in mysqluser["dbs"].items():
+            <tr class="">
+                <td>${username}</td>
+                <td>${", ".join(mysqluser["from_hosts"])}</td>
+                <td>${db_name}</td>
+                <td>${db_rights}</td>
+            </tr>
+        % endfor
+    % endfor
+</table>
+"""
+
+mysql_user_default = {
+    "from_hosts": [],
+    "dbs": {},
+    "rights_all_dbs": ""
+}
+
+def gather_connect():
+    mysql_users = {}
+    hosts_out = tools.cmd('mysql -N -B -e "SELECT * FROM mysql.user"')['stdout']
+    for line in hosts_out.splitlines():
+        fields = line.split("\t")
+        if fields[0] == "%":
+            hostname = "ANY"
+        else:
+            hostname = fields[0]
+        username = fields[1]
+        select_priv = fields[2]
+        insert_priv = fields[3]
+        update_priv = fields[4]
+        delete_priv = fields[5]
+        rights_all_dbs = []
+        if select_priv == "Y":
+            rights_all_dbs.append("Read")
+        if 'Y' in (insert_priv, update_priv, delete_priv):
+            rights_all_dbs.append("Write")
+
+
+        mysql_user = mysql_users.setdefault(username, copy.deepcopy(mysql_user_default))
+        mysql_user['from_hosts'].append(hostname)
+        mysql_user["rights_all_dbs"] = "/".join(rights_all_dbs)
+    return mysql_users
+
+def gather_db_access():
+    mysql_users = {}
+
+    db_access = tools.cmd('mysql -N -B -e "SELECT * FROM mysql.db"')['stdout']
+    for line in db_access.splitlines():
+        fields = line.split("\t")
+        hostname = fields[0]
+        db = fields[1]
+        username = fields[2]
+        select_priv = fields[3]
+        insert_priv = fields[4]
+        update_priv = fields[5]
+        delete_priv = fields[6]
+
+        rights = []
+        if select_priv == "Y":
+            rights.append("Read")
+        if 'Y' in (insert_priv, update_priv, delete_priv):
+            rights.append("Write")
+
+        mysql_user = mysql_users.setdefault(username, copy.deepcopy(mysql_user_default))
+        mysql_user['dbs'][db] = "/".join(rights)
+
+    return mysql_users
+
+def gather():
+    mysql_users = gather_connect()
+    db_access = gather_db_access()
+    tools.deepupdate(mysql_users, db_access)
+    return mysql_users
+
+
+if __name__ == "__main__":
+    formats = ['json', 'html']
+    parser = argparse.ArgumentParser(description='Gather mysql users')
+    parser.add_argument('--format', dest="format", choices=formats, type=str, default="json", help="Output format")
+
+    args = parser.parse_args()
+
+    mysql_users = gather()
+
+    if args.format == 'json':
+        sys.stdout.write(json.dumps({"mysqlusers": mysql_users}, indent=4))
+    elif args.format == 'html':
+        sys.stdout.write(Template(html_tpl).render(mysqlusers=mysql_users))

@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import argparse
+import subprocess
+from mako.template import Template
+
+def gather(key, format='html', argstr=""):
+    cmd = "./sec-gather-{key} --format {format} {argstr}".format(
+        key=key,
+        format=format,
+        argstr=argstr
+    )
+    p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+    if p.returncode != 0:
+        # FIXME: Raise proper error
+        sys.stderr.write(stderr)
+        raise OSError("Process exited with exit code {}: {}".format(p.returncode, cmd))
+
+    return stdout
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Mail reports and alerts')
+    parser.add_argument('report', metavar='REPORT', type=str, help='Report to generate')
+    args = parser.parse_args()
+
+    mytemplate = Template(filename=args.report)
+    print(mytemplate.render(gather=gather))

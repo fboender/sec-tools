@@ -1,0 +1,140 @@
+#!/usr/bin/env python
+
+import argparse
+import sys
+import json
+from mako.template import Template
+import tools
+import logging
+
+import re
+
+
+html_tpl = """\
+<table>
+    <tr>
+        <th>Protocol</th>
+        <th>Local address</th>
+        <th>Local port</th>
+        <th>State</th>
+        <th>PID</th>
+        <th>Program</th>
+        <th>Service</th>
+        <th>Verified</th>
+    </tr>
+    % for portnr in sorted(listenports.keys()):
+        <%
+        portdetail = listenports[portnr]
+
+        verified = "unverified"
+        if portdetail["verified"] is True:
+            verified = "verified"
+        endif
+
+        %>
+        <tr class="${verified}">
+            <td>${portdetail['proto']}</td>
+            <td>${portdetail['local_address']}</td>
+            <td>${portdetail['local_port']}</td>
+            <td>${portdetail['state']}</td>
+            <td>${portdetail['pid']}</td>
+            <td>${portdetail['prog']}</td>
+            <td>${portdetail['service']}</td>
+            <td>${portdetail['verified']}</td>
+        </tr>
+    % endfor
+</table>
+"""
+
+
+def netstat_line_to_dict(line, annotations={}):
+    """
+    Convert a line from the output of `netstat -pant` to a dictionary.
+    """
+    elems = [elem for elem in line.split(" ") if elem != ""]
+
+    try:
+        proto = elems[0]
+        recv_queue = elems[1]
+        send_queue = elems[2]
+        local_address = elems[3]
+        remote_address = elems[4]
+        state = elems[5]
+        pid_prog = elems[6]
+
+        ret = {
+            "proto": proto,
+            "recv_queue": int(recv_queue),
+            "send_queue": int(send_queue),
+            "local_address": local_address.rsplit(":", 1)[0],
+            "local_port": local_address.rsplit(":", 1)[1],
+            "remote_address": remote_address.rsplit(":", 1)[0],
+            "remote_port": remote_address.rsplit(":", 1)[1],
+            "state": state,
+            "pid": None,
+            "prog": None,
+            "service": "Unknown",
+            "verified": False,
+        }
+
+        if ret['local_port'] in annotations:
+            ret.update(annotations[ret['local_port']])
+
+        # Convert ports to int if possible
+        try:
+            ret["local_port"] = int(ret["local_port"])
+        except ValueError:
+            ret["local_port"] = 0
+
+        try:
+            ret["remote_port"] = int(ret["remote_port"])
+        except ValueError:
+            ret["remote_port"] = 0
+
+        # Split the PID and the program
+        if pid_prog != "-":
+            ret["pid"] = int(pid_prog.split('/')[0])
+            ret["prog"] = pid_prog.split('/')[1]
+        return ret
+    except (IndexError, ValueError):
+        # Not a line with a listening service. Probably a header from netstat
+        # or something.
+        return None
+
+def gather(no_local=False, annotate=None):
+    annotations = {}
+    if annotate:
+        annotations = json.load(open(annotate, 'r'))
+
+    listenports = {}
+    netstat_out = tools.cmd('netstat -pant')['stdout']
+    for line in netstat_out.splitlines():
+        listenport = netstat_line_to_dict(line, annotations)
+        if listenport is not None and \
+           listenport['state'] == "LISTEN" and \
+           (no_local is False or listenport['local_address'] != '127.0.0.1'):
+            listenports[listenport['local_port']] = listenport
+
+    return listenports
+
+
+if __name__ == "__main__":
+    formats = ['json', 'html']
+    parser = argparse.ArgumentParser(description='Gather unix users')
+    parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
+    parser.add_argument('--format', dest="format", choices=formats, type=str, default="json", help="Output format")
+    parser.add_argument('--annotate', dest="annotate", type=str, help="annotation file")
+    parser.add_argument('--no-local', dest="no_local", action='store_true', default=False, help="No services listening locally")
+    args = parser.parse_args()
+
+    loglevel = logging.ERROR
+    if args.debug is True:
+        loglevel = logging.DEBUG
+    logging.basicConfig(level=loglevel)
+
+    listenports = gather(no_local=args.no_local, annotate=args.annotate)
+
+    if args.format == 'json':
+        sys.stdout.write(json.dumps({"listenports": listenports}, indent=4))
+    elif args.format == 'html':
+        sys.stdout.write(Template(html_tpl).render(listenports=listenports))

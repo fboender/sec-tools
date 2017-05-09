@@ -1,0 +1,211 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import json
+import argparse
+import logging
+from mako.template import Template
+from pprint import pformat
+
+def format_value(value, indent=4):
+    pretty = pformat(value)
+    pretty_str = str(pretty)
+    pretty_indent = pretty_str.replace("\n", "\n" + indent * ' ')
+    return pretty_indent
+
+text_tpl = """\
+% for change in changes:
+<%
+path_text = "-> ".join(change["path"])
+%>
+% if change["action"] == 'added':
+  - Added to "${path_text}":
+
+    ${format_value(change["value"])}
+
+% elif change["action"] == 'removed':
+  - Removed from "${path_text}":
+
+    ${format_value(change["value"])}
+
+% elif change["action"] == 'changed':
+  - Changed for "${path_text}"
+
+    from:
+
+    ${format_value(change["old_value"])}
+
+    to:
+
+    ${format_value(change["new_value"])}
+% endif
+% endfor
+"""
+
+html_tpl = """\
+<ul>
+% for change in changes:
+    <%
+    path_html = "&rarr; ".join(change["path"])
+    %>
+    <li>
+        % if change["action"] == "added":
+            <b>Added</b> to
+            <code>${path_html}</code>:
+            <code>${change["value"]}</code>.
+        % elif change["action"] == "removed":
+            <b>Removed</b> from
+            <code>${path_html}</code>:
+            <code>${change["value"]}</code>.
+        % elif change["action"] == "changed":
+            <b>Changed</b> for
+            <code>${path_html}</code> from
+            <code>${change["old_value"]}</code> to
+            <code>${change["value"]}</code>.
+        % endif
+    </li>
+% endfor
+</ul>
+"""
+
+def diff_list(old, new, cur_path=[]):
+    changes = []
+
+    # Go through new values, figure out what's been added
+    for i in range(len(new)):
+        new_v = new[i]
+        logging.debug("Checking if {}::'{}' has been added.".format(cur_path, new_v))
+
+        if not new_v in old:
+            changes.append(
+                {
+                    "action": "added",
+                    "type": "list",
+                    "path": cur_path,
+                    "value": new_v
+                }
+            )
+
+    # Go through old values, figure out what's been removed
+    for i in range(len(old)):
+        old_v = old[i]
+        logging.debug("Checking if {}::'{}' has been removed.".format(cur_path, old_v))
+
+        if not old_v in new:
+            changes.append(
+                {
+                    "action": "removed",
+                    "type": "list",
+                    "path": cur_path,
+                    "value": old_v
+                }
+            )
+
+    return changes
+
+def diff_dict(old, new, cur_path=[]):
+    changes = []
+
+    logging.debug("diff_dict: cur path: {}".format(cur_path))
+    logging.debug("keys in old: {}".format(old.keys()))
+    logging.debug("keys in new: {}".format(new.keys()))
+
+    added_keys = set(new.keys()) - set(old.keys())
+    removed_keys = set(old.keys()) - set(new.keys())
+    same_keys = set(old.keys()).intersection(set(new.keys()))
+
+    logging.debug("diff_dict: added keys: {}".format(added_keys))
+    logging.debug("diff_dict: same keys: {}".format(same_keys))
+    logging.debug("diff_dict: removed keys: {}".format(removed_keys))
+
+    for added_key in added_keys:
+        added_value = new[added_key]
+        changes.append(
+            {
+                "action": "added",
+                "type": "dict",
+                "path": cur_path,
+                "key": added_key,
+                "value": added_value
+            }
+        )
+
+    for removed_key in removed_keys:
+        removed_value = old[removed_key]
+        changes.append(
+            {
+                "action": "removed",
+                "type": "dict",
+                "path": cur_path,
+                "key": removed_key,
+                "value": removed_value
+            }
+        )
+
+    # Go through keys that are in both old and new, and recurse into them if
+    # required.
+    for same_key in same_keys:
+        new_v = new[same_key]
+        old_v = old[same_key]
+        if type(new_v) == list:
+            # Recurse
+            changes.extend(diff_list(old_v, new_v, cur_path=cur_path + [same_key]))
+        elif type(new_v) == dict:
+            # Recurse
+            changes.extend(diff_dict(old_v, new_v, cur_path=cur_path + [same_key]))
+        elif new_v != old_v:
+            # Value has changed
+            changes.append(
+                {
+                    "action": "changed",
+                    "type": "dict",
+                    "path": cur_path,
+                    "key": same_key,
+                    "old_value": old_v,
+                    "new_value": new_v
+                }
+            )
+
+    return changes
+
+def diff(old, new, cur_path=[]):
+    if type(new) == list:
+        return diff_list(old, new, cur_path)
+    elif type(new) == dict:
+        return diff_dict(old, new, cur_path)
+
+
+if __name__ == "__main__":
+    formats = ['json', 'text', 'html']
+    parser = argparse.ArgumentParser(description='Diff json from stdin against json from file.')
+    parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
+    parser.add_argument('--format', dest="format", choices=formats, type=str, default="text", help="Output format")
+    parser.add_argument('key', metavar='KEY', type=str, help='File on disk to check stdin against.')
+    args = parser.parse_args()
+
+    loglevel = logging.ERROR
+    if args.debug is True:
+        loglevel = logging.DEBUG
+    logging.basicConfig(level=loglevel)
+
+    if not os.path.exists(args.key):
+        # First time diff, write previous scan to disk
+        with open(args.key, 'w') as f:
+            f.write(sys.stdin.read())
+        sys.exit(0)
+
+    old_c = json.load(open(args.key, 'r'))
+    new_c = json.load(sys.stdin)
+    changes = diff(old_c, new_c)
+
+    if args.format == 'json':
+        sys.stdout.write(json.dumps(changes))
+    elif args.format == 'text':
+        sys.stdout.write(Template(text_tpl).render(changes=changes, format_value=format_value))
+    elif args.format == 'html':
+        sys.stdout.write(Template(html_tpl).render(changes=changes))
+
+    # Write new contents to key file.
+    with open(args.key, 'w') as f:
+        json.dump(new_c, f, indent=4)

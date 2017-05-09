@@ -1,0 +1,94 @@
+#!/usr/bin/env python
+
+import sys
+import argparse
+import json
+import logging
+from mako.template import Template
+
+import pwd
+import grp
+
+no_login_shells = [
+    '/bin/false',
+    '/bin/nologin',
+    '/usr/sbin/nologin'
+]
+
+html_tpl = """
+<table>
+    <tr>
+        <th>Username</th>
+        <th>Shell</th>
+        <th>Homedir</th>
+        <th>Groups</th>
+    </tr>
+    % for username in sorted(unixusers.keys()):
+        <%
+        userdetail = unixusers[username]
+        %>
+        <tr>
+            <td>${username}</td>
+            <td>${userdetail['shell']}</td>
+            <td>${userdetail['homedir']}</td>
+            <td>
+                <ul>
+                    % for group in userdetail['groups']:
+                        <li>${group}</li>
+                    % endfor
+                </ul>
+            </td>
+        </tr>
+    % endfor
+</table>
+"""
+
+
+def get_user_groups(username):
+    groups = []
+
+    # Get primary group
+    p = pwd.getpwnam(username)
+    groupname = grp.getgrgid(p.pw_gid).gr_name
+    groups.append(groupname)
+
+    # Get supplimentary groups
+    for gr in grp.getgrall():
+        if username in gr.gr_mem:
+            groups.append(gr.gr_name)
+    return groups
+
+def gather(login=False):
+    users = {}
+    for p in pwd.getpwall():
+        if login and p.pw_shell in no_login_shells:
+            continue
+        username = p.pw_name
+        users[username] = {
+            "homedir": p.pw_dir,
+            "shell": p.pw_shell,
+            "groups": get_user_groups(username)
+        }
+
+    return users
+
+
+if __name__ == "__main__":
+    formats = ['json', 'html']
+    parser = argparse.ArgumentParser(description='Gather unix users')
+    parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
+    parser.add_argument('--format', dest="format", choices=formats, type=str, default="json", help="Output format")
+    parser.add_argument('--login', dest="login", action='store_true', default=False, help="Only users that can log in")
+
+    args = parser.parse_args()
+    loglevel = logging.ERROR
+    if args.debug is True:
+        loglevel = logging.DEBUG
+    logging.basicConfig(level=loglevel)
+
+    unixusers = gather(login=args.login)
+
+    if args.format == 'json':
+        sys.stdout.write(json.dumps({"unixusers": unixusers}, indent=4))
+    elif args.format == 'html':
+        sys.stdout.write(Template(html_tpl).render(unixusers=unixusers))
