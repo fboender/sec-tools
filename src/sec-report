@@ -5,6 +5,10 @@ import sys
 import argparse
 import subprocess
 from mako.template import Template
+import json
+import tools
+import socket
+
 
 def gather(key, format='html', argstr=""):
     cmd = "./sec-gather-{key} --format {format} {argstr}".format(
@@ -32,5 +36,9 @@ if __name__ == "__main__":
         sys.stderr.write("Please specify a --report <report.tpl>\n")
         sys.exit(1)
 
+    fqdn = socket.gethostname()
+    if not '.' in fqdn:
+        fqdn = socket.getfqdn()
+
     mytemplate = Template(filename=args.report)
-    print(mytemplate.render(gather=gather))
+    print(mytemplate.render(fqdn=fqdn, gather=gather))
