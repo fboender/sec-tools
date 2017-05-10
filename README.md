@@ -7,6 +7,10 @@ information. The current focus is on user authorization / authentication.
 The tools are written as separate unix tools that read and write from / to
 standard output. These can be combined to produce the desired result.
 
+## Requirements
+
+    sudo apt install python-mako
+
 ## Overview of tools
 
 * `sec-gather-listenports`: Output listening services / ports
