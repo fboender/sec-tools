@@ -4,6 +4,7 @@ import sys
 import json
 import argparse
 from mako.template import Template
+import logging
 
 import pwd
 import grp
@@ -54,6 +55,8 @@ def gather(not_empty=True):
         if not_empty and len(gr.gr_mem) == 0:
             continue
         groups[gr.gr_name] = gr.gr_mem
+
+    return groups
 
 
 if __name__ == "__main__":
