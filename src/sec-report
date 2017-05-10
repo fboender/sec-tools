@@ -25,8 +25,12 @@ def gather(key, format='html', argstr=""):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Mail reports and alerts')
-    parser.add_argument('report', metavar='REPORT', type=str, help='Report to generate')
+    parser.add_argument('report', metavar='REPORT', type=str, help='Mako report template')
     args = parser.parse_args()
+
+    if args.report is None:
+        sys.stderr.write("Please specify a --report <report.tpl>\n")
+        sys.exit(1)
 
     mytemplate = Template(filename=args.report)
     print(mytemplate.render(gather=gather))
