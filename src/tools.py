@@ -6,7 +6,7 @@ import subprocess
 import copy
 
 
-def cmd(cmd, input=None, env=None):
+def cmd(cmd, input=None, env=None, raise_err=True):
     """
     Run command `cmd` in a shell. `input` (string) is passed in the
     process' STDIN.
@@ -18,7 +18,7 @@ def cmd(cmd, input=None, env=None):
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = p.communicate(input)
 
-    if p.returncode != 0:
+    if p.returncode != 0 and raise_err:
         raise Exception("Cmd '{}' returned with exit-code {} and stderr: {}".format(cmd, p.returncode, stderr))
 
     return {
