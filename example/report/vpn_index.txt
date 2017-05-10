@@ -1,0 +1,8 @@
+V	260213101948Z		01	unknown	/C=LU/ST=GLD/L=SomeCity/O=MegaCorp/OU=OpenVPNServer/CN=megacorp-sup/name=ParentCoSup/emailAddress=info@megacorp.eu
+V	260213102105Z		02	unknown	/C=LU/ST=GLD/L=SomeCity/O=MegaCorp/OU=ITPartner/CN=jjohnson/name=John Johnson/emailAddress=info@megacorp.eu
+V	260213102129Z		03	unknown	/C=LU/ST=GLD/L=SomeCity/O=MegaCorp/OU=ParentCo/CN=jnicholson/name=Jake Nicholson/emailAddress=info@megacorp.eu
+V	260213140752Z		0E	unknown	/C=LU/ST=GLD/L=SomeCity/O=MegaCorp/OU=ParentCo/CN=bbanner/name=Bruce Banner/emailAddress=info@megacorp.eu
+V	260223123619Z		0F	unknown	/C=LU/ST=GLD/L=SomeCity/O=MegaCorp/OU=ITPartner/CN=jhelsink/name=James van Helsink/emailAddress=info@megacorp.eu
+V	260808111454Z		11	unknown	/C=LU/ST=GLD/L=SomeCity/O=MegaCorp/OU=changeme/CN=ppeterson/name=ppeterson/emailAddress=info@megacorp.eu
+V	260817091530Z		13	unknown	/C=LU/ST=GLD/L=SomeCity/O=MegaCorp/OU=Dev/CN=dderkson/name=dderkson/emailAddress=info@megacorp.eu
+R	261127120203Z	170110191250Z	1A	unknown	/C=LU/ST=GLD/L=SomeCity/O=MegaCorp/OU=VPN/CN=eut/name=eut/emailAddress=info@megacorp.eu

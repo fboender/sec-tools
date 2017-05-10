@@ -1,0 +1,22 @@
+{
+    "22": {
+        "service": "SSH",
+        "verified": true
+    },
+    "25": {
+        "service": "SMTP",
+        "verified": true
+    },
+    "80": {
+        "service": "HTTP",
+        "verified": true
+    },
+    "443": {
+        "service": "HTTPS",
+        "verified": true
+    },
+    "3306": {
+        "service": "MySQL",
+        "verified": true
+    }
+}
