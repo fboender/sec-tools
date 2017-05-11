@@ -28,7 +28,7 @@ standard output. These can be combined to produce the desired result.
 * `sec-gather-openvpnusers`: Output OpenVPN client certificate status
 * `sec-gather-unixgroups`: Output unix groups and their members
 * `sec-gather-unixusers`: Output unix users and their details
-* `sec-diff`: Output changes in `*-gather-*` script output since last time
+* `sec-diff`: Output changes in `sec-gather-*` script output since last time
 * `sec-report`: Generate HTML and PDF reports from gathered info
 * `sec-mail`: Send alerts and reports.
 
@@ -97,15 +97,17 @@ List unix users and their groups.
 ## <a name="alert">Diffing and alerting</a>
 
 The `sec-diff` tool can be used to diff JSON output from a `sec-gather` script
-with a previous run. For example:
+with a previous run.
 
-	$ sec-gather-listenports | sec-diff /var/cache/sec-tools/listenports
+For example:
 
-This will store the listening ports in `/var/cache/sec-tools/listenports`. The
+	$ sec-gather-listenports | sec-diff /var/cache/sec-tools/listenports.state
+
+This will store the listening ports in `/var/cache/sec-tools/listenports.state`. The
 first run, it will report nothing. The next time it's run, a new listening
 port has appeared, and `sec-diff` reports about it:
 
-	$ sec-gather-listenports | sec-diff /var/cache/sec-tools/listenports
+	$ sec-gather-listenports | sec-diff /var/cache/sec-tools/listenports.state
 
       - Added to "listenports":
 
@@ -129,7 +131,7 @@ any other `gather` script. To do so, you can use the `sec-mail` script:
 
 	$ sec-gather-listenports | \
       sec-diff /var/cache/sec-tools/listenports | \
-      sec-mail --to security@example.org --subject "Listening services changed on $(hostname -f)"
+      mail -t security@example.org --subject "Listening services changed on $(hostname -f)"
 
 ## <a name="report">Reporting</a>
 
