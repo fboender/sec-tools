@@ -36,9 +36,9 @@ standard output. These can be combined to produce the desired result.
 
 The `gather` tools gather information and output json or html output. Example usage:
 
-    ./sec-gather-listenports --no-local --annotate listenports-annotation.json --format json
-    ./sec-gather-unixusers --login --format json
-    ./sec-gather-unixgroups --not-empty --format html
+    sec-gather-listenports --no-local --annotate listenports-annotation.json --format json
+    sec-gather-unixusers --login --format json
+    sec-gather-unixgroups --not-empty --format html
 
 The gather script generally provide options for additional filtering. 
 
@@ -133,4 +133,10 @@ any other `gather` script. To do so, you can use the `sec-mail` script:
 
 ## <a name="report">Reporting</a>
 
-The `sec-report` tool renders a 
+The `sec-report` tool renders a [Mako template](http://www.makotemplates.org/)
+to stdout. For an example, see the [example report](example/report).
+
+Example usage:
+
+    sec-report ../example/report/report.tpl > report.html
+
