@@ -19,10 +19,6 @@
         "service": "MySQL",
         "verified": true
     },
-    "3973": {
-        "service": "JBoss",
-        "verified": false
-    },
     "10050": {
         "service": "Zabbix agent",
         "verified": true
