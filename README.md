@@ -1,17 +1,27 @@
 Security Tools
 ==============
 
+1. [About](#about)
+1. [Requirements](#requirements)
+1. [Overview of tools](#overview)
+1. [Gather scripts](#gather)
+1. [Diffing and alerting](#alert)
+1. [Reporting](#report)
+
+
+## <a name="about">About</a>
+
 These are security tools for reporting and alerting about security
 information. The current focus is on user authorization / authentication.
 
 The tools are written as separate unix tools that read and write from / to
 standard output. These can be combined to produce the desired result.
 
-## Requirements
+## <a name="requirements">Requirements</a>
 
     sudo apt install python-mako
 
-## Overview of tools
+## <a name="overview">Overview of tools</a>
 
 * `sec-gather-listenports`: Output listening services / ports
 * `sec-gather-mysqlusers`: Output MySQL users and privileges
@@ -22,8 +32,7 @@ standard output. These can be combined to produce the desired result.
 * `sec-report`: Generate HTML and PDF reports from gathered info
 * `sec-mail`: Send alerts and reports.
 
-
-## Gather scripts
+## <a name="gather">Gather scripts</a>
 
 The `gather` tools gather information and output json or html output. Example usage:
 
@@ -85,7 +94,7 @@ List unix groups and their members.
 
 List unix users and their groups.
 
-## Alerting / Diffing
+## <a name="alert">Diffing and alerting</a>
 
 The `sec-diff` tool can be used to diff JSON output from a `sec-gather` script
 with a previous run. For example:
@@ -122,3 +131,6 @@ any other `gather` script. To do so, you can use the `sec-mail` script:
       sec-diff /var/cache/sec-tools/listenports | \
       sec-mail --to security@example.org --subject "Listening services changed on $(hostname -f)"
 
+## <a name="report">Reporting</a>
+
+The `sec-report` tool renders a 
