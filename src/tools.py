@@ -4,6 +4,8 @@ import os
 import sys
 import subprocess
 import copy
+from mako import exceptions
+from mako.template import Template
 
 
 def cmd(cmd, input=None, env=None, raise_err=True):
@@ -58,3 +60,17 @@ def deepupdate(target, src):
                 target[k].update(v.copy())
         else:
             target[k] = copy.copy(v)
+
+def tpl_file(path, **kwargs):
+    try:
+        tpl = Template(filename=os.path.abspath(path))
+        return tpl.render(**kwargs)
+    except:
+        raise Exception(exceptions.text_error_template().render())
+
+def tpl_str(string, **kwargs):
+    try:
+        tpl = Template(string)
+        return tpl.render(**kwargs)
+    except:
+        raise Exception(exceptions.text_error_template().render())

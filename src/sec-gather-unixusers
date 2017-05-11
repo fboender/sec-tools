@@ -4,7 +4,7 @@ import sys
 import argparse
 import json
 import logging
-from mako.template import Template
+import tools
 
 import pwd
 import grp
@@ -91,4 +91,4 @@ if __name__ == "__main__":
     if args.format == 'json':
         sys.stdout.write(json.dumps({"unixusers": unixusers}, indent=4))
     elif args.format == 'html':
-        sys.stdout.write(Template(html_tpl).render(unixusers=unixusers))
+        sys.stdout.write(tools.tpl_str(html_tpl, unixusers=unixusers))

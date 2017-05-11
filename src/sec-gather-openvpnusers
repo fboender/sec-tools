@@ -4,7 +4,7 @@ import sys
 import argparse
 import json
 import logging
-from mako.template import Template
+import tools
 
 import datetime
 import pwd
@@ -113,4 +113,4 @@ if __name__ == "__main__":
     if args.format == 'json':
         sys.stdout.write(json.dumps({"openvpnusers": openvpnusers}, indent=4, default=json_serial))
     elif args.format == 'html':
-        sys.stdout.write(Template(html_tpl).render(openvpnusers=openvpnusers))
+        sys.stdout.write(tools.tpl_str(html_tpl, openvpnusers=openvpnusers))

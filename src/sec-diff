@@ -5,14 +5,10 @@ import sys
 import json
 import argparse
 import logging
-from mako.template import Template
+import tools
+
 from pprint import pformat
 
-def format_value(value, indent=4):
-    pretty = pformat(value)
-    pretty_str = str(pretty)
-    pretty_indent = pretty_str.replace("\n", "\n" + indent * ' ')
-    return pretty_indent
 
 text_tpl = """\
 % for change in changes:
@@ -68,6 +64,12 @@ html_tpl = """\
 % endfor
 </ul>
 """
+
+def format_value(value, indent=4):
+    pretty = pformat(value)
+    pretty_str = str(pretty)
+    pretty_indent = pretty_str.replace("\n", "\n" + indent * ' ')
+    return pretty_indent
 
 def diff_list(old, new, cur_path=[]):
     changes = []
@@ -202,9 +204,9 @@ if __name__ == "__main__":
     if args.format == 'json':
         sys.stdout.write(json.dumps(changes))
     elif args.format == 'text':
-        sys.stdout.write(Template(text_tpl).render(changes=changes, format_value=format_value))
+        sys.stdout.write(tools.tpl_str(text_tpl, changes=changes, format_value=format_value))
     elif args.format == 'html':
-        sys.stdout.write(Template(html_tpl).render(changes=changes))
+        sys.stdout.write(tools.tpl_str(html_tpl, changes=changes))
 
     # Write new contents to key file.
     with open(args.key, 'w') as f:

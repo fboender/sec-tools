@@ -3,7 +3,6 @@
 import argparse
 import sys
 import json
-from mako.template import Template
 import tools
 
 import re
@@ -126,4 +125,4 @@ if __name__ == "__main__":
     if args.format == 'json':
         sys.stdout.write(json.dumps({"mysqlusers": mysql_users}, indent=4))
     elif args.format == 'html':
-        sys.stdout.write(Template(html_tpl).render(mysqlusers=mysql_users))
+        sys.stdout.write(tools.tpl_str(html_tpl, mysqlusers=mysql_users))

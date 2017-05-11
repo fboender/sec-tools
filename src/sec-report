@@ -4,9 +4,9 @@ import os
 import sys
 import argparse
 import subprocess
-from mako.template import Template
 import json
 import tools
+
 import socket
 
 
@@ -35,5 +35,4 @@ if __name__ == "__main__":
     if not '.' in fqdn:
         fqdn = socket.getfqdn()
 
-    mytemplate = Template(filename=args.report)
-    print(mytemplate.render(fqdn=fqdn, gather=gather))
+    sys.stdout.write(tools.tpl_file(args.report, fqdn=fqdn, gather=gather))
