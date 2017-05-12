@@ -183,6 +183,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Diff json from stdin against json from file.')
     parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
     parser.add_argument('--format', dest="format", choices=formats, type=str, default="text", help="Output format")
+    parser.add_argument('--exclude', dest="exclude", type=str, help="Exclude keys")
     parser.add_argument('key', metavar='KEY', type=str, help='File on disk to check stdin against.')
     args = parser.parse_args()
 
@@ -200,6 +201,19 @@ if __name__ == "__main__":
     old_c = json.load(open(args.key, 'r'))
     new_c = json.load(sys.stdin)
     changes = diff(old_c, new_c)
+
+    # filter out changes
+    if args.exclude:
+        # build a list of exclude paths
+        exclude_paths = []
+        filtered_changed = []
+        for exclude in args.exclude.split(','):
+            exclude_path = exclude.split('.')
+            exclude_paths.append(exclude_path)
+
+        # Test each change to see if its path (e.g. listenports -> 53 -> proto)
+        # is in the exclude list. Replaces original `changes` list.
+        changes = [change for change in changes if change['path'] not in exclude_paths]
 
     if args.format == 'json':
         sys.stdout.write(json.dumps(changes))

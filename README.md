@@ -133,6 +133,10 @@ any other `gather` script. To do so, you can use the `sec-mail` script:
       sec-diff /var/cache/sec-tools/listenports | \
       mail -t security@example.org --subject "Listening services changed on $(hostname -f)"
 
+You can exclude certain paths from being reported about. For example:
+
+    sec-gather-listenports | sec-diff --exclude listenports.25.pid,listenports.25.prog listenports.state
+
 ## <a name="report">Reporting</a>
 
 The `sec-report` tool renders a [Mako template](http://www.makotemplates.org/)
