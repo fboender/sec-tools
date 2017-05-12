@@ -162,7 +162,7 @@ def diff_dict(old, new, cur_path=[]):
                 {
                     "action": "changed",
                     "type": "dict",
-                    "path": cur_path,
+                    "path": cur_path + [same_key],
                     "key": same_key,
                     "old_value": old_v,
                     "new_value": new_v
