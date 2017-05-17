@@ -13,7 +13,7 @@ from pprint import pformat
 text_tpl = """\
 % for change in changes:
 <%
-path_text = "-> ".join(change["path"])
+path_text = " -> ".join(change["path"])
 %>
 % if change["action"] == 'added':
   - Added to "${path_text}":
