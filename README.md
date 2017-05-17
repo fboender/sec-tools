@@ -135,7 +135,14 @@ any other `gather` script. To do so, you can use the `sec-mail` script:
 
 You can exclude certain paths from being reported about. For example:
 
-    sec-gather-listenports | sec-diff --exclude listenports.25.pid,listenports.25.prog listenports.state
+    # Exclude all items starting with 'listenports.53'
+    sec-gather-listenports | sec-diff --exclude listenports.53 listenports.state
+
+    # Exclude all PID changes for all ports.
+    sec-gather-listenports | sec-diff --exclude listenports.*.pid listenports.state
+
+    # Exclude all PID and Prog changes for all ports
+    sec-gather-listenports | sec-diff --exclude listenports.*.pid,listenports.*.prog listenports.state
 
 ## <a name="report">Reporting</a>
 

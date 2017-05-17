@@ -178,6 +178,38 @@ def diff(old, new, cur_path=[]):
         return diff_dict(old, new, cur_path)
 
 
+def exclude_match(change, match):
+    """
+    Check if the path in `match` matches the path in `change`.
+
+    Return True if `match` matches the path of `change`. Otherwise return
+    `False`.
+    """
+    change_path = change['path']
+    for change_index in range(len(match)):
+        try:
+            if match[change_index] == '*':
+                # Match any key. Compare the rest.
+                continue
+            elif match[change_index] != change_path[change_index]:
+                # Paths are not the same, so it doesn't match
+                return False
+        except IndexError:
+            return False
+
+    return True
+
+def exclude_list(change, matches):
+    """
+    Apply a list of matches to a change. If any of them match, return True.
+    Otherwise, return False.
+    """
+    for match in matches:
+        if exclude_match(change, match):
+            return True
+    return False
+
+
 if __name__ == "__main__":
     formats = ['json', 'text', 'html']
     parser = argparse.ArgumentParser(description='Diff json from stdin against json from file.')
@@ -213,7 +245,11 @@ if __name__ == "__main__":
 
         # Test each change to see if its path (e.g. listenports -> 53 -> proto)
         # is in the exclude list. Replaces original `changes` list.
-        changes = [change for change in changes if change['path'] not in exclude_paths]
+        filtered_changes = []
+        for change in changes:
+            if not exclude_list(change, exclude_paths):
+                filtered_changes.append(change)
+        changes = filtered_changes
 
     if args.format == 'json':
         sys.stdout.write(json.dumps(changes))
