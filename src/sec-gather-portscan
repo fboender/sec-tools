@@ -114,6 +114,14 @@ def scan_ip(ip, ports=None, nmap_extra_opts=""):
     if node_hosts is not None:
         for node_host in node_hosts:
             addr = node_host.find("address").attrib["addr"]
+
+            # Replace IP address with reverse DNS hostname if one was found by
+            # nmap
+            if node_host.find("hostnames") is not None and \
+               node_host.find("hostnames").find("hostname") is not None:
+                addr = node_host.find("hostnames").find("hostname").attrib.get("name", addr)
+
+            # Parse and add port information to this host.
             hosts[addr] = {}
             node_ports = node_host.find("ports")
             for node_port in node_ports.findall("port"):
