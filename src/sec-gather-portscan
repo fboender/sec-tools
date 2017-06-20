@@ -95,13 +95,19 @@ def xml_port_to_dict(node_port):
     """
     Convert a Nmap XML node definition to a dictionary.
     """
-    return {
+    port_state = {
         "protocol": node_port.attrib.get("protocol", "MISSING_PROTOCOL"),
         "port": int(node_port.attrib.get("portid", -1)),
         "state": node_port.find("state").attrib.get("state", "MISSING_STATE"),
         "reason": node_port.find("state").attrib.get("reason", "MISSING_REASON"),
-        "service_name": node_port.find("service").attrib.get("name", "MISSING_NAME")
+        "service_name": "unknown",
     }
+
+    service_name = node_port.find("service")
+    if service_name is not None:
+        port_state["service_name"] = service_name.attrib.get("name", "MISSING_NAME")
+
+    return port_state
 
 def scan_ip(ip, ports=None, nmap_extra_opts="", all=False):
     """
