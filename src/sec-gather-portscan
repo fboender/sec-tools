@@ -19,6 +19,9 @@ import json
 from xml.etree import ElementTree as etree
 import tools
 
+# Port states to filter out
+state_filter = ["closed", "filtered"]
+
 # -T4 = Timing template 4 (0-5, higher is faster)
 # -oX - = output to XML on stdout
 nmap_opts = "-T4 -oX -"
@@ -100,7 +103,7 @@ def xml_port_to_dict(node_port):
         "service_name": node_port.find("service").attrib.get("name", "MISSING_NAME")
     }
 
-def scan_ip(ip, ports=None, nmap_extra_opts=""):
+def scan_ip(ip, ports=None, nmap_extra_opts="", all=False):
     """
     Scan an single or multiple IPs and return a dict of ports and their states.
     """
@@ -126,7 +129,10 @@ def scan_ip(ip, ports=None, nmap_extra_opts=""):
             node_ports = node_host.find("ports")
             for node_port in node_ports.findall("port"):
                 port_state = xml_port_to_dict(node_port)
-                hosts[addr][str(port_state["port"])] = port_state
+                # Include port if --all is given, or if the state should not be
+                # filtered out.
+                if all is True or port_state["state"] not in state_filter:
+                    hosts[addr][str(port_state["port"])] = port_state
     return hosts
 
 def verify_root():
@@ -137,14 +143,14 @@ def verify_root():
         sys.stderr.write("You're not root. Not all ports would be scanned by nmap. Exiting\n")
         sys.exit(2)
 
-def gather(targets, annotate=None, ports=None):
+def gather(targets, annotate=None, ports=None, all=False):
     annotations = {}
     if annotate:
         annotations = json.load(open(annotate, 'r'))
 
     results = {}
     for target in targets:
-        result_hosts = scan_ip(target, ports=ports)
+        result_hosts = scan_ip(target, ports=ports, all=all)
         results.update(result_hosts)
 
     tools.deepupdate(results, annotations)
@@ -159,6 +165,7 @@ if __name__ == "__main__":
     parser.add_argument('--format', dest="format", choices=formats, type=str, default="json", help="Output format")
     parser.add_argument('--annotate', dest="annotate", type=str, help="annotation file")
     parser.add_argument('--ports', dest="ports", type=str, default=None, help="Port range to scan (nmap format)")
+    parser.add_argument('--all', dest="all", action='store_true', default=False, help="Include all ports, not just 'open' states.")
     parser.add_argument('targets', metavar='target', type=str, nargs='+', help='Target(s) to scan')
 
 
@@ -175,7 +182,7 @@ if __name__ == "__main__":
 
     verify_root()
 
-    openports = gather(args.targets, args.annotate, args.ports)
+    openports = gather(args.targets, args.annotate, args.ports, args.all)
 
     if args.format == 'json':
         sys.stdout.write(json.dumps({"openports": openports}, indent=4))
