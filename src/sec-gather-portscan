@@ -1,0 +1,175 @@
+#!/usr/bin/python
+
+#
+# sec-gather-portscan
+#
+# Port-scan a host using nmap, parse and optionally annotate the results and
+# return them in various formats.
+#
+# Copyright 2017, Ferry Boender.
+# Licensed under the MIT license. For more information, see the LICENSE file.
+#
+
+import argparse
+import sys
+import os
+import logging
+import subprocess
+import json
+from xml.etree import ElementTree as etree
+import tools
+
+# -T4 = Timing template 4 (0-5, higher is faster)
+# -oX - = output to XML on stdout
+nmap_opts = "-T4 -oX -"
+
+html_tpl = """\
+<table>
+    <tr>
+        <th>Host</th>
+        <th>Port</th>
+        <th>Protocol</th>
+        <th>State</th>
+        <th>Reason</th>
+        <th>Verified</th>
+        <th>Comment</th>
+    </tr>
+    % for host in openports.keys():
+        % for portnr in openports[host].keys():
+            <%
+            portdetail = openports[host][portnr]
+
+            verified = "unverified"
+            if portdetail.get("verified", False) is True:
+                verified = "verified"
+            endif
+
+            %>
+            <tr class="${verified}">
+                <td>${host}</td>
+                <td>${portdetail['port']}</td>
+                <td>${portdetail['protocol']}</td>
+                <td>${portdetail['state']}</td>
+                <td>${portdetail['reason']}</td>
+                <td>${portdetail.get('verified', False)}</td>
+                <td>${portdetail.get('comment', '')}</td>
+            </tr>
+        % endfor
+    % endfor
+</table>
+"""
+
+def run_nmap(ip, ports=None, nmap_extra_opts=""):
+    """
+    Scan IP and return XML results in nmap format.
+
+    `ip` is a string containing an IP or hostname, `ports` is a string
+    containing the range of ports to scan in nmap commandline argument format
+    (e.g. "U:53,111,137,T:21-25,80,139,8080,S:9")
+    """
+    # Build a list of command options
+    cmd_opts = [
+        "nmap",
+        nmap_opts,
+        nmap_extra_opts,
+    ]
+    if ports is not None:
+        cmd_opts.extend(["-p", ports])
+    cmd_opts.append(ip)
+
+    # Execute command
+    cmd = " ".join(cmd_opts)
+    logging.info("Executing: {}".format(cmd))
+    p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+    if p.returncode > 0:
+        raise Exception("'{}' return exitcode {}. Stderr: {}".format(cmd, p.returncode, stderr))
+    else:
+        return stdout
+
+def xml_port_to_dict(node_port):
+    """
+    Convert a Nmap XML node definition to a dictionary.
+    """
+    return {
+        "protocol": node_port.attrib.get("protocol", "MISSING_PROTOCOL"),
+        "port": int(node_port.attrib.get("portid", -1)),
+        "state": node_port.find("state").attrib.get("state", "MISSING_STATE"),
+        "reason": node_port.find("state").attrib.get("reason", "MISSING_REASON"),
+        "service_name": node_port.find("service").attrib.get("name", "MISSING_NAME")
+    }
+
+def scan_ip(ip, ports=None, nmap_extra_opts=""):
+    """
+    Scan an single or multiple IPs and return a dict of ports and their states.
+    """
+    hosts = {}
+
+    res = run_nmap(ip, ports=ports, nmap_extra_opts=nmap_extra_opts)
+    logging.debug("nmap XML output: {}".format(res))
+    xml = etree.XML(res)
+    node_root = xml
+    node_hosts = node_root.findall("host")
+    if node_hosts is not None:
+        for node_host in node_hosts:
+            addr = node_host.find("address").attrib["addr"]
+            hosts[addr] = {}
+            node_ports = node_host.find("ports")
+            for node_port in node_ports.findall("port"):
+                port_state = xml_port_to_dict(node_port)
+                hosts[addr][str(port_state["port"])] = port_state
+    return hosts
+
+def verify_root():
+    """
+    Verify the user is root.
+    """
+    if os.getuid() != 0:
+        sys.stderr.write("You're not root. Not all ports would be scanned by nmap. Exiting\n")
+        sys.exit(2)
+
+def gather(targets, annotate=None, ports=None):
+    annotations = {}
+    if annotate:
+        annotations = json.load(open(annotate, 'r'))
+
+    results = {}
+    for target in targets:
+        result_hosts = scan_ip(target, ports=ports)
+        results.update(result_hosts)
+
+    tools.deepupdate(results, annotations)
+
+    return results
+
+
+if __name__ == "__main__":
+    formats = ['json', 'html']
+    parser = argparse.ArgumentParser(description='Scan for open ports on machine')
+    parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
+    parser.add_argument('--format', dest="format", choices=formats, type=str, default="json", help="Output format")
+    parser.add_argument('--annotate', dest="annotate", type=str, help="annotation file")
+    parser.add_argument('--ports', dest="ports", type=str, default=None, help="Port range to scan (nmap format)")
+    parser.add_argument('targets', metavar='target', type=str, nargs='+', help='Target(s) to scan')
+
+
+    args = parser.parse_args()
+
+    loglevel = logging.ERROR
+    if args.debug is True:
+        loglevel = logging.DEBUG
+    logging.basicConfig(level=loglevel)
+
+    if args.targets is None:
+        sys.stderr.write("Please specify one or more targets\n")
+        sys.exit(1)
+
+    verify_root()
+
+    openports = gather(args.targets, args.annotate, args.ports)
+
+    if args.format == 'json':
+        sys.stdout.write(json.dumps({"openports": openports}, indent=4))
+    elif args.format == 'html':
+        sys.stdout.write(tools.tpl_str(html_tpl, openports=openports))

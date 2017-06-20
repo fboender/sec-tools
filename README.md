@@ -28,6 +28,7 @@ standard output. These can be combined to produce the desired result.
 * `sec-gather-openvpnusers`: Output OpenVPN client certificate status
 * `sec-gather-unixgroups`: Output unix groups and their members
 * `sec-gather-unixusers`: Output unix users and their details
+* `sec-gather-portscan`: Output open ports detected through a portscan of a host
 * `sec-diff`: Output changes in `sec-gather-*` script output since last time
 * `sec-report`: Generate HTML and PDF reports from gathered info
 * `sec-mail`: Send alerts and reports.
@@ -93,6 +94,33 @@ List unix groups and their members.
 ### sec-gather-unixusers
 
 List unix users and their groups.
+
+### sec-gather-portscan
+
+Perform a port scan against a host using nmap (which should be installed) and
+return the results in various formats. It must be run as root, or nmap won't
+report all open ports for some reason. 
+
+For example:
+
+    sudo ./sec-gather-portscan --format html --ports 1-4000 --annotate portscan.annotate 192.168.1.5
+
+The results can be annotated using an annotation file, which could look
+something like this:
+
+    {
+        "192.168.1.5": {
+            "514": {
+                "verified": true,
+                "comment": "rsyslog server"
+            },
+            "2222": {
+                "verified": true,
+                "comment": "Virtualbox remote access"
+            }
+        }
+    }
+
 
 ## <a name="alert">Diffing and alerting</a>
 
