@@ -101,6 +101,11 @@ Perform a port scan against a host using nmap (which should be installed) and
 return the results in various formats. It must be run as root, or nmap won't
 report all open ports for some reason. 
 
+By default, nmap scans the "top 1000 most used ports". Which exactly those are
+depends on your version of nmap. You can use the `--debug` option to find out
+which ports are included in the scan. Use the `--ports` option to specify your
+own range.
+
 For example:
 
     sudo ./sec-gather-portscan --format html --ports 1-4000 --annotate portscan.annotate 192.168.1.5
