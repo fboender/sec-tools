@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
-import argparse
 import sys
-import json
-import tools
+import argparse
 import logging
-
+import json
 import re
+
+import tools
+
+__VERSION__ = "0.1"
 
 
 html_tpl = """\
@@ -120,6 +122,7 @@ def gather(no_local=False, annotate=None):
 if __name__ == "__main__":
     formats = ['json', 'html']
     parser = argparse.ArgumentParser(description='Gather unix users')
+    parser.add_argument('--version', action='version', version=__VERSION__)
     parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
     parser.add_argument('--format', dest="format", choices=formats, type=str, default="json", help="Output format")
     parser.add_argument('--annotate', dest="annotate", type=str, help="annotation file")
