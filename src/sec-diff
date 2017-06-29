@@ -1,5 +1,16 @@
 #!/usr/bin/env python
 
+#
+# sec-diff
+#
+# Deep-compare a JSON structure read from stdin with a JSON structure read from
+# disk and output the difference. This is useful for generating events when
+# output of the various sec-gather-* tools changes.
+#
+# Copyright 2017, Ferry Boender.
+# Licensed under the MIT license. For more information, see the LICENSE file.
+#
+
 import os
 import sys
 import json

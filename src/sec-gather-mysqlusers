@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 
-import argparse
+#
+# sec-gather-mysqlusers
+#
+# Gather information about MySQL users and their grants.
+#
+# Copyright 2017, Ferry Boender.
+# Licensed under the MIT license. For more information, see the LICENSE file.
+#
 import sys
 import json
 import tools
