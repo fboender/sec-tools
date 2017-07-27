@@ -133,7 +133,7 @@ if __name__ == "__main__":
     if args.no_conn_error is True:
         cmd_status = tools.cmd('mysql -N -B -e "SELECT 1"', raise_err=False)
         if cmd_status['exitcode'] != 0:
-            sys.exit(0)
+            sys.exit(1)
 
     mysql_users = gather()
 
