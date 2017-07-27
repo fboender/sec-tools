@@ -76,14 +76,23 @@ html_tpl = """\
         % if change["action"] == "added":
             <b>Added</b> to
             <code>${path_html}</code>:
+            % if change["type"] == 'dict':
+            <b>${change["key"]}</b>
+            % endif
             <code>${change["value"]}</code>.
         % elif change["action"] == "removed":
             <b>Removed</b> from
             <code>${path_html}</code>:
+            % if change["type"] == 'dict':
+            <b>${change["key"]}</b>
+            % endif
             <code>${change["value"]}</code>.
         % elif change["action"] == "changed":
             <b>Changed</b> for
             <code>${path_html}</code> from
+            % if change["type"] == 'dict':
+            <b>${change["key"]}</b>
+            % endif
             <code>${change["old_value"]}</code> to
             <code>${change["value"]}</code>.
         % endif
