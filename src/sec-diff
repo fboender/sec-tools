@@ -228,7 +228,7 @@ if __name__ == "__main__":
     parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
     parser.add_argument('--format', dest="format", choices=formats, type=str, default="text", help="Output format")
     parser.add_argument('--exclude', dest="exclude", type=str, help="Exclude keys")
-    parser.add_argument('key', metavar='KEY', type=str, help='File on disk to check stdin against.')
+    parser.add_argument('statefile', metavar='STATEFILE', type=str, help='File on disk to check stdin against.')
     args = parser.parse_args()
 
     loglevel = logging.ERROR
@@ -236,13 +236,13 @@ if __name__ == "__main__":
         loglevel = logging.DEBUG
     logging.basicConfig(level=loglevel)
 
-    if not os.path.exists(args.key):
+    if not os.path.exists(args.statefile):
         # First time diff, write previous scan to disk
-        with open(args.key, 'w') as f:
+        with open(args.statefile, 'w') as f:
             f.write(sys.stdin.read())
         sys.exit(0)
 
-    old_c = json.load(open(args.key, 'r'))
+    old_c = json.load(open(args.statefile, 'r'))
     new_c = json.load(sys.stdin)
     changes = diff(old_c, new_c)
 
@@ -271,5 +271,5 @@ if __name__ == "__main__":
         sys.stdout.write(tools.tpl_str(html_tpl, changes=changes))
 
     # Write new contents to key file.
-    with open(args.key, 'w') as f:
+    with open(args.statefile, 'w') as f:
         json.dump(new_c, f, indent=4)
