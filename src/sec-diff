@@ -94,6 +94,9 @@ html_tpl = """\
 """
 
 def format_value(value, left_indent=2):
+    """
+    Return a pretty version of `value` (list, dict, etc) with indenting.
+    """
     pretty = json.dumps(value, indent=2)
     if type(value) == dict:
         pretty = pretty.lstrip('{').rstrip('}')
@@ -101,6 +104,13 @@ def format_value(value, left_indent=2):
     return pretty_indent
 
 def diff_list(old, new, cur_path=[]):
+    """
+    Compare two lists and return a list of additions and deletions in the old
+    and new list.
+
+    We don't need to recurse into the lists, because Python can deep-compare
+    lists automatically.
+    """
     changes = []
 
     # Go through new values, figure out what's been added
@@ -136,6 +146,22 @@ def diff_list(old, new, cur_path=[]):
     return changes
 
 def diff_dict(old, new, cur_path=[]):
+    """
+    Compare two dicts and return a list of key additions and deletions in the old
+    and new dict. For any keys that haven't changed between the dicts, we
+    recurse into those keys to do a deep compare.
+
+    Returns a flat list of changes, where each entry in the list is a dict that
+    looks like:
+
+        {
+            "action": "added/deleted",
+            "type": "dict",
+            "path": ["groups", "students", "firstyear"],
+            "key": "John McFirstyearStudent",
+            "value": {"firstname": "John", .....etc}
+        }
+    """
     changes = []
 
     logging.debug("diff_dict: cur path: {}".format(cur_path))
@@ -201,6 +227,9 @@ def diff_dict(old, new, cur_path=[]):
     return changes
 
 def diff(old, new, cur_path=[]):
+    """
+    Compare two python dicts or lists and return their difference.
+    """
     if type(new) == list:
         return diff_list(old, new, cur_path)
     elif type(new) == dict:
