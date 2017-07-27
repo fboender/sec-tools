@@ -29,23 +29,39 @@ path_text = " -> ".join(change["path"])
 % if change["action"] == 'added':
   - Added to "${path_text}":
 
+    % if change["type"] == 'dict':
+    ${format_value({change["key"]:change["value"]})}
+    % else:
     ${format_value(change["value"])}
+    % endif
 
 % elif change["action"] == 'removed':
   - Removed from "${path_text}":
 
+    % if change["type"] == 'dict':
+    ${format_value({change["key"]:change["value"]})}
+    % else:
     ${format_value(change["value"])}
+    % endif
 
 % elif change["action"] == 'changed':
   - Changed for "${path_text}"
 
     from:
 
-    ${format_value(change["old_value"])}
+    % if change["type"] == 'dict':
+    ${format_value({change["key"]:change["value"]})}
+    % else:
+    ${format_value(change["value"])}
+    % endif
 
     to:
 
-    ${format_value(change["new_value"])}
+    % if change["type"] == 'dict':
+    ${format_value({change["key"]:change["value"]})}
+    % else:
+    ${format_value(change["value"])}
+    % endif
 % endif
 % endfor
 """
