@@ -27,7 +27,7 @@ text_tpl = """\
 path_text = " -> ".join(change["path"])
 %>
 % if change["action"] == 'added':
-  - Added to "${path_text}":
+  - Added to "${path_text}":\
 
     % if change["type"] == 'dict':
     ${format_value({change["key"]:change["value"]})}
@@ -36,7 +36,7 @@ path_text = " -> ".join(change["path"])
     % endif
 
 % elif change["action"] == 'removed':
-  - Removed from "${path_text}":
+  - Removed from "${path_text}":\
 
     % if change["type"] == 'dict':
     ${format_value({change["key"]:change["value"]})}
@@ -45,7 +45,7 @@ path_text = " -> ".join(change["path"])
     % endif
 
 % elif change["action"] == 'changed':
-  - Changed for "${path_text}"
+  - Changed for "${path_text}"\
 
     from:
 
