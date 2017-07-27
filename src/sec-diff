@@ -49,19 +49,11 @@ path_text = " -> ".join(change["path"])
 
     from:
 
-    % if change["type"] == 'dict':
-    ${format_value({change["key"]:change["value"]})}
-    % else:
-    ${format_value(change["value"])}
-    % endif
+      ${format_value(change["old_value"])}
 
     to:
 
-    % if change["type"] == 'dict':
-    ${format_value({change["key"]:change["value"]})}
-    % else:
-    ${format_value(change["value"])}
-    % endif
+      ${format_value(change["new_value"])}
 % endif
 % endfor
 """
@@ -101,10 +93,11 @@ html_tpl = """\
 </ul>
 """
 
-def format_value(value, indent=4):
-    pretty = pformat(value)
-    pretty_str = str(pretty)
-    pretty_indent = pretty_str.replace("\n", "\n" + indent * ' ')
+def format_value(value, left_indent=2):
+    pretty = json.dumps(value, indent=2)
+    if type(value) == dict:
+        pretty = pretty.lstrip('{').rstrip('}')
+    pretty_indent = pretty.replace("\n", "\n" + left_indent * ' ')
     return pretty_indent
 
 def diff_list(old, new, cur_path=[]):
