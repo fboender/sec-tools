@@ -175,7 +175,7 @@ if __name__ == "__main__":
     parser.add_argument('--format', dest="format", choices=formats, type=str, default="json", help="Output format")
     parser.add_argument('--annotate', dest="annotate", type=str, help="annotation file")
     parser.add_argument('--ports', dest="ports", type=str, default=None, help="Port range to scan (nmap format)")
-    parser.add_argument('--all', dest="all", action='store_true', default=False, help="Include all ports, not just 'open' states.")
+    parser.add_argument('--all', dest="all", action='store_true', default=False, help="Report all ports, not just 'open' states.")
     parser.add_argument('targets', metavar='target', type=str, nargs='+', help='Target(s) to scan')
     args = parser.parse_args()
 
