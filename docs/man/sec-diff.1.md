@@ -1,0 +1,82 @@
+% SEC-DIFF(1)
+% Ferry Boender
+% May 2017
+
+<!---
+Convert with pandoc to Groff man format:
+
+pandoc this.md -s -t man > this.1
+--->
+
+# NAME
+
+sec-diff – Diff JSON from stdin (sec-gather-X) against JSON from file.
+
+# SYNOPSIS
+
+ **sec-diff** [**-h**] [**--version**] [**--debug**] [**--format** *{json,text,html}*] [**--exclude** *EXCLUDE*] *STATEFILE*
+
+# DESCRIPTION
+
+**sec-diff** can be used to diff JSON output from a **sec-gather** script with
+a previous run. The first time **sec-diff** runs, it will output nothing.
+Subsequent invocations will show any differences (additions, deletions and
+modifications) in the JSON output.
+
+Diff output can be shown in a variety of formats. The **sec-mail** tool can be
+used to mail changes.
+
+# OPTIONS
+
+**-h**, **--help**
+:   Display this help message and exit
+
+**--version**
+:   show program's version number and exit
+
+**--debug**
+:   Show debug info
+
+**--format** *{json,text,html}*
+:   Output format. Default is "*text*"
+
+**--exclude** *EXCLUDE*
+:   Exclude keys from diffing. Useful for keys that always change.
+
+# EXAMPLES
+
+The following example stores listening ports in a state file:
+
+    $ sec-gather-listenports | sec-diff listenports.state
+
+If a new service starts listening on a port, and we run the command again, the
+output will look like:
+
+    $ sec-gather-listenports | sec-diff listenports.state
+
+      - Added to "listenports":
+    
+        {u'local_address': u'127.0.0.1',
+        u'local_port': 5555,
+        u'pid': 31978,
+        u'prog': u'nc',
+        u'proto': u'tcp',
+        u'recv_queue': 0,
+        u'remote_address': u'0.0.0.0',
+        u'remote_port': 0,
+        u'send_queue': 0,
+        u'service': u'Unknown',
+        u'state': u'LISTEN',
+        u'verified': False}
+
+Exclude all items starting with `listenports.53`:
+
+    $ sec-gather-listenports | sec-diff --exclude listenports.53 listenports.state
+
+Exclude all PID changes for all ports:
+
+    $ sec-gather-listenports | sec-diff --exclude listenports.*.pid listenports.state
+
+Exclude all PID and Prog changes for all ports:
+
+    $ sec-gather-listenports | sec-diff --exclude listenports.*.pid,listenports.*.prog listenports.state
