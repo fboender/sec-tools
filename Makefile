@@ -6,3 +6,7 @@ fake:
 
 doc:
 	scripts/make_man.sh
+
+clean:
+	find ./ -name "*.state" -delete
+	find ./ -name "*.pyc" -delete
