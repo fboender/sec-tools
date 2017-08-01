@@ -80,3 +80,9 @@ Exclude all PID changes for all ports:
 Exclude all PID and Prog changes for all ports:
 
     $ sec-gather-listenports | sec-diff --exclude listenports.*.pid,listenports.*.prog listenports.state
+
+# COPYRIGHT
+
+Copyright 2017, Ferry Boender.
+
+Licensed under the MIT license. For more information, see the LICENSE file.

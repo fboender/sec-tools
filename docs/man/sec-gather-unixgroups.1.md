@@ -73,3 +73,9 @@ sec-gather-unixgroups – Output unix groups and their users
             ]
         }
     }
+
+# COPYRIGHT
+
+Copyright 2017, Ferry Boender.
+
+Licensed under the MIT license. For more information, see the LICENSE file.

@@ -83,3 +83,9 @@ Make sure the file isn't readable for other users.
             }
         }
     }
+
+# COPYRIGHT
+
+Copyright 2017, Ferry Boender.
+
+Licensed under the MIT license. For more information, see the LICENSE file.

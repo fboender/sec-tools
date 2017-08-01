@@ -79,3 +79,8 @@ The template can then access these:
 If a '*/*' is present in the path, it will be converted to '*\_\_*' (double
 underscores).
 
+# COPYRIGHT
+
+Copyright 2017, Ferry Boender.
+
+Licensed under the MIT license. For more information, see the LICENSE file.
