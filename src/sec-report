@@ -15,6 +15,10 @@ __VERSION__ = "0.1"
 
 
 def gather(cmd):
+    """
+    Helper method that's sent to templates so they can easily gather additional
+    information.
+    """
     p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = p.communicate()
@@ -27,8 +31,11 @@ def gather(cmd):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Mail reports and alerts')
+    parser = argparse.ArgumentParser(description='Generate reports')
+    parser.add_argument('--version', action='version', version=__VERSION__)
+    parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
     parser.add_argument('report', metavar='REPORT', type=str, help='Mako report template')
+    parser.add_argument('assets', metavar='ASSETS', type=str, default=None, nargs='*', help='JSON files to be made accessible to the report.')
     args = parser.parse_args()
 
     if args.report is None:
@@ -39,4 +46,8 @@ if __name__ == "__main__":
     if not '.' in fqdn:
         fqdn = socket.getfqdn()
 
-    sys.stdout.write(tools.tpl_file(args.report, fqdn=fqdn, gather=gather))
+    assets = {}
+    for asset in args.assets:
+        assets[asset.replace('/', '__')] = json.load(open(asset, 'r'))
+
+    sys.stdout.write(tools.tpl_file(args.report, fqdn=fqdn, gather=gather, **assets))
