@@ -1,14 +1,7 @@
 #!/usr/bin/env python
 
-#
-# sec-gather-unixusers
-#
-# Read /etc/passwd and /etc/groups and return information about users and their
-# groups. Unlike sec-gather-unixgroups, this tool is user-centric.
-#
 # Copyright 2017, Ferry Boender.
 # Licensed under the MIT license. For more information, see the LICENSE file.
-#
 
 import sys
 import argparse
@@ -19,6 +12,7 @@ import pwd
 import grp
 
 __VERSION__ = "0.1"
+
 
 no_login_shells = [
     '/bin/false',

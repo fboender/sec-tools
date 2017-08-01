@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 
+# Copyright 2017, Ferry Boender.
+# Licensed under the MIT license. For more information, see the LICENSE file.
+
 import os
 import sys
 import argparse
 import subprocess
 import json
+import socket
 import tools
 
-import socket
+__VERSION__ = "0.1"
 
 
 def gather(cmd):
