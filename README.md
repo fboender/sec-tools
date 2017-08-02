@@ -41,104 +41,43 @@ The `gather` tools gather information and output json or html output. Example us
     sec-gather-unixusers --login --format json
     sec-gather-unixgroups --not-empty --format html
 
-The gather script generally provide options for additional filtering. 
-
-### sec-gather-listenports
-
-List listening services / ports on a system.
-
-An optional `--annotate` flag can be passed with a JSON file as argument. The
-output will be augmented with additional info about the service. Example
-annotation JSON file:
+The JSON output would look something like:
 
     {
-        "22": {
-            "service": "SSH",
-            "verified": true
-        },
-        "3306": {
-            "service": "MySQL",
-            "verified": true
-        },
-        "3973": {
-            "service": "Vat JBoss",
-            "verified": false
-        },
-        "10050": {
-            "service": "Zabbix agent",
-            "verified": true
+      "listenports": {
+        "8000": {
+          "pid": 30925, 
+          "remote_address": "0.0.0.0", 
+          "recv_queue": 0, 
+          "verified": false, 
+          "service": "Unknown", 
+          "remote_port": 0, 
+          "proto": "tcp", 
+          "local_port": 8000, 
+          "state": "LISTEN", 
+          "prog": "python2.7", 
+          "local_address": "127.0.0.1", 
+          "send_queue": 0
         }
+      }
     }
 
-### sec-gather-mysqlusers
-
-List MySQL users and their connect / database privileges.
-
-`sec-gather-mysqlusers` does not take arguments to connect to the database.
-Instead, it relies on a `~/.my.cnf` to be present to connect to the database.
-
-FIXME: Add example .my.cnf
-
-### sec-gather-openvpnusers
-
-Gather details about OpenVPN users. This assumes you're using EasyRSA to
-manage the certificates. You should point `sec-gather-openvpnusers` to the
-`index.txt` file containing the client certificates. For example:
-
-    sec-gather-openvpnusers /data/certificates/keys/index.txt
-
-### sec-gather-unixgroups
-
-List unix groups and their members.
-
-### sec-gather-unixusers
-
-List unix users and their groups.
-
-### sec-gather-portscan
-
-Perform a port scan against a host using nmap (which should be installed) and
-return the results in various formats. It must be run as root, or nmap won't
-report all open ports for some reason. 
-
-By default, nmap scans the "top 1000 most used ports". Which exactly those are
-depends on your version of nmap. You can use the `--debug` option to find out
-which ports are included in the scan. Use the `--ports` option to specify your
-own range.
-
-For example:
-
-    sudo ./sec-gather-portscan --format html --ports 1-4000 --annotate portscan.annotate 192.168.1.5
-
-The results can be annotated using an annotation file, which could look
-something like this:
-
-    {
-        "192.168.1.5": {
-            "514": {
-                "verified": true,
-                "comment": "rsyslog server"
-            },
-            "2222": {
-                "verified": true,
-                "comment": "Virtualbox remote access"
-            }
-        }
-    }
-
+The gather script generally provide options for additional filtering and
+manual annotations of gathered information.
 
 ## <a name="alert">Diffing and alerting</a>
 
-The `sec-diff` tool can be used to diff JSON output from a `sec-gather` script
-with a previous run.
+The [sec-diff](docs/man/sec-diff.1.md) tool can be used to diff JSON output
+from a `sec-gather` script with a previous run.
 
 For example:
 
 	$ sec-gather-listenports | sec-diff /var/cache/sec-tools/listenports.state
 
-This will store the listening ports in `/var/cache/sec-tools/listenports.state`. The
-first run, it will report nothing. The next time it's run, a new listening
-port has appeared, and `sec-diff` reports about it:
+This will store the listening ports in
+`/var/cache/sec-tools/listenports.state`. The first run, it will report
+nothing. The next time it's run, a new listening port has appeared, and
+`sec-diff` reports about it:
 
 	$ sec-gather-listenports | sec-diff /var/cache/sec-tools/listenports.state
 
@@ -160,7 +99,8 @@ port has appeared, and `sec-diff` reports about it:
 If nothing changed, the output will be empty.
 
 This can be used to alert about changes in listening services, unix users or
-any other `gather` script. To do so, you can use the `sec-mail` script:
+any other `gather` script. To do so, you can use the
+[sec-maili](docs/man/sec-mail.1.md) script:
 
 	$ sec-gather-listenports | \
       sec-diff /var/cache/sec-tools/listenports | \
@@ -179,10 +119,11 @@ You can exclude certain paths from being reported about. For example:
 
 ## <a name="report">Reporting</a>
 
-The `sec-report` tool renders a [Mako template](http://www.makotemplates.org/)
-to stdout. For an example, see the [example report](example/report).
+The [sec-report](docs/man/sec-report.1.md) tool renders a [Mako
+template](http://www.makotemplates.org/) to HTML. The output is written to
+stdout and can be used to generate a PDF with a tool like html2pdf. For an
+example, see the [example report](example/report).
 
-Example usage:
-
-    sec-report ../example/report/report.tpl > report.html
+Reports can call gather scripts themselves, or can be fed JSON and other data
+through ASSET parameters.
 
