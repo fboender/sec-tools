@@ -11,8 +11,10 @@ Security Tools
 
 ## <a name="about">About</a>
 
-These are security tools for reporting and alerting about security
-information. The current focus is on user authorization / authentication.
+These are security tools for reporting and alerting about security information
+and events. The focus is on gathering and annotating authentication,
+authorization and system configuration information and reporting and alerting
+based on this information.
 
 The tools are written as separate unix tools that read and write from / to
 standard output. These can be combined to produce the desired result.
@@ -65,6 +67,15 @@ The JSON output would look something like:
 The gather script generally provide options for additional filtering and
 manual annotations of gathered information.
 
+For more information, check out the manual pages for each tool:
+
+* **[sec-gather-listenports](docs/man/sec-gather-listenports.1.md)**
+* **[sec-gather-mysqlusers](docs/man/sec-gather-mysqlusers.1.md)**
+* **[sec-gather-openvpnusers](docs/man/sec-gather-openvpnusers.1.md)**
+* **[sec-gather-unixgroups](docs/man/sec-gather-unixgroups.1.md)**
+* **[sec-gather-unixusers](docs/man/sec-gather-unixusers.1.md)**
+* **[sec-gather-portscan](docs/man/sec-gather-portscan.1.md)**
+
 ## <a name="alert">Diffing and alerting</a>
 
 The [sec-diff](docs/man/sec-diff.1.md) tool can be used to diff JSON output
@@ -100,7 +111,7 @@ If nothing changed, the output will be empty.
 
 This can be used to alert about changes in listening services, unix users or
 any other `gather` script. To do so, you can use the
-[sec-maili](docs/man/sec-mail.1.md) script:
+[sec-mail](docs/man/sec-mail.1.md) script:
 
 	$ sec-gather-listenports | \
       sec-diff /var/cache/sec-tools/listenports | \
@@ -117,6 +128,11 @@ You can exclude certain paths from being reported about. For example:
     # Exclude all PID and Prog changes for all ports
     sec-gather-listenports | sec-diff --exclude listenports.*.pid,listenports.*.prog listenports.state
 
+For more information, check out the manual pages for each tool:
+
+* **[sec-diff](docs/man/sec-diff.1.md)**
+* **[sec-mail](docs/man/sec-mail.1.md)**
+
 ## <a name="report">Reporting</a>
 
 The [sec-report](docs/man/sec-report.1.md) tool renders a [Mako
@@ -127,3 +143,9 @@ example, see the [example report](example/report).
 Reports can call gather scripts themselves, or can be fed JSON and other data
 through ASSET parameters.
 
+You can either write your own reports (see the [examples](examples/)) or use
+a pre-made one from the [tools](tools/) directory.
+
+For more information, check out the manual pages for each tool:
+
+* **[sec-report](docs/man/sec-diff.1.md)**
