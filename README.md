@@ -19,10 +19,6 @@ based on this information.
 The tools are written as separate unix tools that read and write from / to
 standard output. These can be combined to produce the desired result.
 
-## <a name="requirements">Requirements</a>
-
-    sudo apt install python-mako
-
 ## <a name="overview">Overview of tools</a>
 
 * **[sec-gather-listenports](docs/man/sec-gather-listenports.1.md)**: Output listening services / ports
@@ -34,6 +30,21 @@ standard output. These can be combined to produce the desired result.
 * **[sec-diff](docs/man/sec-diff.1.md)**: Output changes in `sec-gather-*` script output since last time
 * **[sec-report](docs/man/sec-report.1.md)**: Generate HTML and PDF reports from gathered info
 * **[sec-mail](docs/man/sec-mail.1.md)**: Send alerts and reports.
+
+## <a name="installation">Installation</a>
+
+sec-tools requires the Mako Python library. Debian / Ubuntu users can install
+it with:
+
+    $ sudo apt install python-mako
+
+Clone the `sec-tools` repository and run the install Make job:
+
+    $ git clone ...
+    $ cd sec-tools
+    $ sudo make install
+
+This will install all the tools and the manual pages. 
 
 ## <a name="gather">Gather scripts</a>
 
