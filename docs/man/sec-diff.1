@@ -13,7 +13,7 @@ file.
 [\f[B]\-\-exclude\f[] \f[I]EXCLUDE\f[]] \f[I]STATEFILE\f[]
 .SH DESCRIPTION
 .PP
-\f[B]sec\-diff\f[] can be used to diff JSON output from a
+\f[B]sec\-diff\f[] can be used to diff (deep compare) JSON output from a
 \f[B]sec\-gather\f[] script with a previous run.
 The first time \f[B]sec\-diff\f[] runs, it will output nothing.
 Subsequent invocations will show any differences (additions, deletions
@@ -49,6 +49,11 @@ Exclude keys from diffing.
 Useful for keys that always change.
 .RS
 .RE
+.TP
+.B \f[B]STATEFILE\f[]
+File to compare against and save current output.
+.RS
+.RE
 .SH EXAMPLES
 .PP
 The following example stores listening ports in a state file:
@@ -60,7 +65,7 @@ $\ sec\-gather\-listenports\ |\ sec\-diff\ listenports.state
 .fi
 .PP
 If a new service starts listening on a port, and we run the command
-again, the output will look like:
+again, the output (in \f[C]text\f[] format) will look like:
 .IP
 .nf
 \f[C]
@@ -80,6 +85,37 @@ $\ sec\-gather\-listenports\ |\ sec\-diff\ listenports.state
 \ \ \ \ u\[aq]service\[aq]:\ u\[aq]Unknown\[aq],
 \ \ \ \ u\[aq]state\[aq]:\ u\[aq]LISTEN\[aq],
 \ \ \ \ u\[aq]verified\[aq]:\ False}
+\f[]
+.fi
+.PP
+If the chosen output format is JSON, it would look like:
+.IP
+.nf
+\f[C]
+[
+\ \ \ \ {
+\ \ \ \ \ \ \ \ "action":\ "added",\ 
+\ \ \ \ \ \ \ \ "path":\ [
+\ \ \ \ \ \ \ \ \ \ \ \ "listenports"
+\ \ \ \ \ \ \ \ ],\ 
+\ \ \ \ \ \ \ \ "type":\ "dict",\ 
+\ \ \ \ \ \ \ \ "key":\ "5555",\ 
+\ \ \ \ \ \ \ \ "value":\ {
+\ \ \ \ \ \ \ \ \ \ \ \ "recv_queue":\ 0,\ 
+\ \ \ \ \ \ \ \ \ \ \ \ "verified":\ false,\ 
+\ \ \ \ \ \ \ \ \ \ \ \ "service":\ "Unknown",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ "proto":\ "tcp",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ "remote_port":\ 0,\ 
+\ \ \ \ \ \ \ \ \ \ \ \ "pid":\ 1859,\ 
+\ \ \ \ \ \ \ \ \ \ \ \ "remote_address":\ "0.0.0.0",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ "local_port":\ 5555,\ 
+\ \ \ \ \ \ \ \ \ \ \ \ "state":\ "LISTEN",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ "prog":\ "python2.7",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ "local_address":\ "127.0.0.1",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ "send_queue":\ 0
+\ \ \ \ \ \ \ \ }
+\ \ \ \ }
+]
 \f[]
 .fi
 .PP
