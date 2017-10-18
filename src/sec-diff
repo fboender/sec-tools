@@ -282,6 +282,7 @@ if __name__ == "__main__":
             f.write(sys.stdin.read())
         sys.exit(0)
 
+    # Compare old from disk with new from stdin
     old_c = json.load(open(args.statefile, 'r'))
     new_c = json.load(sys.stdin)
     changes = diff(old_c, new_c)
