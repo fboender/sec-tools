@@ -105,7 +105,29 @@ def netstat_line_to_dict(line, annotations={}):
         # or something.
         return None
 
-def gather(no_local=False, annotate=None):
+def include_listenport(listenport, no_local=False, no_verified=False):
+    """
+    Return True if the port should be included in the output. False otherwise.
+    """
+    # Do not include things that are not ports
+    if listenport is None:
+        return False
+
+    # Only include listening ports.
+    if listenport['state'] != "LISTEN":
+        return False
+
+    # Do not include locally listening ports if requested
+    if no_local is True and listenport["local_address"] == "127.0.0.1":
+        return False
+
+    # Do not include ports that have been verified if no_verified is True
+    if no_verified is True and listenport.get("verified", False) is True:
+        return False
+
+    return True
+
+def gather(no_local=False, annotate=None, no_verified=False):
     annotations = {}
     if annotate:
         annotations = json.load(open(annotate, 'r'))
@@ -114,9 +136,7 @@ def gather(no_local=False, annotate=None):
     netstat_out = tools.cmd('netstat -pant')['stdout']
     for line in netstat_out.splitlines():
         listenport = netstat_line_to_dict(line, annotations)
-        if listenport is not None and \
-           listenport['state'] == "LISTEN" and \
-           (no_local is False or listenport['local_address'] != '127.0.0.1'):
+        if include_listenport(listenport, no_local, no_verified):
             listenports[listenport['local_port']] = listenport
 
     return listenports
@@ -130,6 +150,7 @@ if __name__ == "__main__":
     parser.add_argument('--format', dest="format", choices=formats, type=str, default="json", help="Output format")
     parser.add_argument('--annotate', dest="annotate", type=str, help="annotation file")
     parser.add_argument('--no-local', dest="no_local", action='store_true', default=False, help="No services listening locally")
+    parser.add_argument('--no-verified', dest="no_verified", action='store_true', default=False, help="Don't include verified port")
     args = parser.parse_args()
 
     loglevel = logging.ERROR
@@ -137,7 +158,8 @@ if __name__ == "__main__":
         loglevel = logging.DEBUG
     logging.basicConfig(level=loglevel)
 
-    listenports = gather(no_local=args.no_local, annotate=args.annotate)
+    listenports = gather(no_local=args.no_local, annotate=args.annotate,
+                         no_verified=args.no_verified)
 
     if args.format == 'json':
         sys.stdout.write(json.dumps({"listenports": listenports}, indent=4))
