@@ -59,6 +59,20 @@ html_tpl = """\
 </table>
 """
 
+def expand_range(s):
+    """
+    Expand a string with one or more ranges and expand the ranges into a set.
+    """
+    expanded = set()
+    for _range in s.split(','):
+        if ':' in _range:
+            range_start, range_end = [int(x) for x in _range.split(':',1)]
+        else:
+            range_start = range_end = int(_range)
+        for i in range(range_start, range_end + 1):
+            expanded.add(i)
+    return expanded
+
 def run_nmap(ip, ports=None, nmap_extra_opts=""):
     """
     Scan IP and return XML results in nmap format.
@@ -106,7 +120,7 @@ def xml_port_to_dict(node_port):
 
     return port_state
 
-def scan_ip(ip, ports=None, nmap_extra_opts="", all=False):
+def scan_ip(ip, ports=None, nmap_extra_opts="", all=False, ports_exclude=None):
     """
     Scan an single or multiple IPs and return a dict of ports and their states.
     """
@@ -132,10 +146,15 @@ def scan_ip(ip, ports=None, nmap_extra_opts="", all=False):
             node_ports = node_host.find("ports")
             for node_port in node_ports.findall("port"):
                 port_state = xml_port_to_dict(node_port)
-                # Include port if --all is given, or if the state should not be
-                # filtered out.
-                if all is True or port_state["state"] not in state_filter:
-                    hosts[addr][str(port_state["port"])] = port_state
+                if ports_exclude is not None and port_state["port"] in ports_exclude:
+                    # Skip ports that the requested to exclude
+                    continue
+                if port_state["state"] in state_filter and all is not True:
+                    # skip ports if the state isn't interesting to us, unless
+                    # the user specified --all.
+                    continue
+
+                hosts[addr][str(port_state["port"])] = port_state
     return hosts
 
 def verify_root():
@@ -146,14 +165,14 @@ def verify_root():
         sys.stderr.write("You're not root. Not all ports would be scanned by nmap. Exiting\n")
         sys.exit(2)
 
-def gather(targets, annotate=None, ports=None, all=False):
+def gather(targets, annotate=None, ports=None, all=False, ports_exclude=None):
     annotations = {}
     if annotate:
         annotations = json.load(open(annotate, 'r'))
 
     results = {}
     for target in targets:
-        result_hosts = scan_ip(target, ports=ports, all=all)
+        result_hosts = scan_ip(target, ports=ports, all=all, ports_exclude=ports_exclude)
         results.update(result_hosts)
 
     tools.deepupdate(results, annotations)
@@ -170,6 +189,7 @@ if __name__ == "__main__":
     parser.add_argument('--annotate', dest="annotate", type=str, help="annotation file")
     parser.add_argument('--ports', dest="ports", type=str, default=None, help="Port range to scan (nmap format)")
     parser.add_argument('--all', dest="all", action='store_true', default=False, help="Report all ports, not just 'open' states.")
+    parser.add_argument('--ports-exclude', dest="ports_exclude", type=str, default=None, help="Port range(s) to skip")
     parser.add_argument('targets', metavar='target', type=str, nargs='+', help='Target(s) to scan')
     args = parser.parse_args()
 
@@ -182,9 +202,13 @@ if __name__ == "__main__":
         sys.stderr.write("Please specify one or more targets\n")
         sys.exit(1)
 
+    ports_exclude = None
+    if args.ports_exclude is not None:
+        ports_exclude = expand_range(args.ports_exclude)
+
     verify_root()
 
-    openports = gather(args.targets, args.annotate, args.ports, args.all)
+    openports = gather(args.targets, args.annotate, args.ports, args.all, ports_exclude)
 
     if args.format == 'json':
         sys.stdout.write(json.dumps({"openports": openports}, indent=4))

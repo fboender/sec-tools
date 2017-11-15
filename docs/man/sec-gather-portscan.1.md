@@ -14,7 +14,7 @@ sec-gather-portscan – Perform port scan and output ports.
 
 # SYNOPSIS
 
- **sec-gather-portscan** [**-h**] [**--version**] [**--debug**] [**--format** *{json,html}*] [**--annotate** *ANNOTATIONFILE*] [**--ports** *PORTS*] [**--all**] *TARGETS*
+ **sec-gather-portscan** [**-h**] [**--version**] [**--debug**] [**--format** *{json,html}*] [**--annotate** *ANNOTATIONFILE*] [**--ports** *PORTS*] [**--all**] [**--ports-exclude** *PORTS*] *TARGETS*
 
 # DESCRIPTION
 
@@ -58,6 +58,9 @@ reverse-looked up hostname (see paragraph above).
 **--all**
 :   Report all ports, not just open ones.
 
+**--ports-exclude** *PORTS*
+:   TCP ports to exclude in nmap format
+
 **TARGET**
 :   One or more target(s) to scan or a range of targets in the nmap format.
 
@@ -87,6 +90,30 @@ Scan the privileged ports and port 8080 on host test.example.com:
             }
         }
     }
+
+Exclude a range of ports:
+
+    sudo ./sec-gather-portscan --ports-exclude 22:25,631 --all 127.0.0.1
+	{
+		"openports": {
+			"localhost": {
+				"6667": {
+					"reason": "syn-ack", 
+					"service_name": "irc", 
+					"state": "open", 
+					"protocol": "tcp", 
+					"port": 6667
+				}, 
+				"8443": {
+					"reason": "syn-ack", 
+					"service_name": "https-alt", 
+					"state": "open", 
+					"protocol": "tcp", 
+					"port": 8443
+				}
+			}
+		}
+	}
 
 You can annotate scanned ports your own info such as verified ports. The annotation file
 looks like this:
