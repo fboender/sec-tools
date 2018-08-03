@@ -175,7 +175,8 @@ def gather(targets, annotate=None, ports=None, all=False, ports_exclude=None):
         result_hosts = scan_ip(target, ports=ports, all=all, ports_exclude=ports_exclude)
         results.update(result_hosts)
 
-    tools.deepupdate(results, annotations)
+        if target in annotations:
+            tools.deepupdate(results[target], annotations[target])
 
     return results
 
