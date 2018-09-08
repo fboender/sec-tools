@@ -78,14 +78,7 @@ The JSON output would look something like:
 The gather script generally provide options for additional filtering and
 manual annotations of gathered information.
 
-For more information, check out the manual pages for each tool:
-
-* **[sec-gather-listenports](docs/man/sec-gather-listenports.1.md)**
-* **[sec-gather-mysqlusers](docs/man/sec-gather-mysqlusers.1.md)**
-* **[sec-gather-openvpnusers](docs/man/sec-gather-openvpnusers.1.md)**
-* **[sec-gather-unixgroups](docs/man/sec-gather-unixgroups.1.md)**
-* **[sec-gather-unixusers](docs/man/sec-gather-unixusers.1.md)**
-* **[sec-gather-portscan](docs/man/sec-gather-portscan.1.md)**
+For more information, check out the [manual pages](docs/man).
 
 ## <a name="alert">Diffing and alerting</a>
 
