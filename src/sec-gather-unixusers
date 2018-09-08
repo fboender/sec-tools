@@ -17,6 +17,7 @@ __VERSION__ = "0.1"
 no_login_shells = [
     '/bin/false',
     '/bin/nologin',
+    '/sbin/nologin',
     '/usr/sbin/nologin'
 ]
 
