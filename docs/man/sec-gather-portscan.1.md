@@ -2,12 +2,6 @@
 % Ferry Boender
 % May 2017
 
-<!---
-Convert with pandoc to Groff man format:
-
-pandoc this.md -s -t man > this.1
---->
-
 # NAME
 
 sec-gather-portscan – Perform port scan and output ports.
