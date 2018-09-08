@@ -152,4 +152,4 @@ a pre-made one from the [tools](tools/) directory.
 
 For more information, check out the manual pages for each tool:
 
-* **[sec-report](docs/man/sec-diff.1.md)**
+* **[sec-report](docs/man/sec-report.1.md)**
