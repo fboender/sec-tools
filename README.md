@@ -19,6 +19,13 @@ based on this information.
 The tools are written as separate unix tools that read and write from / to
 standard output. These can be combined to produce the desired result.
 
+Some examples of possible usage scenarios:
+
+* Generate a report of all user permissions (unix, mysql, etc).
+* Generate email alerts when a new open port is detected on a system.
+* Generate email alerts when users are created, modified or deleted.
+
+
 ## <a name="overview">Overview of tools</a>
 
 * **[sec-gather-listenports](docs/man/sec-gather-listenports.1.md)**: Output listening services / ports
