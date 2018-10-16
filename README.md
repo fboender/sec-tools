@@ -1,14 +1,6 @@
 Security Tools
 ==============
 
-1. [About](#about)
-1. [Requirements](#requirements)
-1. [Overview of tools](#overview)
-1. [Gather scripts](#gather)
-1. [Diffing and alerting](#alert)
-1. [Reporting](#report)
-
-
 ## <a name="about">About</a>
 
 These are security tools for reporting and alerting about security information
