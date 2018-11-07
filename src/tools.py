@@ -74,3 +74,21 @@ def tpl_str(string, **kwargs):
         return tpl.render(**kwargs)
     except:
         raise Exception(exceptions.text_error_template().render())
+
+def normalize_conf(path, comment='#'):
+    """
+    Read a configuration file, remove all commented out lines, convert to
+    lowercase and strip whitespacing.
+    """
+    with open(path, 'r') as f:
+        return [
+            line.strip().lower()
+            for line in f.readlines()
+            if not line.startswith(comment)
+        ]
+
+def plain_err(err):
+    """
+    Convert Exception message to plain text string
+    """
+    return str(err).replace('<', '').replace('>', '')

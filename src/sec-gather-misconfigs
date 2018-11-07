@@ -1,0 +1,184 @@
+#!/usr/bin/env python
+
+# Copyright 2017, Ferry Boender.
+# Licensed under the MIT license. For more information, see the LICENSE file.
+
+import sys
+import argparse
+import logging
+import json
+import os
+import imp
+import inspect
+import traceback
+import ast
+
+import tools
+
+__VERSION__ = "0.1"
+
+
+html_tpl = """\
+% for plugin_name in misconfigs.keys():
+  <h1 class="plugin_name">${plugin_name}</h1>
+  % for test_name, result in misconfigs[plugin_name].items():
+    ${tools.tpl_str(html_result_tpl, plugin_name=plugin_name, test_name=test_name, result=result)}
+  % endfor
+% endfor
+"""
+    #${tools.tpl_str(html_result_tpl, plugin_name=plugin_name, test_name=test_name)}
+
+html_result_tpl = """\
+<%
+passed_text = "Failed"
+passed_class="failed"
+if result['passed'] is True:
+  passed_text = "Passed"
+  passed_class="passed"
+%>
+<table class="test_result">
+  <tr class="test_name">
+    <th colspan="2">${plugin_name}: ${test_name}</th>
+  </tr>
+  <tr class="description">
+    <th>Description:</th>
+    <td><p>${result['desc']}</p></td>
+  </tr>
+  <tr class="explanation">
+    <th>Explanation:</th>
+    <td><p>${result['explanation']}</p></td>
+  </tr>
+  <tr class="has_passed">
+    <th>Passed:</th>
+    <td><span class="${passed_class}">${passed_text}</span></td>
+  </tr>
+  <tr class="severity">
+    <th>Severity:</th>
+    <td><span class="severity-${result['severity']}">${result['severity']}</span></td>
+  </tr class="">
+  <tr class="">
+    <th>Results:</th>
+    <td>
+      <ul>
+        % for r in result['results']:
+          <li>${r}</li>
+        % endfor
+      </ul>
+    </td>
+  </tr>
+</table>
+"""
+
+class Result:
+    def __init__(self, desc, explanation, severity, passed=False):
+        self.desc = desc
+        self.explanation = explanation
+        self.severity = severity
+        self.has_passed = passed
+        self.results = []
+        self.plugin_name = None
+        self.test_name = None
+
+        assert(severity >= 0 and severity <= 5)
+
+    def passed(self, passed=True):
+        self.has_passed = passed
+
+    def add_result(self, result):
+        self.results.append(result)
+
+    def set_plugin_name(self, plugin_name):
+        self.plugin_name = plugin_name
+
+    def set_test_name(self, test_name):
+        self.test_name = test_name
+
+    def to_dict(self):
+        return {
+            self.plugin_name: {
+                self.test_name: {
+                    "desc": self.desc,
+                    "explanation": self.explanation,
+                    "severity": self.severity,
+                    "passed": self.has_passed,
+                    "results": self.results,
+                }
+            }
+        }
+
+def load_plugins(debug=False):
+    plugins = {}
+    plugin_dir = 'sec-gather-misconfigs.d'
+    for fname in os.listdir(plugin_dir):
+        fname_parts = os.path.splitext(fname)
+        plugin_name = fname_parts[0]
+        if fname_parts[1] == ".py":
+            # Load and execute Python code
+            path = os.path.join(plugin_dir, fname)
+            try:
+                module = imp.load_source(plugin_name, path)
+                module.Result = Result
+            except Exception as err:
+                logging.error("Couldn't import plugin '{}': {}".format(plugin_name, err))
+                if debug is True:
+                    logging.exception(err)
+                continue
+
+            for func_name, func_cb in inspect.getmembers(module, inspect.isfunction):
+                if not func_name.startswith('_'):
+                    plugins.setdefault(plugin_name, []).append(func_cb)
+
+    return plugins
+
+def gather(config, skip_passed, debug):
+    plugins = load_plugins(debug=debug)
+    results = {}
+    for plugin_name in plugins.keys():
+        for plugin_cb in plugins[plugin_name]:
+            test_name = plugin_cb.__name__
+            test_config = {}
+            if plugin_name in config:
+                if test_name in config[plugin_name]:
+                    test_config = config[plugin_name][test_name]
+            try:
+                result = plugin_cb(**test_config)
+                assert isinstance(result, Result)
+                result.set_plugin_name(plugin_name)
+                result.set_test_name(test_name)
+                if result.has_passed is False or skip_passed is False:
+                    tools.deepupdate(results, result.to_dict())
+            except Exception as err:
+                sys.stderr.write("Error executing test '{}:{}': {}: {}\n".format(plugin_name, test_name, type(err), err))
+                if debug is True:
+                    logging.exception(err)
+
+    return results
+
+if __name__ == "__main__":
+    formats = ['json', 'html']
+    parser = argparse.ArgumentParser(description='Gather unix users')
+    parser.add_argument('--version', action='version', version=__VERSION__)
+    parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
+    parser.add_argument('--format', dest="format", choices=formats, type=str, default="json", help="Output format")
+    parser.add_argument('--skip-passed', dest="skip_passed", action="store_true", default=False, help="Don't include passed tests")
+    parser.add_argument('--config', dest="config", action="store", type=str, default=None, help="Configuration file for tests")
+    args = parser.parse_args()
+
+    loglevel = logging.ERROR
+    if args.debug is True:
+        loglevel = logging.DEBUG
+    logging.basicConfig(level=loglevel)
+
+    config = {}
+    if args.config is not None:
+        config = ast.literal_eval(open(args.config, 'r').read())
+
+    misconfigs = gather(config=config, skip_passed=args.skip_passed, debug=args.debug)
+
+    if args.format == 'json':
+        sys.stdout.write(json.dumps({"misconfigs": misconfigs}, indent=4))
+    elif args.format == 'html':
+        sys.stdout.write(tools.tpl_str(html_tpl,
+                                       html_result_tpl=html_result_tpl,
+                                       tools=tools,
+                                       misconfigs=misconfigs))
