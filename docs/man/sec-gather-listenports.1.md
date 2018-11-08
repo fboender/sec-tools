@@ -1,4 +1,4 @@
-% SEC-GATHER-UNIXUSERS(1)
+% SEC-GATHER-LISTENPORTS(1)
 % Ferry Boender
 % May 2017
 
