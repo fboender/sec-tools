@@ -1,0 +1,193 @@
+.TH "SEC\-GATHER\-MISCONFIGS" "1" "Nov 2018" "" ""
+.hy
+.SH NAME
+.PP
+sec\-gather\-misconfigs \[en] Scan for security misconfigurations
+.SH SYNOPSIS
+.PP
+\f[B]sec\-gather\-misconfigs\f[] [\f[B]\-h\f[]] [\f[B]\-\-version\f[]]
+[\f[B]\-\-debug\f[]] [\f[B]\-\-format\f[] \f[I]{json,html}\f[]]
+[\f[B]\-\-skip\-passed\f[]] [\f[B]\-\-config\f[] \f[I]CONFIG\f[]]
+.SH DESCRIPTION
+.PP
+\f[B]sec\-gather\-misconfigs\f[] scans the local system for common
+security (and other) misconfigurations such as dangerous SSH
+configurations, insecure web server configurations, permission problems,
+etc.
+.SH OPTIONS
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Display this help message and exit
+.RS
+.RE
+.TP
+.B \f[B]\-\-version\f[]
+show program\[aq]s version number and exit
+.RS
+.RE
+.TP
+.B \f[B]\-\-debug\f[]
+Show debug info
+.RS
+.RE
+.TP
+.B \f[B]\-\-format\f[] \f[I]{json,html}\f[]
+Output format.
+Default is "\f[I]json\f[]"
+.RS
+.RE
+.TP
+.B \f[B]\-\-skip\-passed\f[]
+Do not include tests that passed
+.RS
+.RE
+.TP
+.B \f[B]\-\-config\f[] \f[I]CONFIG\f[]
+Configuration file for tests
+.RS
+.RE
+.SH PLUGINS
+.PP
+The scan consist of plugins, each which can run multiple tests.
+Some examples:
+.IP
+.nf
+\f[C]
+tmp:executable
+tmp:searate_mounts
+webserver:content_security_policy_header
+webserver:version_in_header
+homedir_perms:world_readable_homedirs
+homedir_perms:incorrect_skel_permissions
+ssh:permit_empty_passwords
+ssh:old_protocol
+\f[]
+.fi
+.PP
+Scans are Python files located in the \f[I]sec\-gather\-misconfigs.d\f[]
+directory.
+These files are automatically loaded and each function in the file is
+executed as a test.
+Each test returns a \f[I]RESULT\f[], which is included in the output.
+.SH RESULTS
+.PP
+Each test produces a result that includes information on the test and
+whether it passed or failed.
+.TP
+.B \f[B]desc\f[]
+A short description of the what the test does.
+.RS
+.RE
+.TP
+.B \f[B]explanation\f[]
+A short explanation of why the test matters.
+.RS
+.RE
+.TP
+.B \f[B]passed\f[]
+Whether the test passed or failed.
+.RS
+.RE
+.TP
+.B \f[B]severity\f[]
+The severity of the misconfiguration and its impact on security.
+Rated on a scale from 0 to 5, where 0 is "informational" and 5 is
+"critical".
+.RS
+.RE
+.TP
+.B \f[B]results\f[]
+Additional information on the results of the test such as a list of
+files that were scanned.
+.RS
+.RE
+.SH CONFIGURATION
+.PP
+Certain tests may require configuration by the user in order to be
+useful.
+For example, the \f[I]webserver\f[] tests are more helpful if a full
+list of URLs served by the locally running web server is provided.
+We can pass a configuration file with the \f[B]\-\-config\f[] option.
+.PP
+The configuration file should specify the plugin and specific test, and
+a collection of key/value options to configure the test.
+The format is semi\-JSON, but you can use comments and trailing
+comma\[aq]s are also fine.
+It would look something like this for the \f[I]permit_root_login\f[] and
+\f[I]permit_empty_passwords\f[] test of the \f[I]ssh\f[] plugin:
+.IP
+.nf
+\f[C]
+{
+\ \ "ssh":\ {
+\ \ \ \ #\ We\ have\ our\ own\ compiled\ version\ of\ OpenSSH\ server
+\ \ \ \ "permit_root_login":\ {
+\ \ \ \ \ \ "sshd_config":\ "/opt/patched_ssh/sshd_config"
+\ \ \ \ },
+\ \ \ \ "permit_empty_passwords":\ {
+\ \ \ \ \ \ "sshd_config":\ "/opt/patched_ssh/sshd_config"
+\ \ \ \ },
+\ \ }
+}
+\f[]
+.fi
+.PP
+A fully annotated configuration file can be found in
+\f[I]examples/sec\-gather\-misconfigs.conf\f[].
+.SH EXAMPLES
+.PP
+The default output looks like the following.
+Note that most descriptions have been cut short and many tests have been
+omitted to keep the example comprehensible.
+.IP
+.nf
+\f[C]
+$\ sec\-gather\-misconfigs
+{
+\ \ \ \ "misconfigs":\ {
+\ \ \ \ \ \ \ \ "tmp":\ {
+\ \ \ \ \ \ \ \ \ \ \ \ "executable":\ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "explanation":\ "Attackers\ often\ use\ temp\ dirs...",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "desc":\ "Temp\ dirs\ that\ allow\ file\ execution",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "results":\ [
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "/tmp",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "/var/tmp",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "/var/crash/"
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ],\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "passed":\ false,\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "severity":\ 3
+\ \ \ \ \ \ \ \ \ \ \ \ },\ 
+\ \ \ \ \ \ \ \ \ \ \ \ "separate_mount":\ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "explanation":\ "Prevent\ users\ from\ filling\ the\ filesystem...",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "desc":\ "Temp\ dirs\ not\ mounted\ on\ separate\ filesystem",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "results":\ [
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "/tmp",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "/var/tmp",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "/run/lock/",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "/var/crash/"
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ],\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "passed":\ false,\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "severity":\ 2
+\ \ \ \ \ \ \ \ \ \ \ \ }
+\ \ \ \ \ \ \ \ },\ 
+\ \ \ \ \ \ \ \ "webserver":\ {
+\ \ \ \ \ \ \ \ \ \ \ \ "version_in_header":\ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "explanation":\ "...",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "desc":\ "Web\ server\ exposes\ version\ in\ \[aq]Server\[aq]\ header.",\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "results":\ [
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ],\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "passed":\ true,\ 
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "severity":\ 1
+\ \ \ \ \ \ \ \ \ \ \ \ },\ 
+\ \ \ \ \ \ \ \ },
+}
+\f[]
+.fi
+.SH COPYRIGHT
+.PP
+Copyright 2017\-2018, Ferry Boender.
+.PP
+Licensed under the MIT license.
+For more information, see the LICENSE file.
+.SH AUTHORS
+Ferry Boender.
