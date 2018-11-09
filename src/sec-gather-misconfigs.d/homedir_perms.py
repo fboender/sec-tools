@@ -36,8 +36,7 @@ def world_writable_homedirs():
         if user.pw_uid == 0 or (user.pw_uid > 999):
             try:
                 homedir_stat = os.stat(user.pw_dir)
-                if homedir_stat.st_mode & stat.S_IROTH or \
-                   homedir_stat.st_mode & stat.S_IXOTH:
+                if homedir_stat.st_mode & stat.S_IWOTH:
                     result.passed(False)
                     result.add_result("{} (homedir={})".format(user.pw_name, user.pw_dir))
             except OSError:
