@@ -59,8 +59,8 @@ def version_in_header(urls=None):
         try:
             req = _urlopen_cache(url)
             headers = req.info()
-            result.add_result("URL {} sent header 'Server: {}'".format(url, headers['server']))
             if 'server' in headers:
+                result.add_result("URL {} sent header 'Server: {}'".format(url, headers['server']))
                 match = re.match('.*[0-9]+\..*', headers['server'].lower())
                 if match:
                     result.passed(False)
