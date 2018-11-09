@@ -20,9 +20,9 @@ def old_protocol(sshd_config=sshd_config):
 
     return result
 
-def whitelisted_users(sshd_config=sshd_config):
+def whitelist(sshd_config=sshd_config):
     result = Result(
-        desc="SSH server does not whitelist users (AllowUsers)",
+        desc="SSH server does not whitelist users or groups (AllowUsers or AllowGroups)",
         explanation="Which users are allowed to log in with SSH should be whitelisted to prevent temporary accounts and service users from logging in.",
         severity=3,
         passed=False
@@ -30,6 +30,9 @@ def whitelisted_users(sshd_config=sshd_config):
 
     for line in tools.normalize_conf(sshd_config):
         if "allowusers" in line:
+            result.passed(True)
+            break
+        elif "allowgroups" in line:
             result.passed(True)
             break
 
