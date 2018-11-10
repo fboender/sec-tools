@@ -12,6 +12,7 @@ import imp
 import inspect
 import traceback
 import ast
+import fnmatch
 
 import tools
 
@@ -130,16 +131,31 @@ def load_plugins(debug=False):
 
     return plugins
 
-def gather(config, skip_passed, debug):
+def gather(config, skip_passed, limit, debug):
     plugins = load_plugins(debug=debug)
     results = {}
     for plugin_name in plugins.keys():
         for plugin_cb in plugins[plugin_name]:
             test_name = plugin_cb.__name__
+            full_name = '{}:{}'.format(plugin_name, test_name)
+
+            # Skip tests if not in limit. Can use wildcards such as 'net:*'
+            if limit is not None:
+                for match in limit:
+                    if fnmatch.fnmatch(full_name, match):
+                        # Test name found
+                        break
+                else:
+                    # Test name not found
+                    continue
+
+            # Apply test configuration
             test_config = {}
             if plugin_name in config:
                 if test_name in config[plugin_name]:
                     test_config = config[plugin_name][test_name]
+
+            # Execute test
             try:
                 result = plugin_cb(**test_config)
                 assert isinstance(result, Result)
@@ -162,18 +178,29 @@ if __name__ == "__main__":
     parser.add_argument('--format', dest="format", choices=formats, type=str, default="json", help="Output format")
     parser.add_argument('--skip-passed', dest="skip_passed", action="store_true", default=False, help="Don't include passed tests")
     parser.add_argument('--config', dest="config", action="store", type=str, default=None, help="Configuration file for tests")
+    parser.add_argument('--limit', dest="limit", action="store", type=str, default=None, help="Limit which tests are executed")
     args = parser.parse_args()
 
+    # Parse limit
+    if args.limit is not None:
+        args.limit = args.limit.split(',')
+
+    # Setup logging
     loglevel = logging.ERROR
     if args.debug is True:
         loglevel = logging.DEBUG
     logging.basicConfig(level=loglevel)
 
+    # Read configuration
     config = {}
     if args.config is not None:
         config = ast.literal_eval(open(args.config, 'r').read())
 
-    misconfigs = gather(config=config, skip_passed=args.skip_passed, debug=args.debug)
+    # Run tests
+    misconfigs = gather(config=config,
+                        skip_passed=args.skip_passed,
+                        limit=args.limit,
+                        debug=args.debug)
 
     if args.format == 'json':
         sys.stdout.write(json.dumps({"misconfigs": misconfigs}, indent=4))

@@ -8,7 +8,7 @@ sec-gather-misconfigs – Scan for security misconfigurations
 
 # SYNOPSIS
 
- **sec-gather-misconfigs** [**-h**] [**--version**] [**--debug**] [**--format** *{json,html}*] [**--skip-passed**] [**--config** *CONFIG*]
+ **sec-gather-misconfigs** [**-h**] [**--version**] [**--debug**] [**--format** *{json,html}*] [**--skip-passed**] [**--config** *CONFIG*] [**--limit** *LIMITS*]
 
 
 # DESCRIPTION
@@ -36,6 +36,9 @@ server configurations, permission problems, etc.
 
 **--config** *CONFIG*
 :   Configuration file for tests
+
+**--limit** *LIMITS*
+:   Limit which tests are executed
 
 # PLUGINS
 
@@ -102,6 +105,15 @@ would look something like this for the *permit_root_login* and
 
 A fully annotated configuration file can be found in
 *examples/sec-gather-misconfigs.conf*.
+
+# LIMITS
+
+You can limit which tests are executed with the **--limit** option. Multiple
+values may be specified, separated by comma's. Wildcards ('\*') are permitted.
+For example:
+
+    # Run all 'net' tests, and the 'ssh:whitelist' test
+    sec-gather-misconfigs --limit 'net:*,ssh:whitelist'
 
 # EXAMPLES
 
