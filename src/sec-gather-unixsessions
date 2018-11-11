@@ -13,16 +13,16 @@ import re
 __VERSION__ = "0.1"
 
 last_line_re = re.compile(
-    "(?P<username>.*?)"
-    "\s+"
-    "(?P<tty>.*?)"
-    "\s+"
-    "(?P<remote_addr>.*?)"
-    "\s+"
-    "(?P<login_starttime>.*?)(   | - )"
-    "(?P<login_endtime>.*?)\s*($|\()"
-    "(?P<duration>.*?)(\)|$)"
-    ".*"
+    r"(?P<username>.*?)"
+    r"\s+"
+    r"(?P<tty>.*?)"
+    r"\s+"
+    r"(?P<remote_addr>.*?)"
+    r"\s+"
+    r"(?P<login_starttime>.*?)(   | - )"
+    r"(?P<login_endtime>.*?)\s*($|\()"
+    r"(?P<duration>.*?)(\)|$)"
+    r".*"
 )
 
 

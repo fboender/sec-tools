@@ -8,7 +8,6 @@ import sys
 import argparse
 import logging
 import json
-from pprint import pformat
 import tools
 
 __VERSION__ = "0.1"
@@ -86,6 +85,7 @@ html_tpl = """\
 </ul>
 """
 
+
 def format_value(value, left_indent=2):
     """
     Return a pretty version of `value` (list, dict, etc) with indenting.
@@ -95,6 +95,7 @@ def format_value(value, left_indent=2):
         pretty = pretty.lstrip('{').rstrip('}')
     pretty_indent = pretty.replace("\n", "\n" + left_indent * ' ')
     return pretty_indent
+
 
 def diff_list(old, new, cur_path=[]):
     """
@@ -109,9 +110,10 @@ def diff_list(old, new, cur_path=[]):
     # Go through new values, figure out what's been added
     for i in range(len(new)):
         new_v = new[i]
-        logging.debug("Checking if {}::'{}' has been added.".format(cur_path, new_v))
+        logging.debug("Checking if {}::'{}' has been added.".format(cur_path,
+                                                                    new_v))
 
-        if not new_v in old:
+        if new_v not in old:
             changes.append(
                 {
                     "action": "added",
@@ -124,9 +126,10 @@ def diff_list(old, new, cur_path=[]):
     # Go through old values, figure out what's been removed
     for i in range(len(old)):
         old_v = old[i]
-        logging.debug("Checking if {}::'{}' has been removed.".format(cur_path, old_v))
+        logging.debug("Checking if {}::'{}' has been removed.".format(cur_path,
+                                                                      old_v))
 
-        if not old_v in new:
+        if old_v not in new:
             changes.append(
                 {
                     "action": "removed",
@@ -138,10 +141,11 @@ def diff_list(old, new, cur_path=[]):
 
     return changes
 
+
 def diff_dict(old, new, cur_path=[]):
     """
-    Compare two dicts and return a list of key additions and deletions in the old
-    and new dict. For any keys that haven't changed between the dicts, we
+    Compare two dicts and return a list of key additions and deletions in the
+    old and new dict. For any keys that haven't changed between the dicts, we
     recurse into those keys to do a deep compare.
 
     Returns a flat list of changes, where each entry in the list is a dict that
@@ -200,10 +204,14 @@ def diff_dict(old, new, cur_path=[]):
         old_v = old[same_key]
         if type(new_v) == list:
             # Recurse
-            changes.extend(diff_list(old_v, new_v, cur_path=cur_path + [same_key]))
+            changes.extend(diff_list(old_v,
+                                     new_v,
+                                     cur_path=cur_path + [same_key]))
         elif type(new_v) == dict:
             # Recurse
-            changes.extend(diff_dict(old_v, new_v, cur_path=cur_path + [same_key]))
+            changes.extend(diff_dict(old_v,
+                                     new_v,
+                                     cur_path=cur_path + [same_key]))
         elif new_v != old_v:
             # Value has changed
             changes.append(
@@ -218,6 +226,7 @@ def diff_dict(old, new, cur_path=[]):
             )
 
     return changes
+
 
 def diff(old, new, cur_path=[]):
     """
@@ -250,6 +259,7 @@ def exclude_match(change, match):
 
     return True
 
+
 def exclude_list(change, matches):
     """
     Apply a list of matches to a change. If any of them match, return True.
@@ -263,12 +273,31 @@ def exclude_list(change, matches):
 
 if __name__ == "__main__":
     formats = ['json', 'text', 'html']
-    parser = argparse.ArgumentParser(description='Diff JSON from stdin against JSON from file.')
-    parser.add_argument('--version', action='version', version=__VERSION__)
-    parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
-    parser.add_argument('--format', dest="format", choices=formats, type=str, default="text", help="Output format")
-    parser.add_argument('--exclude', dest="exclude", type=str, help="Exclude keys")
-    parser.add_argument('statefile', metavar='STATEFILE', type=str, help='File on disk to check stdin against.')
+    parser = argparse.ArgumentParser(
+        description='Diff JSON from stdin against JSON from file.'
+    )
+    parser.add_argument('--version',
+                        action='version',
+                        version=__VERSION__)
+    parser.add_argument('--debug',
+                        dest="debug",
+                        action='store_true',
+                        default=False,
+                        help="Show debug info")
+    parser.add_argument('--format',
+                        dest="format",
+                        choices=formats,
+                        type=str,
+                        default="text",
+                        help="Output format")
+    parser.add_argument('--exclude',
+                        dest="exclude",
+                        type=str,
+                        help="Exclude keys")
+    parser.add_argument('statefile',
+                        metavar='STATEFILE',
+                        type=str,
+                        help='File on disk to check stdin against.')
     args = parser.parse_args()
 
     loglevel = logging.ERROR
@@ -308,7 +337,9 @@ if __name__ == "__main__":
         sys.stdout.write(json.dumps(changes))
         sys.stdout.write("\n")
     elif args.format == 'text':
-        sys.stdout.write(tools.tpl_str(text_tpl, changes=changes, format_value=format_value))
+        sys.stdout.write(tools.tpl_str(text_tpl,
+                                       changes=changes,
+                                       format_value=format_value))
     elif args.format == 'html':
         sys.stdout.write(tools.tpl_str(html_tpl, changes=changes))
 

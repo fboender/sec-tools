@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import re
 import os
 import tools
 
@@ -11,6 +10,7 @@ tmp_dirs = [
     '/var/crash/',
     '/var/hoopla',
 ]
+
 
 def executable():
     result = Result(
@@ -31,12 +31,13 @@ def executable():
             if 'test' in res['stdout']:
                 result.passed(False)
                 result.add_result(tmp_dir)
-        except IOError, e:
+        except IOError:
             pass
         if os.path.exists(path):
             os.unlink(path)
 
     return result
+
 
 def separate_mount():
     result = Result(

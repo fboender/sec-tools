@@ -7,7 +7,6 @@ import sys
 import argparse
 import logging
 import json
-import re
 
 import tools
 
@@ -105,6 +104,7 @@ def netstat_line_to_dict(line, annotations={}):
         # or something.
         return None
 
+
 def include_listenport(listenport, no_local=False, no_verified=False):
     """
     Return True if the port should be included in the output. False otherwise.
@@ -126,6 +126,7 @@ def include_listenport(listenport, no_local=False, no_verified=False):
         return False
 
     return True
+
 
 def gather(no_local=False, annotate=None, no_verified=False):
     annotations = {}

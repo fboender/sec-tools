@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import re
 import tools
 
 sshd_config = "/etc/ssh/sshd_config"
+
 
 def old_protocol(sshd_config=sshd_config):
     result = Result(
@@ -19,6 +19,7 @@ def old_protocol(sshd_config=sshd_config):
             break
 
     return result
+
 
 def whitelist(sshd_config=sshd_config):
     result = Result(
@@ -41,6 +42,7 @@ def whitelist(sshd_config=sshd_config):
 
     return result
 
+
 def permit_empty_passwords(sshd_config=sshd_config):
     result = Result(
         desc="SSH server allows empty passwords (PermitEmptyPasswords)",
@@ -55,6 +57,7 @@ def permit_empty_passwords(sshd_config=sshd_config):
             break
 
     return result
+
 
 def permit_root_login(sshd_config=sshd_config):
     result = Result(
@@ -72,6 +75,7 @@ def permit_root_login(sshd_config=sshd_config):
                 break
 
     return result
+
 
 def permit_password_auth(sshd_config=sshd_config):
     result = Result(

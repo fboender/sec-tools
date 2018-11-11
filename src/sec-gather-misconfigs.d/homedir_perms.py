@@ -4,6 +4,7 @@ import pwd
 import os
 import stat
 
+
 def world_readable_homedirs():
     result = Result(
         desc="Non-system users whoms home dirs are world readable",
@@ -24,6 +25,7 @@ def world_readable_homedirs():
 
     return result
 
+
 def world_writable_homedirs():
     result = Result(
         desc="Non-system users whoms home dirs are world writable",
@@ -43,6 +45,7 @@ def world_writable_homedirs():
                 pass
 
     return result
+
 
 def open_ssh_config_dirs():
     result = Result(
@@ -68,6 +71,7 @@ def open_ssh_config_dirs():
                 pass
 
     return result
+
 
 def incorrect_skel_permissions():
     result = Result(

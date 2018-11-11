@@ -10,7 +10,6 @@ import json
 import os
 import imp
 import inspect
-import traceback
 import ast
 import fnmatch
 
@@ -27,7 +26,6 @@ html_tpl = """\
   % endfor
 % endfor
 """
-    #${tools.tpl_str(html_result_tpl, plugin_name=plugin_name, test_name=test_name)}
 
 html_result_tpl = """\
 <%
@@ -70,6 +68,7 @@ if result['passed'] is True:
 </table>
 """
 
+
 class Result:
     def __init__(self, desc, explanation, severity, passed=False):
         self.desc = desc
@@ -107,6 +106,7 @@ class Result:
             }
         }
 
+
 def load_plugins(debug=False):
     plugins = {}
     plugin_dir = 'sec-gather-misconfigs.d'
@@ -130,6 +130,7 @@ def load_plugins(debug=False):
                     plugins.setdefault(plugin_name, []).append(func_cb)
 
     return plugins
+
 
 def gather(config, skip_passed, limit, debug):
     plugins = load_plugins(debug=debug)
@@ -175,6 +176,7 @@ def gather(config, skip_passed, limit, debug):
                 tools.deepupdate(results, result.to_dict())
 
     return results
+
 
 if __name__ == "__main__":
     formats = ['json', 'html']

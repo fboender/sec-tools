@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-import sys
 import subprocess
 import copy
 from mako import exceptions
@@ -29,6 +28,7 @@ def cmd(cmd, input=None, env=None, raise_err=True):
         'exitcode': p.returncode
     }
 
+
 def deepupdate(target, src):
     """Deep update target dict with src
     For each k,v in src: if k doesn't exist in target, it is deep copied from
@@ -44,36 +44,39 @@ def deepupdate(target, src):
     """
     for k, v in src.items():
         if type(v) == list:
-            if not k in target:
+            if k not in target:
                 target[k] = copy.deepcopy(v)
             else:
                 target[k].extend(v)
         elif type(v) == dict:
-            if not k in target:
+            if k not in target:
                 target[k] = copy.deepcopy(v)
             else:
                 deepupdate(target[k], v)
         elif type(v) == set:
-            if not k in target:
+            if k not in target:
                 target[k] = v.copy()
             else:
                 target[k].update(v.copy())
         else:
             target[k] = copy.copy(v)
 
+
 def tpl_file(path, **kwargs):
     try:
         tpl = Template(filename=os.path.abspath(path))
         return tpl.render(**kwargs)
-    except:
+    except Exception:
         raise Exception(exceptions.text_error_template().render())
+
 
 def tpl_str(string, **kwargs):
     try:
         tpl = Template(string)
         return tpl.render(**kwargs)
-    except:
+    except Exception:
         raise Exception(exceptions.text_error_template().render())
+
 
 def normalize_conf(path, comment='#'):
     """
@@ -87,11 +90,13 @@ def normalize_conf(path, comment='#'):
             if not line.startswith(comment)
         ]
 
+
 def plain_err(err):
     """
     Convert Exception message to plain text string
     """
     return "{} {}".format(str(type(err)).replace('<', '').replace('>', ''), str(err).replace('<', '').replace('>', ''))
+
 
 def get_os():
     """

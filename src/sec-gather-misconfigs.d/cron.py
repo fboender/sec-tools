@@ -1,5 +1,6 @@
 import os
 
+
 def cron_allow():
     result = Result(
         desc="No cron.allow file present",
@@ -19,6 +20,7 @@ def cron_allow():
             break
 
     return result
+
 
 def mailto_set():
     result = Result(

@@ -9,8 +9,6 @@ import json
 import logging
 import tools
 import datetime
-import pwd
-import grp
 
 __VERSION__ = "0.1"
 
@@ -49,13 +47,14 @@ today = datetime.date.today()
 </table>
 """
 
+
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
 
     if isinstance(obj, datetime.date):
         serial = obj.isoformat()
         return serial
-    raise TypeError ("{} is not serializable".format(type(obj)))
+    raise TypeError("{} is not serializable".format(type(obj)))
 
 
 def parse_subject(subject):
@@ -66,6 +65,7 @@ def parse_subject(subject):
             fields[key] = value
     return fields
 
+
 def ts_to_datetime(ts):
     if ts == "":
         return ""
@@ -74,6 +74,7 @@ def ts_to_datetime(ts):
     month = int(ts[2:4].lstrip('0'))
     year = 2000 + int(ts[4:6])
     return(datetime.date(year, month, dom))
+
 
 def gather(easyrsa_index):
     users = {}
@@ -92,6 +93,7 @@ def gather(easyrsa_index):
         users[username] = user
 
     return users
+
 
 status_fields = {
     "V": "Valid",

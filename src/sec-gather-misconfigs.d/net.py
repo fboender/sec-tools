@@ -4,6 +4,7 @@ import socket
 import tools
 import urllib2
 
+
 def hostname():
     result = Result(
         desc="Invalid (fully qualified) hostname",
@@ -17,12 +18,13 @@ def hostname():
 
     if '.' in hostname:
         result.passed(False)
-    if not '.' in fqdn:
+    if '.' not in fqdn:
         result.passed(False)
 
     result.add_result("hostname={}, fqdn={}".format(hostname, fqdn))
 
     return result
+
 
 def resolve_hostname():
     result = Result(
@@ -49,6 +51,7 @@ def resolve_hostname():
         result.add_result("{} couldn't be resolved: {}".format(fqdn, tools.plain_err(err)))
 
     return result
+
 
 def reverse_lookup_ip():
     result = Result(

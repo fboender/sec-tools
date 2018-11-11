@@ -64,6 +64,7 @@ def get_user_groups(username):
             groups.append(gr.gr_name)
     return groups
 
+
 def gather(login=False):
     users = {}
     for p in pwd.getpwall():

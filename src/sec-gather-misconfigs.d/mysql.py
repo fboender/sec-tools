@@ -1,5 +1,6 @@
 import tools
 
+
 def root_password():
     result = Result(
         desc="MySQL root account has no password",

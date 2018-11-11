@@ -2,8 +2,6 @@
 
 import re
 import urllib2
-import socket
-import cgi
 import tools
 
 
@@ -13,6 +11,7 @@ default_urls = [
 ]
 
 request_cache = {}
+
 
 def _urlopen_cache(url):
     """
@@ -24,6 +23,7 @@ def _urlopen_cache(url):
         req = urllib2.urlopen(url)
         request_cache[url] = req
         return req
+
 
 def _has_header(urls, header_name, result):
     """
@@ -44,6 +44,7 @@ def _has_header(urls, header_name, result):
 
     return result
 
+
 def version_in_header(urls=None):
     if urls is None:
         urls = default_urls
@@ -61,13 +62,14 @@ def version_in_header(urls=None):
             headers = req.info()
             if 'server' in headers:
                 result.add_result("URL {} sent header 'Server: {}'".format(url, headers['server']))
-                match = re.match('.*[0-9]+\..*', headers['server'].lower())
+                match = re.match(r'.*[0-9]+\..*', headers['server'].lower())
                 if match:
                     result.passed(False)
         except urllib2.URLError as err:
             result.add_result("Error retrieving {}: {}".format(url, tools.plain_err(err)))
 
     return result
+
 
 def x_frame_options_header(urls=None):
     if urls is None:
@@ -82,6 +84,7 @@ def x_frame_options_header(urls=None):
 
     return _has_header(urls, 'X-Frame-Options', result)
 
+
 def content_security_policy_header(urls=None):
     if urls is None:
         urls = default_urls
@@ -95,6 +98,7 @@ def content_security_policy_header(urls=None):
 
     return _has_header(urls, 'Content-Security-Policy', result)
 
+
 def strict_transport_security_header(urls=None):
     if urls is None:
         urls = default_urls
@@ -107,6 +111,7 @@ def strict_transport_security_header(urls=None):
     )
 
     return _has_header(urls, 'Strict-Transport-Security', result)
+
 
 def x_content_type_options_header(urls=None):
     if urls is None:

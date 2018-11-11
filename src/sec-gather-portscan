@@ -59,6 +59,7 @@ html_tpl = """\
 </table>
 """
 
+
 def expand_range(s):
     """
     Expand a string with one or more ranges and expand the ranges into a set.
@@ -66,12 +67,13 @@ def expand_range(s):
     expanded = set()
     for _range in s.split(','):
         if ':' in _range:
-            range_start, range_end = [int(x) for x in _range.split(':',1)]
+            range_start, range_end = [int(x) for x in _range.split(':', 1)]
         else:
             range_start = range_end = int(_range)
         for i in range(range_start, range_end + 1):
             expanded.add(i)
     return expanded
+
 
 def run_nmap(ip, ports=None, nmap_extra_opts=""):
     """
@@ -102,6 +104,7 @@ def run_nmap(ip, ports=None, nmap_extra_opts=""):
     else:
         return stdout
 
+
 def xml_port_to_dict(node_port):
     """
     Convert a Nmap XML node definition to a dictionary.
@@ -119,6 +122,7 @@ def xml_port_to_dict(node_port):
         port_state["service_name"] = service_name.attrib.get("name", "MISSING_NAME")
 
     return port_state
+
 
 def scan_ip(ip, ports=None, nmap_extra_opts="", all=False, ports_exclude=None):
     """
@@ -157,6 +161,7 @@ def scan_ip(ip, ports=None, nmap_extra_opts="", all=False, ports_exclude=None):
                 hosts[addr][str(port_state["port"])] = port_state
     return hosts
 
+
 def verify_root():
     """
     Verify the user is root.
@@ -164,6 +169,7 @@ def verify_root():
     if os.getuid() != 0:
         sys.stderr.write("You're not root. Not all ports would be scanned by nmap. Exiting\n")
         sys.exit(2)
+
 
 def gather(targets, annotate=None, ports=None, all=False, ports_exclude=None):
     annotations = {}

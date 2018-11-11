@@ -1,5 +1,6 @@
 import grp
 
+
 def group_users():
     result = Result(
         desc="Users in the 'docker' group",

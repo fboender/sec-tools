@@ -7,7 +7,6 @@ import sys
 import argparse
 import logging
 import json
-import re
 import copy
 import tools
 
@@ -53,6 +52,7 @@ mysql_user_default = {
     "rights_all_dbs": ""
 }
 
+
 def gather_connect():
     mysql_users = {}
     hosts_out = tools.cmd('mysql -N -B -e "SELECT * FROM mysql.user"')['stdout']
@@ -73,11 +73,11 @@ def gather_connect():
         if 'Y' in (insert_priv, update_priv, delete_priv):
             rights_all_dbs.append("Write")
 
-
         mysql_user = mysql_users.setdefault(username, copy.deepcopy(mysql_user_default))
         mysql_user['from_hosts'].append(hostname)
         mysql_user["rights_all_dbs"] = "/".join(rights_all_dbs)
     return mysql_users
+
 
 def gather_db_access():
     mysql_users = {}
@@ -103,6 +103,7 @@ def gather_db_access():
         mysql_user['dbs'][db] = "/".join(rights)
 
     return mysql_users
+
 
 def gather():
     mysql_users = gather_connect()

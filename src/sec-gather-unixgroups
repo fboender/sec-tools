@@ -53,6 +53,7 @@ def get_user_groups(username):
             groups.append(gr.gr_name)
     return groups
 
+
 def gather(not_empty=True):
     # Gather users and their groups
     groups = {}
