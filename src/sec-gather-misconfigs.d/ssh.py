@@ -23,7 +23,10 @@ def old_protocol(sshd_config=sshd_config):
 def whitelist(sshd_config=sshd_config):
     result = Result(
         desc="SSH server does not whitelist users or groups (AllowUsers or AllowGroups)",
-        explanation="Which users are allowed to log in with SSH should be whitelisted to prevent temporary accounts and service users from logging in.",
+        explanation="""
+            Which users are allowed to log in with SSH should be whitelisted to
+            prevent temporary accounts and service users from logging in.
+        """,
         severity=3,
         passed=False
     )
@@ -56,7 +59,7 @@ def permit_empty_passwords(sshd_config=sshd_config):
 def permit_root_login(sshd_config=sshd_config):
     result = Result(
         desc="SSH server allows remote login as the root user (PermitRootLogin)",
-        explanation="The root account has all the priviliges on a system. It should not be directly exposed to the outside world.",
+        explanation="The root account has all the priviliges on a system. It should not be directly exposed to the outside world. Additionally, directly logging in with root circumvents proper auditing.",
         severity=5,
         passed=True
     )
