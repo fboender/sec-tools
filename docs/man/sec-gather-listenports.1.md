@@ -12,7 +12,7 @@ sec-gather-listenports – Output listening ports
 
 # DESCRIPTION
 
-**sec-gather-listenports** outputs listening TCP ports on the current machine. 
+**sec-gather-listenports** outputs listening TCP ports on the current machine.
 
 # OPTIONS
 
@@ -32,7 +32,7 @@ sec-gather-listenports – Output listening ports
 :   Annotation file. A JSON file who's information will be joined with the gathered results. This can be used to add custom information to results.
 
 **--no-local**
-:   Only include services that are listening on all / public interfaces (0.0.0.0)
+:   Do not include services listening on 127.0.0.1
 
 # EXAMPLES
 
