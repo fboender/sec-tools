@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import re
-import urllib2
 import tools
+import urllib2
+import ssl
 
 
 default_urls = [
@@ -13,14 +14,21 @@ default_urls = [
 request_cache = {}
 
 
+def _url(url, validate_ssl=True, timeout=4):
+    ctx = ssl.create_default_context()
+    if validate_ssl is False:
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+    return urllib2.urlopen(url, context=ctx, timeout=timeout)
+
 def _urlopen_cache(url):
     """
-    Cache output of urlllib.urlopen.
+    Cache output of urlllib.urlopen. Does not validate SSL.
     """
     if url in request_cache:
         return request_cache[url]
     else:
-        req = urllib2.urlopen(url, timeout=4)
+        req = _url(url, validate_ssl=False, timeout=4)
         request_cache[url] = req
         return req
 
