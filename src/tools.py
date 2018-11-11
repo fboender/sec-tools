@@ -92,3 +92,21 @@ def plain_err(err):
     Convert Exception message to plain text string
     """
     return "{} {}".format(str(type(err)).replace('<', '').replace('>', ''), str(err).replace('<', '').replace('>', ''))
+
+def get_os():
+    """
+    Returns LSB OS info (https://www.freedesktop.org/software/systemd/man/os-release.html)
+    """
+    os_info = {}
+    try:
+        with open('/etc/os-release', 'r') as f:
+            for line in f.readlines():
+                fields = line.split('=', 1)
+                if fields[0] == "ID_LIKE":
+                    os_info[fields[0]] = fields[1].split(' ')
+                else:
+                    os_info[fields[0]] = fields[1]
+    except IOError:
+        pass
+
+    return os_info
