@@ -4,6 +4,7 @@ import re
 import tools
 import urllib2
 import ssl
+import sys
 
 
 default_urls = [
@@ -15,11 +16,19 @@ request_cache = {}
 
 
 def _url(url, validate_ssl=True, timeout=4):
-    ctx = ssl.create_default_context()
-    if validate_ssl is False:
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-    return urllib2.urlopen(url, context=ctx, timeout=timeout)
+    if sys.version_info >= (2, 7, 9):
+        # Python v2.7.9+ has create_default_context()
+        ctx = ssl.create_default_context()
+        if validate_ssl is False:
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+        return urllib2.urlopen(url, context=ctx, timeout=timeout)
+    else:
+        # Python < v2.7.9 doesn't have create_default_context, but it's okay
+        # because it doesn't validate SSL either, which is what we're trying to
+        # turn off with the SSL context here.
+        return urllib2.urlopen(url, timeout=timeout)
+
 
 def _urlopen_cache(url):
     """
