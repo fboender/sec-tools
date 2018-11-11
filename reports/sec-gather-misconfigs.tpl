@@ -13,6 +13,7 @@
             table tr th { text-align: left; padding: 8px; background-color: #F0F0F5; }
             table tr td { padding: 8px; }
             table tr td ul { padding-left: 20px; list-style-type: square; margin: 0px; }
+            table a { color: #000000; text-decoration-color: #AAAACC; }
 
             .verified { color: #008000; }
             .unverified { color: #800000; }
@@ -58,7 +59,7 @@
                   passed_class="passed"
                 %>
                 <tr>
-                    <td>${plugin_name}: ${test_name}</td>
+                    <td><a href="#${plugin_name}_${test_name}">${plugin_name}: ${test_name}</a></td>
                     <td><span class="${passed_class}">${passed_text}</span></td>
                     <td><span class="severity severity-${result['severity']}">${result['severity']}</span></td>
                     <td>${result['desc']}</td>
@@ -80,7 +81,7 @@
                 %>
                 <table class="test_result">
                   <tr class="test_name">
-                    <th colspan="2">${plugin_name}: ${test_name}</th>
+                    <th colspan="2"><a name="${plugin_name}_${test_name}">${plugin_name}: ${test_name}</a></th>
                   </tr>
                   <tr class="description">
                     <th>Description:</th>
