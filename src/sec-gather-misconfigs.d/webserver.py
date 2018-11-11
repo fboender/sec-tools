@@ -20,7 +20,7 @@ def _urlopen_cache(url):
     if url in request_cache:
         return request_cache[url]
     else:
-        req = urllib2.urlopen(url)
+        req = urllib2.urlopen(url, timeout=4)
         request_cache[url] = req
         return req
 
