@@ -110,11 +110,13 @@ class Result:
 def load_plugins(debug=False):
     plugins = {}
     plugin_dir = 'sec-gather-misconfigs.d'
+    logging.info("Loading plugins from {}".format(plugin_dir))
     for fname in os.listdir(plugin_dir):
         fname_parts = os.path.splitext(fname)
         plugin_name = fname_parts[0]
         if fname_parts[1] == ".py":
             # Load and execute Python code
+            logging.info("Loading plugin {}".format(plugin_name))
             path = os.path.join(plugin_dir, fname)
             try:
                 module = imp.load_source(plugin_name, path)
@@ -127,7 +129,10 @@ def load_plugins(debug=False):
 
             for func_name, func_cb in inspect.getmembers(module, inspect.isfunction):
                 if not func_name.startswith('_'):
+                    logging.info("Found scan {}:{}".format(plugin_name, func_name))
                     plugins.setdefault(plugin_name, []).append(func_cb)
+        else:
+            logging.info("Skipping {}".format(fname))
 
     return plugins
 
@@ -157,6 +162,8 @@ def gather(config, skip_passed, limit, debug):
                     test_config = config[plugin_name][test_name]
 
             # Execute test
+            logging.info("Executing test {}:{}".format(plugin_name, test_name))
+            logging.debug("{}:{} config: {}".format(plugin_name, test_name, test_config))
             try:
                 result = plugin_cb(**test_config)
                 assert isinstance(result, Result)
@@ -166,6 +173,7 @@ def gather(config, skip_passed, limit, debug):
                     tools.deepupdate(results, result.to_dict())
             except Exception as err:
                 sys.stderr.write("Error executing test '{}:{}': {}: {}\n".format(plugin_name, test_name, type(err), err))
+                print(debug)
                 if debug is True:
                     logging.exception(err)
 
@@ -202,6 +210,7 @@ if __name__ == "__main__":
     # Read configuration
     config = {}
     if args.config is not None:
+        logging.info("Reading config {}".format(args.config))
         config = ast.literal_eval(open(args.config, 'r').read())
 
     # Run tests
