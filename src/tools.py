@@ -91,4 +91,4 @@ def plain_err(err):
     """
     Convert Exception message to plain text string
     """
-    return str(err).replace('<', '').replace('>', '')
+    return "{} {}".format(str(type(err)).replace('<', '').replace('>', ''), str(err).replace('<', '').replace('>', ''))
