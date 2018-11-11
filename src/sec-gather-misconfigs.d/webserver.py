@@ -25,10 +25,11 @@ def _urlopen_cache(url):
         return req
 
 
-def _has_header(urls, header_name, result):
+def _has_header(urls, header_name, result, present=True):
     """
     Check all urls in `urls` for the presence of a certain header and update
-    result.
+    result. If `present` is True, the header should be present. Otherwise, the
+    header should be absent.
     """
     for url in urls:
         try:
@@ -36,9 +37,12 @@ def _has_header(urls, header_name, result):
             headers = req.info()
             if header_name.lower() in headers:
                 result.add_result("URL {} sent header '{}: {}'".format(url, header_name, headers[header_name]))
+                if present is False:
+                    result.passed(False)
             else:
                 result.add_result("URL {} did not send header '{}'".format(url, header_name))
-                result.passed(False)
+                if present is True:
+                    result.passed(False)
         except urllib2.URLError as err:
             result.add_result("Error retrieving {}: {}".format(url, tools.plain_err(err)))
 
@@ -70,6 +74,21 @@ def version_in_header(urls=None):
 
     return result
 
+
+def powered_by_header(urls=None):
+    if urls is None:
+        urls = default_urls
+
+    result = Result(
+        desc="Web server exposes (X-)Powered-By header",
+        explanation="Exposing a service's version makes it easier to mount attacks against it.",
+        severity=3,
+        passed=True
+    )
+
+    _has_header(urls, 'X-Powered-By', result, present=False)
+    _has_header(urls, 'Powered-By', result, present=False)
+    return result
 
 def x_frame_options_header(urls=None):
     if urls is None:
