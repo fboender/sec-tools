@@ -168,6 +168,12 @@ def gather(config, skip_passed, limit, debug):
                 if debug is True:
                     logging.exception(err)
 
+                result = Result(desc="", explanation="", severity=0, passed=None)
+                result.set_plugin_name(plugin_name)
+                result.set_test_name(test_name)
+                result.add_result("Error while executing the test: {}".format(tools.plain_err(err)))
+                tools.deepupdate(results, result.to_dict())
+
     return results
 
 if __name__ == "__main__":

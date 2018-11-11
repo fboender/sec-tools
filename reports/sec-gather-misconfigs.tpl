@@ -57,6 +57,9 @@
                 if result['passed'] is True:
                   passed_text = "Passed"
                   passed_class="passed"
+                elif result['passed'] is None:
+                  passed_text = "Error"
+                  passed_class = "error"
                 %>
                 <tr>
                     <td><a href="#${plugin_name}_${test_name}">${plugin_name}: ${test_name}</a></td>
@@ -74,10 +77,14 @@
             % for test_name, result in scans.items():
                 <%
                 passed_text = "Failed"
-                passed_class="failed"
+                passed_class = "failed"
                 if result['passed'] is True:
                   passed_text = "Passed"
-                  passed_class="passed"
+                  passed_class = "passed"
+                elif result['passed'] is None:
+                  passed_text = "Error"
+                  passed_class = "error"
+                  print(passed_text)
                 %>
                 <table class="test_result">
                   <tr class="test_name">
