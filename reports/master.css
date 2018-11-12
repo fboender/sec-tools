@@ -1,0 +1,35 @@
+/* Custom CSS */
+body { font-family: sans-serif; }
+h2 { margin-top: 64px; }
+p { color: #606060; }
+
+li { line-height: 1.6em; }
+table { border-collapse: collapse; margin-bottom: 32px; }
+table tr { vertical-align: top; border-bottom: 1px solid #C0C0C0; }
+table tr:last-child { border-bottom: none; }
+table tr th { text-align: left; padding: 8px; background-color: #F0F0F5; }
+table tr td { padding: 8px; }
+table tr td ul { padding-left: 20px; list-style-type: square; margin: 0px; }
+table a { color: #000000; text-decoration-color: #AAAACC; }
+
+.verified { color: #008000; }
+.unverified { color: #800000; }
+
+table.test_result { width: 60em; }
+table.test_result .test_name { font-size: large; }
+
+.passed { color: #008000; }
+.failed { color: #800000; }
+
+span.severity { padding: 2px 5px 2px 5px; }
+.severity-0 { background-color: #6fffda; color: #000000; }
+.severity-1 { background-color: #fffe6f; color: #000000; }
+.severity-2 { background-color: #ffe31d; color: #000000; }
+.severity-3 { background-color: #ffa900; color: #000000; }
+.severity-4 { background-color: #ff5500; color: #FFFFFF; }
+.severity-5 { background-color: #900000; color: #FFFFFF; }
+
+/* Account statusses */
+.acc-active { color: #004000; }
+.acc-inactive { color: #A0A0A0; }
+.acc-revoked { color: #800000; }
