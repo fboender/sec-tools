@@ -5,6 +5,7 @@ import subprocess
 import copy
 from mako import exceptions
 from mako.template import Template
+from mako.lookup import TemplateLookup
 
 
 def cmd(cmd, input=None, env=None, raise_err=True):
@@ -63,8 +64,11 @@ def deepupdate(target, src):
 
 
 def tpl_file(path, **kwargs):
+    tpl_file = os.path.basename(os.path.abspath(path))
+    tpl_dir = os.path.dirname(os.path.abspath(path))
+    tpl_lookup = TemplateLookup(directories=[tpl_dir])
     try:
-        tpl = Template(filename=os.path.abspath(path))
+        tpl = tpl_lookup.get_template(tpl_file)
         return tpl.render(**kwargs)
     except Exception:
         raise Exception(exceptions.text_error_template().render())
