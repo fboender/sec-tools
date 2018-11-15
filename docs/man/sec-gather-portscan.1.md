@@ -8,12 +8,12 @@ sec-gather-portscan – Perform port scan and output ports.
 
 # SYNOPSIS
 
- **sec-gather-portscan** [**-h**] [**--version**] [**--debug**] [**--format** *{json,html}*] [**--annotate** *ANNOTATIONFILE*] [**--ports** *PORTS*] [**--all**] [**--ports-exclude** *PORTS*] *TARGETS*
+ **sec-gather-portscan** [**-h**] [**--version**] [**--debug**] [**--annotate** *ANNOTATIONFILE*] [**--ports** *PORTS*] [**--all**] [**--ports-exclude** *PORTS*] *TARGETS*
 
 # DESCRIPTION
 
 Perform a port scan against a host using nmap (which should be installed) and
-return the results in various formats. It must be run as root, or nmap won't
+return the results in JSON format. It must be run as root, or nmap won't
 report all open ports for some reason. 
 
 By default, nmap scans the "top 1000 most used ports". Which exactly those are
@@ -39,9 +39,6 @@ reverse-looked up hostname (see paragraph above).
 
 **--debug**
 :   Show debug info
-
-**--format** *{json,html}*
-:   Output format. Default is "*json*"
 
 **--annotate** *ANNOTATIONFILE*
 :   Annotation file. A JSON file who's information will be joined with the gathered results. This can be used to add custom information to results.

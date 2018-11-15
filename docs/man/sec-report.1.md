@@ -13,8 +13,12 @@ sec-report – Generate reports
 # DESCRIPTION
 
 **sec-report** is used to generate reports using the Mako templating language.
-Information in JSON format (assets) can be fed into the report. The report can
-also execute `sec-gather-X` tools to fetch input.
+Information in JSON format (assets) can be read from STDIN or from *ASSET*
+files.
+
+Several default reports are included for most **sec-gather-** tools. An
+example **host_report.tpl** is included which renders a HTML page of multiple
+**sec-gather-** scripts.
 
 # OPTIONS
 
@@ -39,15 +43,10 @@ Report templates are written in the Mako templating language. See:
 
     http://www.makotemplates.org/
 
-A helper function **gather()** is passed to the template, which can be used to
-execute **sec-gather-** scripts. For example, a file `report.tpl`:
+To render a report of open ports on a remote host as scanned by
+**sec-gather-portscan**:
 
-    <%
-    unixusers = gather("./sec-gather-unixusers --login --format html")
-    %>
-    <h1>Unix users</h1>
-    ${unixusers}
-    %>
+    sec-gather-portscan my.example.comm | sec-report sec-gather-portscan.tpl
 
 The report would then be rendered to HTML with:
 

@@ -107,6 +107,7 @@ def powered_by_header(urls=None):
     _has_header(urls, 'Powered-By', result, present=False)
     return result
 
+
 def x_frame_options_header(urls=None):
     if urls is None:
         urls = default_urls

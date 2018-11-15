@@ -1,7 +1,6 @@
-/* Custom CSS */
-body { font-family: sans-serif; }
+body { font-family: sans-serif; margin-left: 32px; }
 h2 { margin-top: 64px; }
-p { color: #606060; }
+p.description { color: #404040; max-width: 800px; margin-bottom: 32px; }
 
 li { line-height: 1.6em; }
 table { border-collapse: collapse; margin-bottom: 32px; }

@@ -48,11 +48,11 @@ This will install all the tools and the manual pages.
 
 ## <a name="gather">Gather scripts</a>
 
-The `gather` tools gather information and output json or html output. Example usage:
+The `gather` tools gather information and output JSON. Example usage:
 
-    sec-gather-listenports --no-local --annotate listenports-annotation.json --format json
-    sec-gather-unixusers --login --format json
-    sec-gather-unixgroups --not-empty --format html
+    sec-gather-listenports --no-local --annotate listenports-annotation.json
+    sec-gather-unixusers --login
+    sec-gather-unixgroups --not-empty
 
 The JSON output would look something like:
 
@@ -76,7 +76,8 @@ The JSON output would look something like:
     }
 
 The gather script generally provide options for additional filtering and
-manual annotations of gathered information.
+manual annotations of gathered information. Reports to convert the JSON output
+to HTML are provided in the `reports` directory
 
 For more information, check out the [manual pages](docs/man).
 
@@ -144,12 +145,23 @@ template](http://www.makotemplates.org/) to HTML. The output is written to
 stdout and can be used to generate a PDF with a tool like html2pdf. For an
 example, see the [example report](example/report).
 
-Reports can call gather scripts themselves, or can be fed JSON and other data
-through ASSET parameters.
+Reports can JSON from STDIN or files through `ASSET` params. You can either
+write your own reports (see the [examples](examples/) dir) or use a pre-made
+one from the [reports](src/reports/) directory.
 
-You can either write your own reports (see the [examples](examples/)) or use
-a pre-made one from the [tools](tools/) directory.
+Example usage:
 
-For more information, check out the manual pages for each tool:
+    # One-off report of listening ports
+    $ sudo sec-gather-listenports | sec-report sec-gather-listenports.tpl
+
+    # Generate some host information using sec-gather- scripts and generate a
+    # host report.
+    $ mkdir out
+    $ sudo sec-gather-listenports > out/listenports
+    $ sudo sec-gather-misconfigs > out/misconfigs
+    $ sudo sec-gather-mysqlusers > out/mysqlusers
+    $ sec-report --title "Security report for $(hostname -f)" host_report.tpl out/* > host_report.html
+
+For more information, check out the manual page:
 
 * **[sec-report](docs/man/sec-report.1.md)**

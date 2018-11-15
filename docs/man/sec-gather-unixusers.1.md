@@ -8,13 +8,13 @@ sec-gather-unixusers – Output unix users and their details
 
 # SYNOPSIS
 
- **sec-gather-unixusers** [**-h**] [**--version**] [**--debug**] [**--format** *{json,html}*] [**--login**]
+ **sec-gather-unixusers** [**-h**] [**--version**] [**--debug**] [**--login**]
 
 # DESCRIPTION
 
 **sec-gather-unixusers** gathers information about unix user accounts from
-`/etc/passwd` and their details (such as groups) and outputs it in a variety
-of formats.
+`/etc/passwd` and their details (such as groups) and outputs it in JSON
+format.
 
 # OPTIONS
 
@@ -26,9 +26,6 @@ of formats.
 
 **--debug**
 :   Show debug info
-
-**--format** *{json,text,html}*
-:   Output format. Default is "*text*"
 
 **--login**
 :   Only users that can log in

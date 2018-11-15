@@ -8,12 +8,12 @@ sec-gather-unixgroups – Output unix groups and their users
 
 # SYNOPSIS
 
- **sec-gather-unixgroups** [**-h**] [**--version**] [**--debug**] [**--format** *{json,html}*] [**--not-empty**]
+ **sec-gather-unixgroups** [**-h**] [**--version**] [**--debug**] [**--not-empty**]
 
 # DESCRIPTION
 
 **sec-gather-unixgroups** gathers information about unix groups from
-`/etc/groups` and their users and outputs it in a variety of formats.
+`/etc/groups` and their users and outputs it in JSON format.
 
 # OPTIONS
 
@@ -25,9 +25,6 @@ sec-gather-unixgroups – Output unix groups and their users
 
 **--debug**
 :   Show debug info
-
-**--format** *{json,text,html}*
-:   Output format. Default is "*text*"
 
 **--not-empty**
 :   Only groups that are not empt

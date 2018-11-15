@@ -8,7 +8,7 @@ sec-gather-mysqlusers – Output MySQL users and their grants
 
 # SYNOPSIS
 
- **sec-gather-mysqlusers** [**-h**] [**--version**] [**--debug**] [**--format** *{json,html}*] [**--no-conn-error**]
+ **sec-gather-mysqlusers** [**-h**] [**--version**] [**--debug**] [**--no-conn-error**]
 
 # DESCRIPTION
 
@@ -27,9 +27,6 @@ to connect.
 
 **--debug**
 :   Show debug info
-
-**--format** *{json,html}*
-:   Output format. Default is "*json*"
 
 **--no-conn-error**
 :   If cannot connect to mysql, return empty response

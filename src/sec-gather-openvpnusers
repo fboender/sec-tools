@@ -7,45 +7,9 @@ import sys
 import argparse
 import json
 import logging
-import tools
 import datetime
 
 __VERSION__ = "0.1"
-
-
-html_tpl = """
-<%
-import datetime
-today = datetime.date.today()
-%>
-<table>
-    <tr>
-        <th>Username</th>
-        <th>Full name</th>
-        <th>Status</th>
-        <th>Valid until</th>
-    </tr>
-    % for username in sorted(openvpnusers.keys()):
-        <%
-        userdetail = openvpnusers[username]
-
-        if userdetail["status"] == 'Valid':
-            active = "acc-active"
-        elif userdetail["status"] == "Expired":
-            active = "acc-inactive"
-        elif userdetail["status"] == "Revoked":
-            active = "acc-revoked"
-        endif
-        %>
-        <tr class="${active}">
-            <td>${username}</td>
-            <td>${userdetail["subject"]["name"]}</td>
-            <td>${userdetail["status"]}</td>
-            <td>${userdetail["valid_until"]}</td>
-        </tr>
-    % endfor
-</table>
-"""
 
 
 def json_serial(obj):
@@ -103,11 +67,9 @@ status_fields = {
 
 
 if __name__ == "__main__":
-    formats = ['json', 'html']
     parser = argparse.ArgumentParser(description='Gather unix users')
     parser.add_argument('--version', action='version', version=__VERSION__)
     parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
-    parser.add_argument('--format', dest="format", choices=formats, type=str, default="json", help="Output format")
     parser.add_argument('easyrsa_index', metavar='EASYRSA_INDEX', type=str, help='Path to the EasyRSA index.txt')
     args = parser.parse_args()
 
@@ -118,7 +80,4 @@ if __name__ == "__main__":
 
     openvpnusers = gather(args.easyrsa_index)
 
-    if args.format == 'json':
-        sys.stdout.write(json.dumps({"openvpnusers": openvpnusers}, indent=4, default=json_serial))
-    elif args.format == 'html':
-        sys.stdout.write(tools.tpl_str(html_tpl, openvpnusers=openvpnusers))
+    sys.stdout.write(json.dumps({"openvpnusers": openvpnusers}, indent=4, default=json_serial))

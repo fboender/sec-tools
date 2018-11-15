@@ -8,7 +8,7 @@ sec-gather-listenports – Output listening ports
 
 # SYNOPSIS
 
- **sec-gather-listenports** [**-h**] [**--version**] [**--debug**] [**--format** *{json,html}*] [**--annotate** *ANNOTATIONFILE*] [**--no-local**]
+ **sec-gather-listenports** [**-h**] [**--version**] [**--debug**] [**--annotate** *ANNOTATIONFILE*] [**--no-local**]
 
 # DESCRIPTION
 
@@ -24,9 +24,6 @@ sec-gather-listenports – Output listening ports
 
 **--debug**
 :   Show debug info
-
-**--format** *{json,html}*
-:   Output format. Default is "*json*"
 
 **--annotate** *ANNOTATIONFILE*
 :   Annotation file. A JSON file who's information will be joined with the gathered results. This can be used to add custom information to results.

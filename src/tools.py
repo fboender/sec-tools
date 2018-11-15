@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 import subprocess
 import copy
 from mako import exceptions
@@ -63,13 +64,29 @@ def deepupdate(target, src):
             target[k] = copy.copy(v)
 
 
-def tpl_file(path, **kwargs):
+def tpl_file(path, extra_tpl_dirs=None, **kwargs):
+    if extra_tpl_dirs is None:
+        tpl_dirs = []
+    else:
+        tpl_dirs = extra_tpl_dirs
+
+    # Add directory in which the template resides to the lookup.
     tpl_file = os.path.basename(os.path.abspath(path))
     tpl_dir = os.path.dirname(os.path.abspath(path))
-    tpl_lookup = TemplateLookup(directories=[tpl_dir])
+    tpl_dirs.append(tpl_dir)
+
+    # Add any caller-specified dirs to the lookup
+    if extra_tpl_dirs is not None:
+        tpl_dirs.extend(extra_tpl_dirs)
+
+    # Construct template lookup and render template.
+    tpl_lookup = TemplateLookup(directories=tpl_dirs)
     try:
         tpl = tpl_lookup.get_template(tpl_file)
         return tpl.render(**kwargs)
+    except exceptions.TopLevelLookupException:
+        sys.stderr.write("Couldn't find template {}\n".format(path))
+        sys.exit(1)
     except Exception:
         raise Exception(exceptions.text_error_template().render())
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 # Copyright 2017, Ferry Boender.
 # Licensed under the MIT license. For more information, see the LICENSE file.
 
@@ -26,30 +27,6 @@ last_line_re = re.compile(
 )
 
 
-html_tpl = """
-<table>
-    <tr>
-        <th>Username</th>
-        <th>TTY</th>
-        <th>Remote Address</th>
-        <th>Login start</th>
-        <th>Login end</th>
-        <th>Duration</th>
-    </tr>
-    % for session in unixsessions:
-        <tr>
-            <td>${session["username"]}</td>
-            <td>${session["tty"]}</td>
-            <td>${session["remote_addr"]}</td>
-            <td>${session["login_starttime"]}</td>
-            <td>${session["login_endtime"]}</td>
-            <td>${session["duration"]}</td>
-        </tr>
-    % endfor
-</table>
-"""
-
-
 def gather():
     last = tools.cmd("/usr/bin/last -F -w")
 
@@ -62,11 +39,9 @@ def gather():
 
 
 if __name__ == "__main__":
-    formats = ['json', 'html']
     parser = argparse.ArgumentParser(description='Output unix login sessions')
     parser.add_argument('--version', action='version', version=__VERSION__)
     parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
-    parser.add_argument('--format', dest="format", choices=formats, type=str, default="json", help="Output format")
 
     args = parser.parse_args()
     loglevel = logging.ERROR
@@ -76,7 +51,4 @@ if __name__ == "__main__":
 
     unixsessions = gather()
 
-    if args.format == 'json':
-        sys.stdout.write(json.dumps({"unixsessions": unixsessions}, indent=4))
-    elif args.format == 'html':
-        sys.stdout.write(tools.tpl_str(html_tpl, unixsessions=unixsessions))
+    sys.stdout.write(json.dumps({"unixsessions": unixsessions}, indent=4))

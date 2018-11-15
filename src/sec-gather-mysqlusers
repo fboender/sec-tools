@@ -13,39 +13,6 @@ import tools
 __VERSION__ = "0.1"
 
 
-html_tpl = """\
-<table>
-    <tr>
-        <th>User</th>
-        <th>From</th>
-        <th>Database</th>
-        <th>Rights</th>
-    </tr>
-    % for username in sorted(mysqlusers.keys()):
-        <%
-        mysqluser = mysqlusers[username]
-        %>
-
-        % if mysqluser["rights_all_dbs"] != "":
-            <tr class="">
-                <td>${username}</td>
-                <td>${", ".join(mysqluser["from_hosts"])}</td>
-                <td><b>ALL</b></td>
-                <td>${mysqluser["rights_all_dbs"]}</td>
-            </tr>
-        % endif
-        % for db_name, db_rights in mysqluser["dbs"].items():
-            <tr class="">
-                <td>${username}</td>
-                <td>${", ".join(mysqluser["from_hosts"])}</td>
-                <td>${db_name}</td>
-                <td>${db_rights}</td>
-            </tr>
-        % endfor
-    % endfor
-</table>
-"""
-
 mysql_user_default = {
     "from_hosts": [],
     "dbs": {},
@@ -85,7 +52,6 @@ def gather_db_access():
     db_access = tools.cmd('mysql -N -B -e "SELECT * FROM mysql.db"')['stdout']
     for line in db_access.splitlines():
         fields = line.split("\t")
-        hostname = fields[0]
         db = fields[1]
         username = fields[2]
         select_priv = fields[3]
@@ -113,11 +79,9 @@ def gather():
 
 
 if __name__ == "__main__":
-    formats = ['json', 'html']
     parser = argparse.ArgumentParser(description='Gather mysql users')
     parser.add_argument('--version', action='version', version=__VERSION__)
     parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
-    parser.add_argument('--format', dest="format", choices=formats, type=str, default="json", help="Output format")
     parser.add_argument('--no-conn-error', dest="no_conn_error", action="store_true", default=False, help="If cannot connect to mysql, return empty response")
     args = parser.parse_args()
 
@@ -134,7 +98,4 @@ if __name__ == "__main__":
 
     mysql_users = gather()
 
-    if args.format == 'json':
-        sys.stdout.write(json.dumps({"mysqlusers": mysql_users}, indent=4))
-    elif args.format == 'html':
-        sys.stdout.write(tools.tpl_str(html_tpl, mysqlusers=mysql_users))
+    sys.stdout.write(json.dumps({"mysqlusers": mysql_users}, indent=4))

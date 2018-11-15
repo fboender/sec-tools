@@ -8,7 +8,7 @@ sec-gather-misconfigs – Scan for security misconfigurations
 
 # SYNOPSIS
 
- **sec-gather-misconfigs** [**-h**] [**--version**] [**--debug**] [**--format** *{json,html}*] [**--skip-passed**] [**--config** *CONFIG*] [**--limit** *LIMITS*]
+ **sec-gather-misconfigs** [**-h**] [**--version**] [**--debug**] [**--skip-passed**] [**--config** *CONFIG*] [**--limit** *LIMITS*]
 
 
 # DESCRIPTION
@@ -27,9 +27,6 @@ server configurations, permission problems, etc.
 
 **--debug**
 :   Show debug info
-
-**--format** *{json,html}*
-:   Output format. Default is "*json*"
 
 **--skip-passed**
 :   Do not include tests that passed
@@ -75,8 +72,7 @@ it passed or failed.
 :   The severity of the misconfiguration and its impact on security. Rated on a scale from 0 to 5, where 0 is "informational" and 5 is "critical".
 
 **results**
-:   Additional information on the results of the test such as a list of files
-that were scanned.
+:   Additional information on the results of the test such as a list of files that were scanned.
 
 # CONFIGURATION
 
