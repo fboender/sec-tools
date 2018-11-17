@@ -15,6 +15,8 @@ test:
 	flake8 --exclude src/sec-gather-misconfigs.d/ --ignore=E501 src/*
 	flake8 --ignore=E501,F821 src/sec-gather-misconfigs.d/*
 
-install:
-	install src/* /usr/bin/
-	install docs/man/*.1 /usr/share/man/man1
+install: clean
+	scripts/install.sh
+
+uninstall: clean
+	scripts/uninstall.sh

@@ -56,9 +56,15 @@ class Result:
         }
 
 
+def get_plugin_dir():
+    real_bin_dir = os.path.dirname(os.readlink(sys.argv[0]))
+    plugin_dir = os.path.join(real_bin_dir, 'sec-gather-misconfigs.d')
+    return plugin_dir
+
+
 def load_plugins(debug=False):
     plugins = {}
-    plugin_dir = 'sec-gather-misconfigs.d'
+    plugin_dir = get_plugin_dir()
     logging.info("Loading plugins from {}".format(plugin_dir))
     for fname in os.listdir(plugin_dir):
         fname_parts = os.path.splitext(fname)

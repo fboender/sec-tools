@@ -14,6 +14,47 @@ import tools
 __VERSION__ = "0.1"
 
 
+def get_tpl_dirs(args):
+    """
+    Construct a list of directories in which to look for templates.
+    """
+    tpl_dirs = []
+
+    # User specified dirs
+    if args.tpl_dirs is not None:
+        tpl_dirs.extend(args.tpl_dirs.split(','))
+
+    # Current dir
+    tpl_dirs.append(".")
+
+    # 'report' dir relative to executable
+    tpl_dirs.append(
+        os.path.join(
+            os.path.realpath(
+                os.path.dirname(sys.argv[0])
+            ),
+            "reports"
+        )
+    )
+
+    # 'report' dir relative to real path of executable, in case executable is a
+    # symlink
+    tpl_dirs.append(
+        os.path.join(
+            os.path.realpath(
+                os.path.dirname(
+                    os.readlink(
+                        sys.argv[0]
+                    )
+                )
+            ),
+            "reports"
+        )
+    )
+
+    return tpl_dirs
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generate reports')
     parser.add_argument('--version', action='version', version=__VERSION__)
@@ -52,24 +93,7 @@ if __name__ == "__main__":
         args.hostname = socket.getfqdn()
 
     # Construct additional template lookup dirs
-    tpl_dirs = []
-
-    # User specified dirs
-    if args.tpl_dirs is not None:
-        tpl_dirs.extend(args.tpl_dirs.split(','))
-
-    # Current dir
-    tpl_dirs.append(".")
-
-    # 'report' dir relative to binary
-    tpl_dirs.append(
-        os.path.join(
-            os.path.realpath(
-                os.path.dirname(sys.argv[0])
-            ),
-            "reports"
-        )
-    )
+    tpl_dirs = get_tpl_dirs(args)
 
     logging.info("Extra template lookup dirs: {}".format(tpl_dirs))
     # User-provided dirs
