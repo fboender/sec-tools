@@ -33,6 +33,11 @@
     ${ listenports.results(title="Listening ports", heading_offset=1) }
 % endif
 
+% if "iptables" in data:
+    <%namespace name="iptables" file="sec-gather-iptables.tpl"/>
+    ${ iptables.results(title="Iptables firewall", heading_offset=1) }
+% endif
+
 % if "misconfigs" in data:
     <%namespace name="misconfigs" file="sec-gather-misconfigs.tpl"/>
     ${ misconfigs.results(title="Mis-configurations", heading_offset=1) }
