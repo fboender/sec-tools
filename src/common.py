@@ -71,6 +71,9 @@ class IptablesParser:
             elif token == "-d":
                 cur_rule["dest"] = cur_not.format(tokens.pop(0))
                 cur_not = "{}"
+            elif token == "--dport":
+                cur_rule["dest_port"] = cur_not.format(tokens.pop(0))
+                cur_not = "{}"
             elif token == "-j":
                 cur_rule["jump"] = cur_not.format(tokens.pop(0))
                 cur_not = "{}"
