@@ -312,7 +312,11 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # Compare old from disk with new from stdin
-    old_c = json.load(open(args.statefile, 'r'))
+    try:
+        old_c = json.load(open(args.statefile, 'r'))
+    except ValueError as err:
+        sys.stderr.write("Invalid state file '{}': {}\n".format(args.statefile, err))
+        sys.exit(1)
     new_c = json.load(sys.stdin)
     changes = diff(old_c, new_c)
 
