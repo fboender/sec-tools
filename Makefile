@@ -11,9 +11,10 @@ clean:
 	find ./ -name "*.state" -delete
 	find ./ -name "*.pyc" -delete
 
-test:
-	flake8 --exclude src/sec-gather-misconfigs.d/ --ignore=E501 src/*
-	flake8 --ignore=E501,F821 src/sec-gather-misconfigs.d/*
+test: clean
+	scripts/test.sh
+	flake8 --exclude src/sec-gather-misconfigs.d/ --ignore=E501 src/*.py
+	flake8 --ignore=E501,F821 src/sec-gather-misconfigs.d/*.py
 
 install: clean
 	scripts/install.sh
