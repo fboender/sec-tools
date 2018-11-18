@@ -10,6 +10,7 @@ src/sec-gather-unixgroups > /dev/null
 src/sec-gather-unixusers > /dev/null
 src/sec-gather-unixsessions > /dev/null
 src/sec-gather-misconfigs > /dev/null
+src/sec-gather-portscan --ports 22 127.0.0.1 > /dev/null
 
 # sec-diff
 src/sec-gather-unixusers | src/sec-diff tmp.test
