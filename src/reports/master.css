@@ -1,8 +1,7 @@
 body { font-family: sans-serif; margin-left: 32px; }
 h2 { margin-top: 64px; }
-p.description { color: #404040; max-width: 800px; margin-bottom: 32px; }
-
 li { line-height: 1.6em; }
+
 table { border-collapse: collapse; margin-bottom: 32px; }
 table tr { vertical-align: top; border-bottom: 1px solid #C0C0C0; }
 table tr:last-child { border-bottom: none; }
@@ -11,14 +10,19 @@ table tr td { padding: 8px; }
 table tr td ul { padding-left: 20px; list-style-type: square; margin: 0px; }
 table a { color: #000000; text-decoration-color: #AAAACC; }
 
+.unimportant { color: #A0A0A0; }
+
 .verified { color: #008000; }
 .unverified { color: #800000; }
 
-table.test_result { width: 60em; }
-table.test_result .test_name { font-size: large; }
-
+/* Things such as tests that passed or failed */
 .passed { color: #008000; }
 .failed { color: #800000; }
+
+p.description { color: #404040; max-width: 800px; margin-bottom: 32px; }
+
+table.test_result { width: 60em; }
+table.test_result .test_name { font-size: large; }
 
 span.severity { padding: 2px 5px 2px 5px; }
 .severity-0 { background-color: #6fffda; color: #000000; }
@@ -32,3 +36,4 @@ span.severity { padding: 2px 5px 2px 5px; }
 .acc-active { color: #004000; }
 .acc-inactive { color: #A0A0A0; }
 .acc-revoked { color: #800000; }
+
