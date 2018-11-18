@@ -105,6 +105,7 @@ def gather(config, skip_passed, limit, debug):
                         break
                 else:
                     # Test name not found
+                    logging.debug("Skipping test '{}' due to limit".format(full_name))
                     continue
 
             # Apply test configuration
