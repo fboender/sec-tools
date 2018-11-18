@@ -14,6 +14,15 @@ import common
 __VERSION__ = "0.1"
 
 
+def verify_root():
+    """
+    Verify the user is root.
+    """
+    if os.getuid() != 0:
+        sys.stderr.write("iptables viewing requires you be root.\n")
+        sys.exit(2)
+
+
 def gather():
     output = tools.cmd('iptables-save')['stdout']
     return common.IptablesParser(output).parse()
@@ -29,6 +38,7 @@ if __name__ == "__main__":
     if args.debug is True:
         loglevel = logging.DEBUG
     logging.basicConfig(level=loglevel)
+    verify_root()
 
     results = gather()
 
