@@ -30,24 +30,7 @@ def get_tpl_dirs(args):
     # 'report' dir relative to executable
     tpl_dirs.append(
         os.path.join(
-            os.path.realpath(
-                os.path.dirname(sys.argv[0])
-            ),
-            "reports"
-        )
-    )
-
-    # 'report' dir relative to real path of executable, in case executable is a
-    # symlink
-    tpl_dirs.append(
-        os.path.join(
-            os.path.realpath(
-                os.path.dirname(
-                    os.readlink(
-                        sys.argv[0]
-                    )
-                )
-            ),
+            tools.abs_real_dir(sys.argv[0]),
             "reports"
         )
     )

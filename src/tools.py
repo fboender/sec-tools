@@ -136,3 +136,27 @@ def get_os():
         pass
 
     return os_info
+
+
+def abs_real_path(path):
+    """
+    Return the absolute (relative to /) real (symlink resolved) full path to
+    the given path. Note that it only resolves a symlink of `path` points to a
+    symlink. Other symlinks are not resolved.
+    """
+    if os.path.islink(path):
+        path = os.readlink(path)
+    return os.path.abspath(path)
+
+
+def abs_real_dir(path):
+    """
+    Return the absolute (relative to /) real (symlink resolved) directory part
+    of the given path. Note that it only resolves a symlink of `path` points to
+    a symlink. Other symlinks are not resolved.
+    """
+    path = abs_real_path(path)
+    if not os.path.isdir(path):
+        return os.path.dirname(path)
+    else:
+        return path
