@@ -9,7 +9,9 @@ import argparse
 import logging
 import json
 import socket
+
 import tools
+import common
 
 __VERSION__ = "0.1"
 
@@ -40,19 +42,34 @@ def get_tpl_dirs(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generate reports')
-    parser.add_argument('--version', action='version', version=__VERSION__)
-    parser.add_argument('-d, --debug', dest="debug", action='store_true', default=False, help="Show debug info")
-    parser.add_argument('--tpl-dirs', dest="tpl_dirs", action='store', default=None, help="Extra template dirs")
-    parser.add_argument('--title', dest="title", action='store', default=None, help="Title for the report")
-    parser.add_argument('--hostname', dest="hostname", action='store', default=None, help="Hostname the report is about")
-    parser.add_argument('report', metavar='REPORT', type=str, help='Mako report template')
-    parser.add_argument('assets', metavar='ASSETS', type=str, default=None, nargs='*', help='JSON files to be made accessible to the report.')
+    common.arg_add_defaults(parser, version=__VERSION__, annotate=True)
+    parser.add_argument('--tpl-dirs',
+                        dest="tpl_dirs",
+                        action='store',
+                        default=None,
+                        help="Extra template dirs")
+    parser.add_argument('--title',
+                        dest="title",
+                        action='store',
+                        default=None,
+                        help="Title for the report")
+    parser.add_argument('--hostname',
+                        dest="hostname",
+                        action='store',
+                        default=None,
+                        help="Hostname the report is about")
+    parser.add_argument('report',
+                        metavar='REPORT',
+                        type=str,
+                        help='Mako report template')
+    parser.add_argument('assets',
+                        metavar='ASSETS',
+                        type=str,
+                        default=None,
+                        nargs='*',
+                        help='JSON files to be made accessible to the report.')
     args = parser.parse_args()
-
-    loglevel = logging.ERROR
-    if args.debug is True:
-        loglevel = logging.DEBUG
-    logging.basicConfig(level=loglevel)
+    common.configure_logger(args.debug)
 
     # data will hold all collected data (stdin, assets)
     data = {}

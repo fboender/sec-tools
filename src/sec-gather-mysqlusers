@@ -80,15 +80,14 @@ def gather():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Gather mysql users')
-    parser.add_argument('--version', action='version', version=__VERSION__)
-    parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
-    parser.add_argument('--no-conn-error', dest="no_conn_error", action="store_true", default=False, help="If cannot connect to mysql, return empty response")
+    common.arg_add_defaults(parser, version=__VERSION__, annotate=False)
+    parser.add_argument('--no-conn-error',
+                        dest="no_conn_error",
+                        action="store_true",
+                        default=False,
+                        help="If cannot connect to mysql, return empty response")
     args = parser.parse_args()
-
-    loglevel = logging.ERROR
-    if args.debug is True:
-        loglevel = logging.DEBUG
-    logging.basicConfig(level=loglevel)
+    common.configure_logger(args.debug)
 
     # Try MySQL connection
     if args.no_conn_error is True:
@@ -97,5 +96,4 @@ if __name__ == "__main__":
             sys.exit(1)
 
     results = gather()
-
     sys.stdout.write(json.dumps({"mysqlusers": results}, indent=4))

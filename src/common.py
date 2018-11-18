@@ -2,6 +2,9 @@
 Functionality that's common or shared amongst multiple tools.
 """
 
+import logging
+
+
 class IptablesParser:
     """
     Parse the output of `iptables-save` and return as Python data structure.
@@ -79,3 +82,24 @@ class IptablesParser:
                 cur_not = "{}"
         self._cur_table[cur_rule["chain"]]["rules"].append(cur_rule)
 
+
+def arg_add_defaults(parser, version, annotate=False):
+    parser.add_argument('--version',
+                        action='version',
+                        version=version)
+    parser.add_argument('-d', '--debug',
+                        dest='debug',
+                        action='store_true',
+                        default=False,
+                        help='Show debug info')
+    parser.add_argument('--annotate',
+                        dest="annotate",
+                        type=str,
+                        help="annotation file")
+
+
+def configure_logger(debug=False):
+    loglevel = logging.ERROR
+    if debug is True:
+        loglevel = logging.DEBUG
+    logging.basicConfig(level=loglevel)

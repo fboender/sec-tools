@@ -14,6 +14,7 @@ import ast
 import fnmatch
 
 import tools
+import common
 
 __VERSION__ = "0.1"
 
@@ -138,22 +139,30 @@ def gather(config, skip_passed, limit, debug):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Gather unix users')
-    parser.add_argument('--version', action='version', version=__VERSION__)
-    parser.add_argument('-d, --debug', dest="debug", action='store_true', default=False, help="Show debug info")
-    parser.add_argument('--skip-passed', dest="skip_passed", action="store_true", default=False, help="Don't include passed tests")
-    parser.add_argument('--config', dest="config", action="store", type=str, default=None, help="Configuration file for tests")
-    parser.add_argument('--limit', dest="limit", action="store", type=str, default=None, help="Limit which tests are executed")
+    common.arg_add_defaults(parser, version=__VERSION__, annotate=False)
+    parser.add_argument('--skip-passed',
+                        dest='skip_passed',
+                        action='store_true',
+                        default=False,
+                        help="Don't include passed tests")
+    parser.add_argument('--config',
+                        dest='config',
+                        action='store',
+                        type=str,
+                        default=None,
+                        help='Configuration file for tests')
+    parser.add_argument('--limit',
+                        dest='limit',
+                        action='store',
+                        type=str,
+                        default=None,
+                        help='Limit which tests are executed')
     args = parser.parse_args()
+    common.configure_logger(args.debug)
 
     # Parse limit
     if args.limit is not None:
         args.limit = args.limit.split(',')
-
-    # Setup logging
-    loglevel = logging.ERROR
-    if args.debug is True:
-        loglevel = logging.DEBUG
-    logging.basicConfig(level=loglevel)
 
     # Read configuration
     config = {}
@@ -166,5 +175,4 @@ if __name__ == "__main__":
                      skip_passed=args.skip_passed,
                      limit=args.limit,
                      debug=args.debug)
-
     sys.stdout.write(json.dumps({"misconfigs": results}, indent=4))

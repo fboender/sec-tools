@@ -9,6 +9,7 @@ import logging
 import json
 
 import tools
+import common
 
 __VERSION__ = "0.1"
 
@@ -108,19 +109,20 @@ def gather(no_local=False, annotate=None, no_verified=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Gather unix users')
-    parser.add_argument('--version', action='version', version=__VERSION__)
-    parser.add_argument('--debug', dest="debug", action='store_true', default=False, help="Show debug info")
-    parser.add_argument('--annotate', dest="annotate", type=str, help="annotation file")
-    parser.add_argument('--no-local', dest="no_local", action='store_true', default=False, help="No services listening locally")
-    parser.add_argument('--no-verified', dest="no_verified", action='store_true', default=False, help="Don't include verified port")
+    common.arg_add_defaults(parser, version=__VERSION__, annotate=True)
+    parser.add_argument('--no-local',
+                        dest="no_local",
+                        action='store_true',
+                        default=False,
+                        help="No services listening locally")
+    parser.add_argument('--no-verified',
+                        dest="no_verified",
+                        action='store_true',
+                        default=False,
+                        help="Don't include verified port")
     args = parser.parse_args()
-
-    loglevel = logging.ERROR
-    if args.debug is True:
-        loglevel = logging.DEBUG
-    logging.basicConfig(level=loglevel)
+    common.configure_logger(args.debug)
 
     results = gather(no_local=args.no_local, annotate=args.annotate,
                      no_verified=args.no_verified)
-
     sys.stdout.write(json.dumps({"listenports": results}, indent=4))
