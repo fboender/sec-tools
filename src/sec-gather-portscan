@@ -177,6 +177,6 @@ if __name__ == "__main__":
 
     verify_root()
 
-    portscan = gather(args.targets, args.annotate, args.ports, args.all, ports_exclude)
+    results = gather(args.targets, args.annotate, args.ports, args.all, ports_exclude)
 
-    sys.stdout.write(json.dumps({"portscan": portscan}, indent=4))
+    sys.stdout.write(json.dumps({"portscan": results}, indent=4))

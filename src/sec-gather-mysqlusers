@@ -96,6 +96,6 @@ if __name__ == "__main__":
         if cmd_status['exitcode'] != 0:
             sys.exit(1)
 
-    mysql_users = gather()
+    results = gather()
 
-    sys.stdout.write(json.dumps({"mysqlusers": mysql_users}, indent=4))
+    sys.stdout.write(json.dumps({"mysqlusers": results}, indent=4))

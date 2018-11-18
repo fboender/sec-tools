@@ -30,12 +30,12 @@ last_line_re = re.compile(
 def gather():
     last = tools.cmd("/usr/bin/last -F -w")
 
-    sessions = []
+    results = []
     for line in last['stdout'].splitlines():
         match = last_line_re.match(line)
         if match:
-            sessions.append(match.groupdict())
-    return sessions
+            results.append(match.groupdict())
+    return results
 
 
 if __name__ == "__main__":
@@ -49,6 +49,6 @@ if __name__ == "__main__":
         loglevel = logging.DEBUG
     logging.basicConfig(level=loglevel)
 
-    unixsessions = gather()
+    results = gather()
 
-    sys.stdout.write(json.dumps({"unixsessions": unixsessions}, indent=4))
+    sys.stdout.write(json.dumps({"unixsessions": results}, indent=4))

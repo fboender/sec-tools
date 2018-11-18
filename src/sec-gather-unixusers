@@ -37,18 +37,18 @@ def get_user_groups(username):
 
 
 def gather(login=False):
-    users = {}
+    results = {}
     for p in pwd.getpwall():
         if login and p.pw_shell in no_login_shells:
             continue
         username = p.pw_name
-        users[username] = {
+        results[username] = {
             "homedir": p.pw_dir,
             "shell": p.pw_shell,
             "groups": get_user_groups(username)
         }
 
-    return users
+    return results
 
 
 if __name__ == "__main__":
@@ -63,6 +63,6 @@ if __name__ == "__main__":
         loglevel = logging.DEBUG
     logging.basicConfig(level=loglevel)
 
-    unixusers = gather(login=args.login)
+    results = gather(login=args.login)
 
-    sys.stdout.write(json.dumps({"unixusers": unixusers}, indent=4))
+    sys.stdout.write(json.dumps({"unixusers": results}, indent=4))

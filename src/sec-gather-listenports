@@ -96,14 +96,14 @@ def gather(no_local=False, annotate=None, no_verified=False):
     if annotate:
         annotations = json.load(open(annotate, 'r'))
 
-    listenports = {}
+    results = {}
     netstat_out = tools.cmd('netstat -pant')['stdout']
     for line in netstat_out.splitlines():
         listenport = netstat_line_to_dict(line, annotations)
         if include_listenport(listenport, no_local, no_verified):
-            listenports[listenport['local_port']] = listenport
+            results[listenport['local_port']] = listenport
 
-    return listenports
+    return results
 
 
 if __name__ == "__main__":
@@ -120,7 +120,7 @@ if __name__ == "__main__":
         loglevel = logging.DEBUG
     logging.basicConfig(level=loglevel)
 
-    listenports = gather(no_local=args.no_local, annotate=args.annotate,
-                         no_verified=args.no_verified)
+    results = gather(no_local=args.no_local, annotate=args.annotate,
+                     no_verified=args.no_verified)
 
-    sys.stdout.write(json.dumps({"listenports": listenports}, indent=4))
+    sys.stdout.write(json.dumps({"listenports": results}, indent=4))

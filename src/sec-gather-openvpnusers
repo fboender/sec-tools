@@ -41,7 +41,7 @@ def ts_to_datetime(ts):
 
 
 def gather(easyrsa_index):
-    users = {}
+    results = {}
     for line in open(easyrsa_index, 'r').read().splitlines():
         logging.debug(line)
         fields = line.split("\t")
@@ -54,9 +54,9 @@ def gather(easyrsa_index):
             "subject": parse_subject(fields[5]),
         }
         username = user['subject']['CN']
-        users[username] = user
+        results[username] = user
 
-    return users
+    return results
 
 
 status_fields = {
@@ -78,6 +78,6 @@ if __name__ == "__main__":
         loglevel = logging.DEBUG
     logging.basicConfig(level=loglevel)
 
-    openvpnusers = gather(args.easyrsa_index)
+    results = gather(args.easyrsa_index)
 
-    sys.stdout.write(json.dumps({"openvpnusers": openvpnusers}, indent=4, default=json_serial))
+    sys.stdout.write(json.dumps({"openvpnusers": results}, indent=4, default=json_serial))

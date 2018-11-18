@@ -89,6 +89,7 @@ def load_plugins(debug=False):
 
 def gather(config, skip_passed, limit, debug):
     plugins = load_plugins(debug=debug)
+
     results = {}
     for plugin_name in plugins.keys():
         for plugin_cb in plugins[plugin_name]:
@@ -161,9 +162,9 @@ if __name__ == "__main__":
         config = ast.literal_eval(open(args.config, 'r').read())
 
     # Run tests
-    misconfigs = gather(config=config,
-                        skip_passed=args.skip_passed,
-                        limit=args.limit,
-                        debug=args.debug)
+    results = gather(config=config,
+                     skip_passed=args.skip_passed,
+                     limit=args.limit,
+                     debug=args.debug)
 
-    sys.stdout.write(json.dumps({"misconfigs": misconfigs}, indent=4))
+    sys.stdout.write(json.dumps({"misconfigs": results}, indent=4))

@@ -54,14 +54,13 @@ def get_user_groups(username):
 
 
 def gather(not_empty=True):
-    # Gather users and their groups
-    groups = {}
+    results = {}
     for gr in grp.getgrall():
         if not_empty and len(gr.gr_mem) == 0:
             continue
-        groups[gr.gr_name] = gr.gr_mem
+        results[gr.gr_name] = gr.gr_mem
 
-    return groups
+    return results
 
 
 if __name__ == "__main__":
@@ -76,6 +75,6 @@ if __name__ == "__main__":
         loglevel = logging.DEBUG
     logging.basicConfig(level=loglevel)
 
-    unixgroups = gather(not_empty=args.not_empty)
+    results = gather(not_empty=args.not_empty)
 
-    sys.stdout.write(json.dumps({"unixgroups": unixgroups}, indent=4))
+    sys.stdout.write(json.dumps({"unixgroups": results}, indent=4))
