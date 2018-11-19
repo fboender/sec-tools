@@ -1,0 +1,134 @@
+#
+# This is a script containing functions that are used as build rules. You can
+# use the Simple Little Automator (https://github.com/fboender/sla.git) to run
+# these rules, or you can run them directly in your shell:
+#
+#   $ bash -c ". rules.sla && test"
+#
+
+doc () {
+    # Convert Markdown man pages in docs/man/ to Groff formatted (real) man pages.
+    set -v
+    MAN_DIR=docs/man
+
+    for MD_MAN_FILE in $MAN_DIR/*.md; do
+        echo "Converting $(basename $MD_MAN_FILE)"
+        MAN_FILE=$(basename $MD_MAN_FILE .md)
+        pandoc $MD_MAN_FILE -s -t man > $MAN_DIR/$MAN_FILE
+        sed "/Automatically generated/,+1d" -i "$MAN_DIR/$MAN_FILE" 
+    done
+}
+
+clean () {
+    # Clean the repo
+    echo "Cleaning repo"
+	find ./ -name "*.state" -delete
+	find ./ -name "*.pyc" -delete
+}
+
+test () {
+    # Run some tests and code linting
+    clean
+
+    # Gather scripts
+    src/sec-gather-listenports > /dev/null
+    #src/sec-gather-mysqlusers > /dev/null
+    #src/sec-gather-openvpnusers > /dev/null
+    src/sec-gather-unixgroups > /dev/null
+    src/sec-gather-unixusers > /dev/null
+    src/sec-gather-unixsessions > /dev/null
+    src/sec-gather-iptables > /dev/null
+    src/sec-gather-misconfigs > /dev/null
+    src/sec-gather-portscan --ports 22 127.0.0.1 > /dev/null
+
+    # sec-diff
+    src/sec-gather-unixusers | src/sec-diff tmp.test
+    src/sec-gather-unixusers | src/sec-diff tmp.test
+    rm tmp.test
+
+    # Generate report
+    src/sec-gather-unixusers | src/sec-report sec-gather-unixusers.tpl > /dev/null
+
+    # Code quality tests
+    flake8 --exclude src/sec-gather-misconfigs.d/ --ignore=E501 src/*.py
+    flake8 --ignore=E501,F821 src/sec-gather-misconfigs.d/*.py
+}
+
+install () {
+    clean
+
+    PREFIX=${PREFIX:-/usr/local}
+    PREFIX_LIB=$PREFIX/lib/sec-tools
+    PREFIX_BIN=$PREFIX/bin
+    PREFIX_MAN=$PREFIX/man/man1
+
+    echo "Installing into $PREFIX..."
+
+    echo "Creating $PREFIX dirs"
+    mkdir -p $PREFIX_LIB $PREFIX_BIN $PREFIX_MAN
+
+    # Install libs and data
+    echo "Installing libs and data into $PREFIX_LIB"
+    env install src/tools.py -m 644 $PREFIX_LIB
+    cp -r src/reports $PREFIX_LIB
+    cp -r src/sec-gather-misconfigs.d $PREFIX_LIB
+
+    # Install binaries
+    echo "Installing binaries into $PREFIX_LIB"
+    for BIN in $(find src -maxdepth 1 -executable -type f ); do
+        BIN=$(basename "$BIN")
+        env install "src/$BIN" $PREFIX_LIB
+    done
+
+    # Symlink binaries
+    echo "Symlinking binaries to $PREFIX_BIN"
+    for BIN in $(find src -maxdepth 1 -executable -type f ); do
+        BIN=$(basename "$BIN")
+        PREFIX_LINK="$PREFIX_BIN/$BIN"
+
+        if [ \! -f "$PREFIX_LINK" ]; then
+            ln -s "$PREFIX_LIB/$BIN" $PREFIX_BIN/
+        fi
+    done
+
+    # Install man pages
+    echo "Installing man pages to $PREFIX_MAN"
+    cp docs/man/*.1 "$PREFIX_MAN"
+
+    echo "Installation complete. Run 'make uninstall' to remove"
+}
+
+uninstall () {
+    PREFIX=${PREFIX:-/usr/local}
+    PREFIX_LIB=$PREFIX/lib/sec-tools
+    PREFIX_BIN=$PREFIX/bin
+    PREFIX_MAN=$PREFIX/man/man1
+
+    echo "Uninstalling from $PREFIX..."
+
+    # Remove symlinked binaries
+    echo "Removing symlinked binaries from $PREFIX_BIN"
+    for BIN in $(find src -maxdepth 1 -executable -type f ); do
+        BIN=$(basename "$BIN")
+        PREFIX_LINK="$PREFIX_BIN/$BIN"
+
+        if [ -f "$PREFIX_LINK" ]; then
+            rm "$PREFIX_LINK"
+        fi
+    done
+
+    # Uninstall libs, data and binaries
+    echo "Uinstalling libs, data and binarines from $PREFIX_LIB"
+    rm -rf "$PREFIX_LIB"
+
+    # Uninstall man pages
+    echo "Uinstalling man pages from $PREFIX_MAN"
+    for MAN in docs/man/*.1; do
+        F="$PREFIX_MAN/$(basename "$MAN")"
+        if [ -f $F ]; then
+            rm "$F"
+        fi
+    done
+
+    echo "Uninstallation complete."
+}
