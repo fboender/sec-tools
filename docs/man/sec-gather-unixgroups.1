@@ -6,13 +6,11 @@ sec\-gather\-unixgroups \[en] Output unix groups and their users
 .SH SYNOPSIS
 .PP
 \f[B]sec\-gather\-unixgroups\f[] [\f[B]\-h\f[]] [\f[B]\-\-version\f[]]
-[\f[B]\-\-debug\f[]] [\f[B]\-\-format\f[] \f[I]{json,html}\f[]]
-[\f[B]\-\-not\-empty\f[]]
+[\f[B]\-\-debug\f[]] [\f[B]\-\-not\-empty\f[]]
 .SH DESCRIPTION
 .PP
 \f[B]sec\-gather\-unixgroups\f[] gathers information about unix groups
-from \f[C]/etc/groups\f[] and their users and outputs it in a variety of
-formats.
+from \f[C]/etc/groups\f[] and their users and outputs it in JSON format.
 .SH OPTIONS
 .TP
 .B \f[B]\-h\f[], \f[B]\-\-help\f[]
@@ -27,12 +25,6 @@ show program\[aq]s version number and exit
 .TP
 .B \f[B]\-\-debug\f[]
 Show debug info
-.RS
-.RE
-.TP
-.B \f[B]\-\-format\f[] \f[I]{json,text,html}\f[]
-Output format.
-Default is "\f[I]text\f[]"
 .RS
 .RE
 .TP

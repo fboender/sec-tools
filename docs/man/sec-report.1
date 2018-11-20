@@ -11,9 +11,13 @@ sec\-report \[en] Generate reports
 .PP
 \f[B]sec\-report\f[] is used to generate reports using the Mako
 templating language.
-Information in JSON format (assets) can be fed into the report.
-The report can also execute \f[C]sec\-gather\-X\f[] tools to fetch
-input.
+Information in JSON format (assets) can be read from STDIN or from
+\f[I]ASSET\f[] files.
+.PP
+Several default reports are included for most \f[B]sec\-gather\-\f[]
+tools.
+An example \f[B]host_report.tpl\f[] is included which renders a HTML
+page of multiple \f[B]sec\-gather\-\f[] scripts.
 .SH OPTIONS
 .TP
 .B \f[B]\-h\f[], \f[B]\-\-help\f[]
@@ -51,18 +55,12 @@ http://www.makotemplates.org/
 \f[]
 .fi
 .PP
-A helper function \f[B]gather()\f[] is passed to the template, which can
-be used to execute \f[B]sec\-gather\-\f[] scripts.
-For example, a file \f[C]report.tpl\f[]:
+To render a report of open ports on a remote host as scanned by
+\f[B]sec\-gather\-portscan\f[]:
 .IP
 .nf
 \f[C]
-<%
-unixusers\ =\ gather("./sec\-gather\-unixusers\ \-\-login\ \-\-format\ html")
-%>
-<h1>Unix\ users</h1>
-${unixusers}
-%>
+sec\-gather\-portscan\ my.example.comm\ |\ sec\-report\ sec\-gather\-portscan.tpl
 \f[]
 .fi
 .PP

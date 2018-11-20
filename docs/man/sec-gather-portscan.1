@@ -6,14 +6,13 @@ sec\-gather\-portscan \[en] Perform port scan and output ports.
 .SH SYNOPSIS
 .PP
 \f[B]sec\-gather\-portscan\f[] [\f[B]\-h\f[]] [\f[B]\-\-version\f[]]
-[\f[B]\-\-debug\f[]] [\f[B]\-\-format\f[] \f[I]{json,html}\f[]]
-[\f[B]\-\-annotate\f[] \f[I]ANNOTATIONFILE\f[]] [\f[B]\-\-ports\f[]
-\f[I]PORTS\f[]] [\f[B]\-\-all\f[]] [\f[B]\-\-ports\-exclude\f[]
-\f[I]PORTS\f[]] \f[I]TARGETS\f[]
+[\f[B]\-\-debug\f[]] [\f[B]\-\-annotate\f[] \f[I]ANNOTATIONFILE\f[]]
+[\f[B]\-\-ports\f[] \f[I]PORTS\f[]] [\f[B]\-\-all\f[]]
+[\f[B]\-\-ports\-exclude\f[] \f[I]PORTS\f[]] \f[I]TARGETS\f[]
 .SH DESCRIPTION
 .PP
 Perform a port scan against a host using nmap (which should be
-installed) and return the results in various formats.
+installed) and return the results in JSON format.
 It must be run as root, or nmap won\[aq]t report all open ports for some
 reason.
 .PP
@@ -45,12 +44,6 @@ show program\[aq]s version number and exit
 .TP
 .B \f[B]\-\-debug\f[]
 Show debug info
-.RS
-.RE
-.TP
-.B \f[B]\-\-format\f[] \f[I]{json,html}\f[]
-Output format.
-Default is "\f[I]json\f[]"
 .RS
 .RE
 .TP

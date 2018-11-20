@@ -6,8 +6,8 @@ sec\-gather\-misconfigs \[en] Scan for security misconfigurations
 .SH SYNOPSIS
 .PP
 \f[B]sec\-gather\-misconfigs\f[] [\f[B]\-h\f[]] [\f[B]\-\-version\f[]]
-[\f[B]\-\-debug\f[]] [\f[B]\-\-format\f[] \f[I]{json,html}\f[]]
-[\f[B]\-\-skip\-passed\f[]] [\f[B]\-\-config\f[] \f[I]CONFIG\f[]]
+[\f[B]\-\-debug\f[]] [\f[B]\-\-skip\-passed\f[]] [\f[B]\-\-config\f[]
+\f[I]CONFIG\f[]] [\f[B]\-\-limit\f[] \f[I]LIMITS\f[]]
 .SH DESCRIPTION
 .PP
 \f[B]sec\-gather\-misconfigs\f[] scans the local system for common
@@ -31,12 +31,6 @@ Show debug info
 .RS
 .RE
 .TP
-.B \f[B]\-\-format\f[] \f[I]{json,html}\f[]
-Output format.
-Default is "\f[I]json\f[]"
-.RS
-.RE
-.TP
 .B \f[B]\-\-skip\-passed\f[]
 Do not include tests that passed
 .RS
@@ -44,6 +38,11 @@ Do not include tests that passed
 .TP
 .B \f[B]\-\-config\f[] \f[I]CONFIG\f[]
 Configuration file for tests
+.RS
+.RE
+.TP
+.B \f[B]\-\-limit\f[] \f[I]LIMITS\f[]
+Limit which tests are executed
 .RS
 .RE
 .SH PLUGINS
@@ -134,6 +133,20 @@ It would look something like this for the \f[I]permit_root_login\f[] and
 .PP
 A fully annotated configuration file can be found in
 \f[I]examples/sec\-gather\-misconfigs.conf\f[].
+.SH LIMITS
+.PP
+You can limit which tests are executed with the \f[B]\-\-limit\f[]
+option.
+Multiple values may be specified, separated by comma\[aq]s.
+Wildcards (\[aq]*\[aq]) are permitted.
+For example:
+.IP
+.nf
+\f[C]
+#\ Run\ all\ \[aq]net\[aq]\ tests,\ and\ the\ \[aq]ssh:whitelist\[aq]\ test
+sec\-gather\-misconfigs\ \-\-limit\ \[aq]net:*,ssh:whitelist\[aq]
+\f[]
+.fi
 .SH EXAMPLES
 .PP
 The default output looks like the following.

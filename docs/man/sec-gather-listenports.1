@@ -6,8 +6,8 @@ sec\-gather\-listenports \[en] Output listening ports
 .SH SYNOPSIS
 .PP
 \f[B]sec\-gather\-listenports\f[] [\f[B]\-h\f[]] [\f[B]\-\-version\f[]]
-[\f[B]\-\-debug\f[]] [\f[B]\-\-format\f[] \f[I]{json,html}\f[]]
-[\f[B]\-\-annotate\f[] \f[I]ANNOTATIONFILE\f[]] [\f[B]\-\-no\-local\f[]]
+[\f[B]\-\-debug\f[]] [\f[B]\-\-annotate\f[] \f[I]ANNOTATIONFILE\f[]]
+[\f[B]\-\-no\-local\f[]]
 .SH DESCRIPTION
 .PP
 \f[B]sec\-gather\-listenports\f[] outputs listening TCP ports on the
@@ -29,12 +29,6 @@ Show debug info
 .RS
 .RE
 .TP
-.B \f[B]\-\-format\f[] \f[I]{json,html}\f[]
-Output format.
-Default is "\f[I]json\f[]"
-.RS
-.RE
-.TP
 .B \f[B]\-\-annotate\f[] \f[I]ANNOTATIONFILE\f[]
 Annotation file.
 A JSON file who\[aq]s information will be joined with the gathered
@@ -44,8 +38,7 @@ This can be used to add custom information to results.
 .RE
 .TP
 .B \f[B]\-\-no\-local\f[]
-Only include services that are listening on all / public interfaces
-(0.0.0.0)
+Do not include services listening on 127.0.0.1
 .RS
 .RE
 .SH EXAMPLES
