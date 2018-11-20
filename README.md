@@ -42,7 +42,7 @@ Clone the `sec-tools` repository and run the install:
 
     $ git clone ...
     $ cd sec-tools
-    $ sudo bash -c '. rules.sla install'
+    $ sudo bash -c '. build.sla install'
 
 This will install all the tools and the manual pages. 
 

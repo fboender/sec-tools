@@ -3,7 +3,7 @@
 # use the Simple Little Automator (https://github.com/fboender/sla.git) to run
 # these rules, or you can run them directly in your shell:
 #
-#   $ bash -c ". rules.sla && test"
+#   $ bash -c ". build.sla && test"
 #
 
 doc () {
@@ -22,8 +22,8 @@ doc () {
 clean () {
     # Clean the repo
     echo "Cleaning repo"
-	find ./ -name "*.state" -delete
-	find ./ -name "*.pyc" -delete
+    find ./ -name "*.state" -delete
+    find ./ -name "*.pyc" -delete
 }
 
 test () {
