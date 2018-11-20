@@ -26,7 +26,7 @@ Some examples of possible usage scenarios:
 * **[sec-gather-unixgroups](docs/man/sec-gather-unixgroups.1.md)**: Output unix groups and their members
 * **[sec-gather-unixusers](docs/man/sec-gather-unixusers.1.md)**: Output unix users and their details
 * **[sec-gather-portscan](docs/man/sec-gather-portscan.1.md)**: Output open ports detected through a portscan of a host
-* **[sec-gather-misconfigs](docs/man/sec-gather-misconfigs.1.md)**: Scan for common security misconfigurations.
+* **[sec-gather-misconfigs](docs/man/sec-gather-misconfigs.1.md)**: Scan for common security misconfigurations
 * **[sec-diff](docs/man/sec-diff.1.md)**: Output changes in `sec-gather-*` script output since last time
 * **[sec-report](docs/man/sec-report.1.md)**: Generate HTML and PDF reports from gathered info
 * **[sec-mail](docs/man/sec-mail.1.md)**: Send alerts and reports.
@@ -38,11 +38,11 @@ it with:
 
     $ sudo apt install python-mako
 
-Clone the `sec-tools` repository and run the install Make job:
+Clone the `sec-tools` repository and run the install:
 
     $ git clone ...
     $ cd sec-tools
-    $ sudo make install
+    $ sudo bash -c '. rules.sla install'
 
 This will install all the tools and the manual pages. 
 
