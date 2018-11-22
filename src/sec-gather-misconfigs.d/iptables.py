@@ -1,7 +1,6 @@
-import grp
-
 import tools
 import common
+
 
 def input_policy_drop():
     result = Result(
@@ -21,6 +20,7 @@ def input_policy_drop():
         result.add_result("filter:INPUT default policy is DROP or DENY")
 
     return result
+
 
 def forward_policy_drop():
     result = Result(

@@ -15,6 +15,7 @@ def _file_content_is(result, path, content):
             result.add_result("'{}' content is not '{}'".format(path, content))
     return result
 
+
 def tcp_sycookies_disabled():
     result = Result(
         desc="TCP SYN cookies should be enabled",
@@ -24,6 +25,7 @@ def tcp_sycookies_disabled():
     )
 
     return _file_content_is(result, '/proc/sys/net/ipv4/tcp_syncookies', '1')
+
 
 def accept_source_route():
     result = Result(
@@ -35,6 +37,7 @@ def accept_source_route():
 
     return _file_content_is(result, '/proc/sys/net/ipv4/conf/all/accept_source_route', '0')
 
+
 def icmp_ignore_broadcast():
     result = Result(
         desc="ICMP broadcasts should be ignored",
@@ -44,6 +47,7 @@ def icmp_ignore_broadcast():
     )
 
     return _file_content_is(result, '/proc/sys/net/ipv4/icmp_echo_ignore_broadcasts', '1')
+
 
 def icmp_redirects():
     result = Result(
@@ -55,6 +59,7 @@ def icmp_redirects():
 
     return _file_content_is(result, '/proc/sys/net/ipv4/conf/all/accept_redirects', '0')
 
+
 def ip_spoofing_protection():
     result = Result(
         desc="IP spoofing protection should be enabled",
@@ -64,6 +69,7 @@ def ip_spoofing_protection():
     )
 
     return _file_content_is(result, '/proc/sys/net/ipv4/conf/all/rp_filter', '1')
+
 
 def hostname():
     result = Result(
