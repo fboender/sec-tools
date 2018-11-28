@@ -17,9 +17,9 @@ def mail_spool_populated():
         for fname in os.listdir(spool_dir):
             path = os.path.join(spool_dir, fname)
             st = os.stat(path)
+            result.add_result("{} size is {}".format(path, st.st_size))
             if st.st_size > 0:
-                result.passed = True
-                result.add_result("{} size is 0".format(path))
+                result.passed(False)
     else:
         result.add_result("{} not found".format(spool_dir))
 
