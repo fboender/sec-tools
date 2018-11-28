@@ -7,7 +7,7 @@ import tools
 def mail_spool_populated():
     result = Result(
         desc="No mail should arrive in /var/spool/mail",
-        explanation="Mail that arrives in /var/spool/mail is generally never read, and indicated missing mail forwarding settings for users.",
+        explanation="Mail that arrives in /var/spool/mail is generally never read, and indicated missing mail forwarding settings for users. This can cause important (security) warnings to go unnoticed",
         severity=5,
         passed=True
     )
