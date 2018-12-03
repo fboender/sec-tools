@@ -4,7 +4,11 @@ import os
 def cron_allow():
     result = Result(
         desc="No cron.allow file present",
-        explanation="If no cron.allow file is present, every user can create cronjobs. Cron jobs are sometimes used as a vehicle for privilege escalations or to keep backdoors active.",
+        explanation=""""
+            If no cron.allow file is present, every user can create cronjobs.
+            Cron jobs are sometimes used as a vehicle for privilege escalations
+            or to keep backdoors active.
+        """,
         severity=4,
         passed=False
     )
@@ -25,7 +29,10 @@ def cron_allow():
 def mailto_set():
     result = Result(
         desc="No MAILTO present in crontab",
-        explanation="Crontabs should have a MAILTO setting so that mail from cronjobs is sent to a real email address.",
+        explanation="""
+            Crontabs should have a MAILTO setting so that mail from cronjobs is
+            sent to a real email address.
+        """,
         severity=4,
         passed=True
     )

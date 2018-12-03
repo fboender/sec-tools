@@ -4,7 +4,13 @@ import grp
 def group_users():
     result = Result(
         desc="Users in the 'docker' group",
-        explanation="Due to security vulnerabilities in docker (which won't be fixed), putting users in the 'docker' group is the same as giving them root without requiring a password. No users should be present in the 'docker' group, and docker operations should be performed through sudo instead.",
+        explanation="""
+            Due to security vulnerabilities in docker (which won't be fixed),
+            putting users in the 'docker' group is the same as giving them root
+            without requiring a password. No users should be present in the
+            'docker' group, and docker operations should be performed through
+            sudo instead.
+        """,
         severity=5,
         passed=True
     )

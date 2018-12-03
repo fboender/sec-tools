@@ -8,7 +8,7 @@ import stat
 def world_readable_homedirs():
     result = Result(
         desc="Non-system users whoms home dirs are world readable",
-        explanation="World readable home dirs can cause information leaks",
+        explanation="World readable home dirs can cause information leaks.",
         severity=3,
         passed=True
     )
@@ -29,7 +29,10 @@ def world_readable_homedirs():
 def world_writable_homedirs():
     result = Result(
         desc="Non-system users whoms home dirs are world writable",
-        explanation="World writable dirs allow attackers to fool users into running arbirary commands",
+        explanation="""
+            World writable dirs allow attackers to fool users into running
+            arbirary commands.
+        """,
         severity=5,
         passed=True
     )
@@ -50,7 +53,10 @@ def world_writable_homedirs():
 def open_ssh_config_dirs():
     result = Result(
         desc="User .ssh config directories that are readable for others",
-        explanation=".ssh directories should only be readable for the user, or keys might be leaked",
+        explanation="""
+            .ssh directories should only be readable for the user, or keys
+            might be leaked.
+        """,
         severity=5,
         passed=True
     )
@@ -76,7 +82,11 @@ def open_ssh_config_dirs():
 def incorrect_skel_permissions():
     result = Result(
         desc="/etc/skel permissions should be strict",
-        explanation="The /etc/skel dir is used as the basis for new unix accounts. Its permissions should be 0700 by default, which will be inherited by new user home dirs.",
+        explanation="""
+            The /etc/skel dir is used as the basis for new unix accounts. Its
+            permissions should be 0700 by default, which will be inherited by
+            new user home dirs.
+        """,
         severity=4,
         passed=True
     )

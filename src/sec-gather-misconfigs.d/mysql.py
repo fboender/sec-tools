@@ -4,7 +4,11 @@ import tools
 def root_password():
     result = Result(
         desc="MySQL root account has no password",
-        explanation="Without a password, anyone can connect to the database as the root user. (newer versions of MySQL are not affected, because they use a root-owned socket)",
+        explanation="""
+            Without a password, anyone can connect to the database as the root
+            user. (newer versions of MySQL are not affected, because they use a
+            root-owned socket)
+        """,
         severity=5,
         passed=True
     )

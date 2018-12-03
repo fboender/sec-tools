@@ -5,9 +5,10 @@ import common
 def input_policy_drop():
     result = Result(
         desc="Default policy for INPUT rule is not DROP or DENY",
-        explanation="The default INPUT policy should be to drop "
-                    "traffic, and explicitly whitelist traffic that is "
-                    "allowed.",
+        explanation="""
+            The default INPUT policy should be to drop traffic, and explicitly
+            whitelist traffic that is allowed.
+        """,
         severity=5,
         passed=False
     )
@@ -25,9 +26,10 @@ def input_policy_drop():
 def forward_policy_drop():
     result = Result(
         desc="Default policy for FORWARD rule is not DROP or DENY",
-        explanation="The default FORWARD policy should be to drop "
-                    "traffic, and explicitly whitelist traffic that is "
-                    "allowed to be forwarded.",
+        explanation="""
+            The default FORWARD policy should be to drop traffic, and
+            explicitly whitelist traffic that is allowed to be forwarded.
+        """,
         severity=4,
         passed=False
     )
