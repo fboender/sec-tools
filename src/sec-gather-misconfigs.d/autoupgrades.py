@@ -27,7 +27,6 @@ def autosecurityupgrades():
 
         # Check that unattended-upgrades are configured
         line = tools.file_grep('/etc/apt/apt.conf.d/50unattended-upgrades', '-security";')
-        print(line)
         if line is not False and not line.strip().startswith('//'):
             result.passed(True)
             result.add_result('Unattended security upgrades properly configured')
