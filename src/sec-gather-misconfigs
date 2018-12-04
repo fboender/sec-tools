@@ -33,7 +33,7 @@ class Result:
         assert(severity >= 0 and severity <= 5)
 
     def _normalize_explanation(self, explanation):
-        return textwrap.dedent(explanation).strip()
+        return textwrap.dedent(explanation).strip().replace("\n", " ")
 
     def passed(self, passed=True):
         self.has_passed = passed
