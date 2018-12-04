@@ -96,7 +96,9 @@ def hostname():
         desc="Invalid (fully qualified) hostname",
         explanation="""
             Invalid (fully qualified) hostnames cause a number of problems such
-            as invalid mail handling.
+            as invalid mail handling, unexplainable timeouts, etc. See the man
+            page for the "hostname" command on how to set the (fully qualified)
+            domainname.
         """,
         severity=0,
         passed=True
