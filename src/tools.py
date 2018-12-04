@@ -31,6 +31,29 @@ def cmd(cmd, input=None, env=None, raise_err=True):
     }
 
 
+def file_grep(path, match):
+    """
+    Return the first line that contains 'match'
+    """
+    with open(path, 'r') as f:
+        for line in f:
+            if match in line:
+                return line
+    return False
+
+
+def file_egrep(path, match):
+    """
+    Return the first line that matches regexp `match`.
+    """
+    r = re.compile(match)
+    with open(path, 'r') as f:
+        for line in f:
+            if r.match(line):
+                return line
+    return False
+
+
 def deepupdate(target, src):
     """Deep update target dict with src
     For each k,v in src: if k doesn't exist in target, it is deep copied from
