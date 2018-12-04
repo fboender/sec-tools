@@ -27,3 +27,23 @@ def mail_spool_populated():
         result.add_result("{} not found".format(spool_dir))
 
     return result
+
+def root_forward():
+    result = Result(
+        desc="Root account should have a .forward file",
+        explanation="""
+            Any mail sent to the root account should be forwarded to a real
+            email address, to prevent important messages from being lost.
+        """,
+        severity=4,
+        passed=False
+    )
+
+    forward_path = os.path.expanduser("~root/.forward")
+    if os.path.isfile(forward_path):
+        result.passed(True)
+        result.add_result("{} found".format(forward_path))
+    else:
+        result.add_result("{} not found".format(forward_path))
+
+    return result
