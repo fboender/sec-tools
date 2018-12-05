@@ -18,6 +18,7 @@ table a { color: #000000; text-decoration-color: #AAAACC; }
 /* Things such as tests that passed or failed */
 .passed { color: #008000; }
 .failed { color: #800000; }
+.error { color: #660066; }
 
 p.description { color: #404040; max-width: 800px; margin-bottom: 32px; }
 
@@ -25,6 +26,7 @@ table.test_result { width: 60em; }
 table.test_result .test_name { font-size: large; }
 
 span.severity { padding: 2px 5px 2px 5px; }
+.severity-error { background-color: #660066; color: #FFFFFF; }
 .severity-0 { background-color: #6fffda; color: #000000; }
 .severity-1 { background-color: #fffe6f; color: #000000; }
 .severity-2 { background-color: #ffe31d; color: #000000; }

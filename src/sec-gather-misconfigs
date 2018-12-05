@@ -27,6 +27,7 @@ class Result:
         self.severity = severity
         self.has_passed = passed
         self.results = []
+        self.error = None
         self.plugin_name = None
         self.test_name = None
 
@@ -41,6 +42,9 @@ class Result:
     def add_result(self, result):
         self.results.append(result)
 
+    def set_error(self, error):
+        self.error = error
+
     def set_plugin_name(self, plugin_name):
         self.plugin_name = plugin_name
 
@@ -48,7 +52,7 @@ class Result:
         self.test_name = test_name
 
     def to_dict(self):
-        return {
+        res = {
             self.plugin_name: {
                 self.test_name: {
                     "desc": self.desc,
@@ -59,6 +63,11 @@ class Result:
                 }
             }
         }
+
+        if self.error is not None:
+            res[self.plugin_name][self.test_name]['error'] = self.error
+
+        return res
 
 
 def load_plugins(debug=False):
@@ -133,11 +142,14 @@ def gather(config, skip_passed, limit, debug):
                 if debug is True:
                     logging.exception(err)
 
+                # Create Error result.
                 result = Result(desc="", explanation="", severity=0, passed=None)
                 result.set_plugin_name(plugin_name)
                 result.set_test_name(test_name)
-                result.add_result("Error while executing the test: {}".format(tools.plain_err(err)))
-                tools.deepupdate(results, result.to_dict())
+                result.set_error(tools.plain_err(err))
+
+            # Update all results with the current result
+            tools.deepupdate(results, result.to_dict())
 
     return results
 

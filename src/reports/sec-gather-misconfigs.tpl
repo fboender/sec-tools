@@ -19,6 +19,7 @@
         <li><span class="severity severity-3">3</span>: Medium</li>
         <li><span class="severity severity-4">4</span>: High</li>
         <li><span class="severity severity-5">5</span>: Severe</li>
+        <li><span class="severity severity-error">E</span>: Test not executed due to fatal error.</li>
     </ul>
 
     <h${ heading_offset + 2 }>Overview</h${ heading_offset + 2 }>
@@ -34,17 +35,21 @@
             <%
             passed_text = "Failed"
             passed_class="failed"
-            if result['passed'] is True:
-              passed_text = "Passed"
-              passed_class="passed"
-            elif result['passed'] is None:
+            if "error" in result:
               passed_text = "Error"
               passed_class = "error"
+            elif result['passed'] is True:
+              passed_text = "Passed"
+              passed_class="passed"
             %>
             <tr>
                 <td><a href="#${plugin_name}_${test_name}">${plugin_name}: ${test_name}</a></td>
                 <td><span class="${passed_class}">${passed_text}</span></td>
-                <td><span class="severity severity-${result['severity']}">${result['severity']}</span></td>
+                % if "error" in result:
+                    <td><span class="severity severity-error">E</span></td>
+                % else:
+                    <td><span class="severity severity-${result['severity']}">${result['severity']}</span></td>
+                % endif
                 <td>${result['desc']}</td>
             </tr>
         % endfor
@@ -57,18 +62,26 @@
         % for test_name, result in scans.items():
             <%
             passed_text = "Failed"
-            passed_class = "failed"
-            if result['passed'] is True:
-              passed_text = "Passed"
-              passed_class = "passed"
-            elif result['passed'] is None:
+            passed_class="failed"
+            if "error" in result:
               passed_text = "Error"
               passed_class = "error"
+            elif result['passed'] is True:
+              passed_text = "Passed"
+              passed_class="passed"
             %>
             <table class="test_result">
               <tr class="test_name">
                 <th colspan="2"><a name="${plugin_name}_${test_name}">${plugin_name}: ${test_name}</a></th>
               </tr>
+              % if "error" in result:
+              <tr class="error">
+                <th>Fatal error:</th>
+                <td>
+                <p>${result['error']}</p>
+                </td>
+              </tr>
+              % endif
               <tr class="description">
                 <th>Description:</th>
                 <td><p>${result['desc']}</p></td>
