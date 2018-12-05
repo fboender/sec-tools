@@ -4,7 +4,7 @@ import os
 def cron_allow():
     result = Result(
         desc="No cron.allow file present",
-        explanation=""""
+        explanation="""
             If no cron.allow file is present, every user can create cronjobs.
             Cron jobs are sometimes used as a vehicle for privilege escalations
             or to keep backdoors active.
