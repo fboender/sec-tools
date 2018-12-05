@@ -40,10 +40,16 @@ def root_forward():
     )
 
     forward_path = os.path.expanduser("~root/.forward")
-    if os.path.isfile(forward_path):
-        result.passed(True)
-        result.add_result("{} found".format(forward_path))
-    else:
-        result.add_result("{} not found".format(forward_path))
+    try:
+        with open(forward_path, 'r') as f:
+            line = f.readline()
+            if '@' in line:
+                result.passed(True)
+                result.add_result("Email address found in {}".format(forward_path))
+            else:
+                result.add_result("No email address found in {}".format(forward_path))
+    except IOError as err:
+        result.passed(False)
+        result.add_result(str(err))
 
     return result
