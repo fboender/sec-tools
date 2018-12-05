@@ -89,7 +89,7 @@ def load_plugins(debug=False):
                 logging.error("Couldn't import plugin '{}': {}".format(plugin_name, err))
                 if debug is True:
                     logging.exception(err)
-                continue
+                raise
 
             for func_name, func_cb in inspect.getmembers(module, inspect.isfunction):
                 if not func_name.startswith('_'):
