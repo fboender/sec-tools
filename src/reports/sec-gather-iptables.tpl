@@ -63,7 +63,9 @@
                        (rule.get("interface", "") == "lo") or \
                        (rule.get("state", "") == "RELATED,ESTABLISHED" and rule.get("jump", "") == "ACCEPT") or \
                        (rule.get("proto", "") == "icmp" and rule.get("jump", "") == "ACCEPT"):
-                        _class="unimportant"
+                        _class = "unimportant"
+                    elif (rule.get("src", None) is None):
+                        _class = "important"
                     %>
                     <tr class="${ _class }">
                         <td>${ table_name }</td>

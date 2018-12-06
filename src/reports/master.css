@@ -11,6 +11,7 @@ table tr td ul { padding-left: 20px; list-style-type: square; margin: 0px; }
 table a { color: #000000; text-decoration-color: #AAAACC; }
 
 .unimportant { color: #A0A0A0; }
+.important { color: #800000; }
 
 .verified { color: #008000; }
 .unverified { color: #800000; }
