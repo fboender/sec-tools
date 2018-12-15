@@ -99,18 +99,20 @@ nothing. The next time it's run, a new listening port has appeared, and
 
       - Added to "listenports":
 
-        {u'local_address': u'127.0.0.1',
-         u'local_port': 5555,
-         u'pid': 31978,
-         u'prog': u'nc',
-         u'proto': u'tcp',
-         u'recv_queue': 0,
-         u'remote_address': u'0.0.0.0',
-         u'remote_port': 0,
-         u'send_queue': 0,
-         u'service': u'Unknown',
-         u'state': u'LISTEN',
-         u'verified': False}
+        "8888": {
+          "recv_queue": 0, 
+          "verified": false, 
+          "service": "Unknown", 
+          "remote_port": 0, 
+          "proto": "tcp", 
+          "pid": 3747, 
+          "remote_address": "0.0.0.0", 
+          "local_port": 8888, 
+          "state": "LISTEN", 
+          "prog": "nc", 
+          "local_address": "0.0.0.0", 
+          "send_queue": 0
+        }
 
 If nothing changed, the output will be empty.
 
