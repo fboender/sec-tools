@@ -135,6 +135,8 @@ def gather(config, skip_passed, limit, debug):
                 assert isinstance(result, Result)
                 result.set_plugin_name(plugin_name)
                 result.set_test_name(test_name)
+
+                # Update all results with this result
                 if result.has_passed is False or skip_passed is False:
                     tools.deepupdate(results, result.to_dict())
             except Exception as err:
@@ -147,9 +149,6 @@ def gather(config, skip_passed, limit, debug):
                 result.set_plugin_name(plugin_name)
                 result.set_test_name(test_name)
                 result.set_error(tools.plain_err(err))
-
-            # Update all results with the current result
-            tools.deepupdate(results, result.to_dict())
 
     return results
 
