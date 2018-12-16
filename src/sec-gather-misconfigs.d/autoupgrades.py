@@ -38,10 +38,12 @@ def autosecurityupgrades():
         # Fail
         return result
     elif os_info['family'] == 'redhat':
-        out = tools.cmd('yum -q list installed yum-cron')
+        out = tools.cmd('yum -q list installed yum-cron', raise_err=False)
         if out['exitcode'] == 0:
             result.passed(True)
             result.add_result("yum-cron package installed")
+        else:
+            result.add_result("yum-cron package not installed")
         return result
     else:
         raise Exception("Unsupported OS family '{}'".format(os_info['family']))
