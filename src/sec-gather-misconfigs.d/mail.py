@@ -28,6 +28,7 @@ def mail_spool_populated():
 
     return result
 
+
 def root_forward():
     result = Result(
         desc="Root account should have a .forward file",
