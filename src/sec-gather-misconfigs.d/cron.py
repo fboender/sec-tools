@@ -37,12 +37,25 @@ def mailto_set():
         passed=True
     )
 
+    crontab_dirs = [
+        '/var/spool/cron/crontabs/',
+        '/var/spool/cron/',
+    ]
     crontabs = [
         '/etc/crontab',
     ]
-    for crontab in os.listdir("/var/spool/cron/crontabs/"):
-        crontabs.append(os.path.join("/var/spool/cron/crontabs/", crontab))
 
+    # Find all user crontabs in crontab dirs (Debian / Redhat)
+    for crontab_dir in crontab_dirs:
+        try:
+            for crontab in os.listdir(crontab_dir):
+                path = os.path.join(crontab_dir, crontab)
+                if os.path.isfile(path):
+                    crontabs.append(path)
+        except OSError:
+            pass
+
+    # Scan crontabs for MAILTO
     for crontab in crontabs:
         with open(crontab, 'r') as f:
             contents = f.read()
