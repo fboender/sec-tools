@@ -7,109 +7,172 @@ import sys
 import argparse
 import logging
 import json
+import socket
+import struct
+import pwd
+import os
 
 import tools
 import common
 
-__VERSION__ = "0.1"
+__VERSION__ = "0.2"
+
+# Enum of all TCP port states (from tcp_states.h)
+tcp_port_states = {
+    1: "ESTABLISHED",
+    2: "SYN_SENT",
+    3: "SYN_RECV",
+    4: "FIN_WAIT1",
+    5: "FIN_WAIT2",
+    6: "TIME_WAIT",
+    7: "CLOSE",
+    8: "CLOSE_WAIT",
+    9: "LAST_ACK",
+    10: "LISTEN",
+    11: "CLOSING",
+}
 
 
-def netstat_line_to_dict(line, annotations={}):
+def inode_to_pid(inode):
     """
-    Convert a line from the output of `netstat -pant` to a dictionary.
+    Go through all PID dirs in /proc and see if they have a file descriptor
+    open to socket `inode`. Requires root permissions to work properly.
     """
-    elems = [elem for elem in line.split(" ") if elem != ""]
-
-    try:
-        proto = elems[0]
-        recv_queue = elems[1]
-        send_queue = elems[2]
-        local_address = elems[3]
-        remote_address = elems[4]
-        state = elems[5]
-        pid_prog = elems[6]
-
-        ret = {
-            "proto": proto,
-            "recv_queue": int(recv_queue),
-            "send_queue": int(send_queue),
-            "local_address": local_address.rsplit(":", 1)[0],
-            "local_port": local_address.rsplit(":", 1)[1],
-            "remote_address": remote_address.rsplit(":", 1)[0],
-            "remote_port": remote_address.rsplit(":", 1)[1],
-            "state": state,
-            "pid": None,
-            "prog": None,
-            "service": "Unknown",
-            "verified": False,
-        }
-
-        if ret['local_port'] in annotations:
-            ret.update(annotations[ret['local_port']])
-
-        # Convert ports to int if possible
-        try:
-            ret["local_port"] = int(ret["local_port"])
-        except ValueError:
-            ret["local_port"] = 0
-
-        try:
-            ret["remote_port"] = int(ret["remote_port"])
-        except ValueError:
-            ret["remote_port"] = 0
-
-        # Split the PID and the program
-        if pid_prog != "-":
-            ret["pid"] = int(pid_prog.split('/')[0])
-            ret["prog"] = pid_prog.split('/')[1]
-        return ret
-    except (IndexError, ValueError):
-        # Not a line with a listening service. Probably a header from netstat
-        # or something.
+    if inode == 0:
         return None
 
+    for fname in os.listdir('/proc/'):
+        try:
+            pid = int(fname)
+        except ValueError:
+            # Filename is not int, so not a pid
+            continue
 
-def include_listenport(listenport, no_local=False, no_verified=False):
+        path_fd = os.path.join("/proc", fname, "fd")
+        try:
+            for fd in os.listdir(path_fd):
+                fd_link = os.readlink(os.path.join(path_fd, fd))
+                if fd_link.startswith("socket"):
+                    fd_inode = int(fd_link[8:-1])
+                else:
+                    continue
+
+                if fd_inode == inode:
+                    return pid
+        except OSError:
+            # Probably no permissions
+            pass
+
+    return None
+
+
+def hex_ip4(ip):
+    """
+    Convert a hex IPv4 as found in /proc/net/tcp to a dotted IP.
+
+    0E01A8C0 -> 0E 01 A8 C0 -> 14 1 168 192 -> 192.168.1.14
+    """
+    return(".".join([
+        str(int(ip[6:8], 16)),
+        str(int(ip[4:6], 16)),
+        str(int(ip[2:4], 16)),
+        str(int(ip[0:2], 16)),
+    ]))
+
+
+def parse_proc_net_v4(line, proto):
+    """
+    Parse an IPv4 (tcp / udp) line from /proc/net/ to a dict.
+    """
+    parts = line.strip().split()
+    local_addr_hex, local_port_hex = parts[1].split(':')
+    remote_addr_hex, remote_port_hex = parts[2].split(':')
+    local_addr = hex_ip4(local_addr_hex)
+    local_port = int(local_port_hex, 16)
+    remote_addr = hex_ip4(remote_addr_hex)
+    remote_port = int(remote_port_hex, 16)
+    state = int(parts[3], 16)
+    inode = int(parts[9])
+
+    port = {
+        "local_address": local_addr,
+        "local_port": local_port,
+        "remote_address": remote_addr,
+        "remote_port": remote_port,
+        "uid": pwd.getpwuid(int(parts[7])).pw_name,
+        "pid": inode_to_pid(inode),
+    }
+
+    # UDP has no state
+    if proto.startswith("tcp"):
+        port["state"] = tcp_port_states[state]
+    else:
+        port["state"] = "UNCONN"
+
+    return port
+
+
+def get_ipv4(proto):
+    ports = {}
+
+    # Read open ports and skip first (header) line.
+    path = os.path.join('/proc/net/', proto)
+    with open(path, 'r') as f:
+        for line in f.readlines()[1:]:
+            port = parse_proc_net_v4(line, proto)
+            key = '{}4_{}'.format(proto, port['local_port'])
+            port['proto'] = '{}4'.format(proto)
+            ports[key] = port
+
+    return ports
+
+
+def include_port(port, no_local=False, no_verified=False):
     """
     Return True if the port should be included in the output. False otherwise.
     """
-    # Do not include things that are not ports
-    if listenport is None:
-        return False
-
-    # Only include listening ports.
-    if listenport['state'] != "LISTEN":
+    # Do not include tcp ports that are not listening. We always include UDP
+    # ports, because there's no way to distinguish between listening ports.
+    if port["proto"].startswith("tcp") and port['state'] != "LISTEN":
         return False
 
     # Do not include locally listening ports if requested
-    if no_local is True and listenport["local_address"] == "127.0.0.1":
+    if no_local is True and port["local_address"] == "127.0.0.1":
         return False
 
     # Do not include ports that have been verified if no_verified is True
-    if no_verified is True and listenport.get("verified", False) is True:
+    if no_verified is True and port.get("verified", False) is True:
         return False
 
     return True
 
 
-def gather(no_local=False, annotate=None, no_verified=False):
+def gather(no_udp=False, no_local=False, no_verified=False, annotate=None):
     annotations = {}
     if annotate:
         annotations = json.load(open(annotate, 'r'))
 
+    ports = {}
+    ports.update(get_ipv4('tcp'))
+    if no_udp is not True:
+        ports.update(get_ipv4('udp'))
+
     results = {}
-    netstat_out = tools.cmd('netstat -pant')['stdout']
-    for line in netstat_out.splitlines():
-        listenport = netstat_line_to_dict(line, annotations)
-        if include_listenport(listenport, no_local, no_verified):
-            results[listenport['local_port']] = listenport
+    for port_key, port in ports.items():
+        if include_port(port, no_local, no_verified):
+            results[port_key] = port
 
     return results
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Gather unix users')
+    parser = argparse.ArgumentParser(description='Gather listening ports')
     common.arg_add_defaults(parser, version=__VERSION__, annotate=True)
+    parser.add_argument('--no-udp',
+                        dest="no_udp",
+                        action='store_true',
+                        default=False,
+                        help="No UDP ports")
     parser.add_argument('--no-local',
                         dest="no_local",
                         action='store_true',
@@ -123,6 +186,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     common.configure_logger(args.debug)
 
-    results = gather(no_local=args.no_local, annotate=args.annotate,
-                     no_verified=args.no_verified)
+    results = gather(no_udp=args.no_udp,
+                     no_local=args.no_local,
+                     no_verified=args.no_verified,
+                     annotate=args.annotate)
     sys.stdout.write(json.dumps({"listenports": results}, indent=4))

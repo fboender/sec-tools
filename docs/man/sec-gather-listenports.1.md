@@ -8,11 +8,11 @@ sec-gather-listenports – Output listening ports
 
 # SYNOPSIS
 
- **sec-gather-listenports** [**-h**] [**--version**] [**--debug**] [**--annotate** *ANNOTATIONFILE*] [**--no-local**]
+ **sec-gather-listenports** [**-h**] [**--version**] [**-d**] [**--annotate** *ANNOTATIONFILE*] [**--no-udp**] [**--no-local**] [**--no-verified**]
 
 # DESCRIPTION
 
-**sec-gather-listenports** outputs listening TCP ports on the current machine.
+**sec-gather-listenports** outputs listening TCP/UDP ports on the current machine.
 
 # OPTIONS
 
@@ -22,11 +22,17 @@ sec-gather-listenports – Output listening ports
 **--version**
 :   show program's version number and exit
 
-**--debug**
+**-d** / **--debug**
 :   Show debug info
 
 **--annotate** *ANNOTATIONFILE*
 :   Annotation file. A JSON file who's information will be joined with the gathered results. This can be used to add custom information to results.
+
+**--no-udp**
+:   Do not include UDP ports.
+
+**--no-verified**
+:   Do not include verified services (as read from the annotations file)
 
 **--no-local**
 :   Do not include services listening on 127.0.0.1
