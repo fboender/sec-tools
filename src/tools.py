@@ -4,6 +4,7 @@ import os
 import sys
 import subprocess
 import copy
+import re
 from mako import exceptions
 from mako.template import Template
 from mako.lookup import TemplateLookup
@@ -188,7 +189,7 @@ def get_os():
                         os_info['version'] = (int(version[0]), 0)
 
     if os.path.exists('/etc/redhat-release'):
-        os_reg = re.compile('^(.*?) release (\d+)\.(\d+).*$')
+        os_reg = re.compile(r'^(.*?) release (\d+)\.(\d+).*$')
         os_info['family'] = 'redhat'
         with open('/etc/redhat-release', 'r') as f:
             for line in f:
