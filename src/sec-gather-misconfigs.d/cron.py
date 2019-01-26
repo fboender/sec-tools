@@ -31,7 +31,8 @@ def mailto_set():
         desc="No MAILTO present in crontab",
         explanation="""
             Crontabs should have a MAILTO setting so that mail from cronjobs is
-            sent to a real email address.
+            sent to a real email address. Cron output often contains important
+            information about failing jobs that may have security implications.
         """,
         severity=4,
         passed=True
@@ -47,13 +48,11 @@ def mailto_set():
 
     # Find all user crontabs in crontab dirs (Debian / Redhat)
     for crontab_dir in crontab_dirs:
-        try:
+        if os.path.isdir(crontab_dir):
             for crontab in os.listdir(crontab_dir):
                 path = os.path.join(crontab_dir, crontab)
                 if os.path.isfile(path):
                     crontabs.append(path)
-        except OSError:
-            pass
 
     # Scan crontabs for MAILTO
     for crontab in crontabs:

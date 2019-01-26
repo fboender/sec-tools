@@ -14,14 +14,14 @@ def world_readable_homedirs():
     )
     users = pwd.getpwall()
     for user in users:
-        if user.pw_uid == 0 or (user.pw_uid > 999):
-            try:
-                homedir_stat = os.stat(user.pw_dir)
-                if homedir_stat.st_mode & stat.S_IROTH:
-                    result.passed(False)
-                    result.add_result("{} (homedir={})".format(user.pw_name, user.pw_dir))
-            except OSError:
-                pass
+        if (
+            os.path.isdir(user.pw_dir) and
+            (user.pw_uid == 0 or (user.pw_uid > 999))
+        ):
+            homedir_stat = os.stat(user.pw_dir)
+            if homedir_stat.st_mode & stat.S_IROTH:
+                result.passed(False)
+                result.add_result("{} (homedir={})".format(user.pw_name, user.pw_dir))
 
     return result
 
@@ -38,14 +38,14 @@ def world_writable_homedirs():
     )
     users = pwd.getpwall()
     for user in users:
-        if user.pw_uid == 0 or (user.pw_uid > 999):
-            try:
-                homedir_stat = os.stat(user.pw_dir)
-                if homedir_stat.st_mode & stat.S_IWOTH:
-                    result.passed(False)
-                    result.add_result("{} (homedir={})".format(user.pw_name, user.pw_dir))
-            except OSError:
-                pass
+        if (
+            os.path.isdir(user.pw_dir) and
+            (user.pw_uid == 0 or (user.pw_uid > 999))
+        ):
+            homedir_stat = os.stat(user.pw_dir)
+            if homedir_stat.st_mode & stat.S_IWOTH:
+                result.passed(False)
+                result.add_result("{} (homedir={})".format(user.pw_name, user.pw_dir))
 
     return result
 
@@ -65,16 +65,13 @@ def open_ssh_config_dirs():
     for user in users:
         ssh_dir = os.path.join(user.pw_dir, '.ssh')
         if os.path.isdir(ssh_dir):
-            try:
-                ssh_dir_stat = os.stat(ssh_dir)
-                if ssh_dir_stat.st_mode & stat.S_IRGRP or \
-                   ssh_dir_stat.st_mode & stat.S_IWGRP or \
-                   ssh_dir_stat.st_mode & stat.S_IROTH or \
-                   ssh_dir_stat.st_mode & stat.S_IWOTH:
-                    result.passed(False)
-                    result.add_result("{} (ssh_dir={})".format(user.pw_name, ssh_dir))
-            except OSError:
-                pass
+            ssh_dir_stat = os.stat(ssh_dir)
+            if ssh_dir_stat.st_mode & stat.S_IRGRP or \
+               ssh_dir_stat.st_mode & stat.S_IWGRP or \
+               ssh_dir_stat.st_mode & stat.S_IROTH or \
+               ssh_dir_stat.st_mode & stat.S_IWOTH:
+                result.passed(False)
+                result.add_result("{} (ssh_dir={})".format(user.pw_name, ssh_dir))
 
     return result
 
@@ -93,16 +90,13 @@ def incorrect_skel_permissions():
 
     skel_dir = '/etc/skel'
     if os.path.isdir(skel_dir):
-        try:
-            skel_dir_stat = os.stat(skel_dir)
-            if skel_dir_stat.st_mode & stat.S_IRGRP or \
-               skel_dir_stat.st_mode & stat.S_IWGRP or \
-               skel_dir_stat.st_mode & stat.S_IROTH or \
-               skel_dir_stat.st_mode & stat.S_IWOTH:
-                result.passed(False)
-                result.add_result("skel_dir={}".format(skel_dir))
-        except OSError:
-            pass
+        skel_dir_stat = os.stat(skel_dir)
+        if skel_dir_stat.st_mode & stat.S_IRGRP or \
+           skel_dir_stat.st_mode & stat.S_IWGRP or \
+           skel_dir_stat.st_mode & stat.S_IROTH or \
+           skel_dir_stat.st_mode & stat.S_IWOTH:
+            result.passed(False)
+            result.add_result("skel_dir={}".format(skel_dir))
     else:
         result.add_result("/etc/skel not found")
 
