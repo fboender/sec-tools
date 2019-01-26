@@ -96,7 +96,13 @@
               </tr>
               <tr class="severity">
                 <th>Severity:</th>
-                <td><span class="severity severity-${result['severity']}">${result['severity']}</span></td>
+                <td>
+                  % if "error" in result:
+                      <span class="severity severity-error">E</span>
+                  % else:
+                      <span class="severity severity-${result['severity']}">${result['severity']}</span>
+                  % endif
+                </td>
               </tr class="">
               <tr class="">
                 <th>Results:</th>
