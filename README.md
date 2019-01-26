@@ -3,10 +3,18 @@ Security Tools
 
 ## <a name="about">About</a>
 
-These are security tools for reporting and alerting about security information
-and events. The focus is on gathering and annotating authentication,
-authorization and system configuration information and reporting and alerting
-based on this information.
+These are tools for reporting and alerting about security information and
+events. The focus is on gathering and annotating authentication, authorization
+and system configuration information and reporting and alerting based on this
+information.
+
+Together, these tools provide means for:
+
+* Reviewing and hardening system security.
+* Reporting of security configuration problems and alerting of changes in
+  configuration.
+* Reporting of user privileges and alerting of changes in privileges.
+* Intrusion detection.
 
 The tools are written as separate unix tools that read and write from / to
 standard output. These can be combined to produce the desired result.
