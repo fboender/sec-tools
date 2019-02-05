@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 import os
-import tools
+
+import morestd
 
 tmp_dirs = [
     '/tmp',
@@ -23,11 +24,10 @@ def executable():
     for tmp_dir in tmp_dirs:
         path = os.path.join(tmp_dir, 'whatswrong_tmp_tst')
         try:
-            f = file(path, 'w')
-            f.write('#!/bin/sh\necho "test"')
-            f.close()
-            os.chmod(path, 0755)
-            res = tools.cmd(path, raise_err=False)
+            with open(path, 'w') as f:
+                f.write('#!/bin/sh\necho "test"')
+            os.chmod(path, 0o755)
+            res = morestd.shell.cmd(path, raise_err=False)
             if 'test' in res['stdout']:
                 result.passed(False)
                 result.add_result(tmp_dir)
@@ -52,9 +52,10 @@ def separate_mount():
             continue
 
         tmp_dir_found = False
-        for line in file('/proc/mounts', 'r'):
-            if line.split()[1] == tmp_dir:
-                tmp_dir_found = True
+        with open('/proc/mounts', 'r') as f:
+            for line in f:
+                if line.split()[1] == tmp_dir:
+                    tmp_dir_found = True
         if not tmp_dir_found:
             result.passed(False)
             result.add_result(tmp_dir)

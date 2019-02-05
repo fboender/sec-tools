@@ -12,116 +12,22 @@ import struct
 import pwd
 import os
 
+import morestd
 import tools
 import common
 
 __VERSION__ = "0.2"
-
-# Enum of all TCP port states (from tcp_states.h)
-tcp_port_states = {
-    1: "ESTABLISHED",
-    2: "SYN_SENT",
-    3: "SYN_RECV",
-    4: "FIN_WAIT1",
-    5: "FIN_WAIT2",
-    6: "TIME_WAIT",
-    7: "CLOSE",
-    8: "CLOSE_WAIT",
-    9: "LAST_ACK",
-    10: "LISTEN",
-    11: "CLOSING",
-}
-
-
-def inode_to_pid(inode):
-    """
-    Go through all PID dirs in /proc and see if they have a file descriptor
-    open to socket `inode`. Requires root permissions to work properly.
-    """
-    if inode == 0:
-        return None
-
-    for fname in os.listdir('/proc/'):
-        try:
-            pid = int(fname)
-        except ValueError:
-            # Filename is not int, so not a pid
-            continue
-
-        path_fd = os.path.join("/proc", fname, "fd")
-        try:
-            for fd in os.listdir(path_fd):
-                fd_link = os.readlink(os.path.join(path_fd, fd))
-                if fd_link.startswith("socket"):
-                    fd_inode = int(fd_link[8:-1])
-                else:
-                    continue
-
-                if fd_inode == inode:
-                    return pid
-        except OSError:
-            # Probably no permissions
-            pass
-
-    return None
-
-
-def hex_ip4(ip):
-    """
-    Convert a hex IPv4 as found in /proc/net/tcp to a dotted IP.
-
-    0E01A8C0 -> 0E 01 A8 C0 -> 14 1 168 192 -> 192.168.1.14
-    """
-    return(".".join([
-        str(int(ip[6:8], 16)),
-        str(int(ip[4:6], 16)),
-        str(int(ip[2:4], 16)),
-        str(int(ip[0:2], 16)),
-    ]))
-
-
-def parse_proc_net_v4(line, proto):
-    """
-    Parse an IPv4 (tcp / udp) line from /proc/net/ to a dict.
-    """
-    parts = line.strip().split()
-    local_addr_hex, local_port_hex = parts[1].split(':')
-    remote_addr_hex, remote_port_hex = parts[2].split(':')
-    local_addr = hex_ip4(local_addr_hex)
-    local_port = int(local_port_hex, 16)
-    remote_addr = hex_ip4(remote_addr_hex)
-    remote_port = int(remote_port_hex, 16)
-    state = int(parts[3], 16)
-    inode = int(parts[9])
-
-    port = {
-        "local_address": local_addr,
-        "local_port": local_port,
-        "remote_address": remote_addr,
-        "remote_port": remote_port,
-        "uid": pwd.getpwuid(int(parts[7])).pw_name,
-        "pid": inode_to_pid(inode),
-    }
-
-    # UDP has no state
-    if proto.startswith("tcp"):
-        port["state"] = tcp_port_states[state]
-    else:
-        port["state"] = "UNCONN"
-
-    return port
 
 
 def get_ipv4(proto):
     ports = {}
 
     # Read open ports and skip first (header) line.
-    path = os.path.join('/proc/net/', proto)
-    with open(path, 'r') as f:
-        for line in f.readlines()[1:]:
-            port = parse_proc_net_v4(line, proto)
-            key = '{}4_{}'.format(proto, port['local_port'])
-            port['proto'] = '{}4'.format(proto)
+    for port in morestd.net.net_open_ports():
+        if port["proto"].startswith(proto):
+            port["local_address"] = str(port["local_address"])
+            port["remote_address"] = str(port["remote_address"])
+            key = "{}_{}".format(port["proto"], port["local_port"])
             ports[key] = port
 
     return ports

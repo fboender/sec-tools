@@ -2,9 +2,10 @@
 
 import re
 import tools
-import urllib2
 import ssl
 import sys
+import urllib.request
+import urllib.error
 
 
 default_urls = [
@@ -22,12 +23,12 @@ def _url(url, validate_ssl=True, timeout=4):
         if validate_ssl is False:
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
-        return urllib2.urlopen(url, context=ctx, timeout=timeout)
+        return urllib.request.urlopen(url, context=ctx, timeout=timeout)
     else:
         # Python < v2.7.9 doesn't have create_default_context, but it's okay
         # because it doesn't validate SSL either, which is what we're trying to
         # turn off with the SSL context here.
-        return urllib2.urlopen(url, timeout=timeout)
+        return urllib.request.urlopen(url, timeout=timeout)
 
 
 def _urlopen_cache(url):
@@ -60,7 +61,7 @@ def _has_header(urls, header_name, result, present=True):
                 result.add_result("URL {} did not send header '{}'".format(url, header_name))
                 if present is True:
                     result.passed(False)
-        except urllib2.URLError as err:
+        except urllib.error.URLError as err:
             result.add_result("Error retrieving {}: {}".format(url, tools.plain_err(err)))
 
     return result
@@ -86,7 +87,7 @@ def version_in_header(urls=None):
                 match = re.match(r'.*[0-9]+\..*', headers['server'].lower())
                 if match:
                     result.passed(False)
-        except urllib2.URLError as err:
+        except urllib.error.URLError as err:
             result.add_result("Error retrieving {}: {}".format(url, tools.plain_err(err)))
 
     return result

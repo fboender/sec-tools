@@ -1,4 +1,6 @@
 import os
+
+import morestd
 import tools
 
 
@@ -14,7 +16,7 @@ def autosecurityupgrades():
         passed=False
     )
 
-    os_info = tools.get_os()
+    os_info = morestd.lsb.get_os()
 
     if os_info['family'] == 'debian':
         # Check that unattended-upgrades package is installed
@@ -38,7 +40,7 @@ def autosecurityupgrades():
         # Fail
         return result
     elif os_info['family'] == 'redhat':
-        out = tools.cmd('yum -q list installed yum-cron', raise_err=False)
+        out = morestd.shell.cmd('yum -q list installed yum-cron', raise_err=False)
         if out['exitcode'] == 0:
             result.passed(True)
             result.add_result("yum-cron package installed")

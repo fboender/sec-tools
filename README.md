@@ -41,15 +41,15 @@ Some examples of possible usage scenarios:
 
 ## <a name="installation">Installation</a>
 
-sec-tools requires the Mako Python library. Debian / Ubuntu users can install
-it with:
+sec-tools requires **Python v3.4+**.
 
-    $ sudo apt install python-mako
+You must also install the required dependencies.
 
 Clone the `sec-tools` repository and run the install:
 
     $ git clone ...
     $ cd sec-tools
+    $ pip install -r ./requirements.txt
     $ sudo bash -c '. build.sla install'
 
 This will install all the tools and the manual pages. 

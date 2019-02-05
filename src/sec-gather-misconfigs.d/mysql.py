@@ -1,4 +1,4 @@
-import tools
+import morestd
 
 
 def root_password():
@@ -13,7 +13,7 @@ def root_password():
         passed=True
     )
 
-    res = tools.cmd('mysql -u root -h 127.0.0.1 -e "exit" ', raise_err=False)
+    res = morestd.shell.cmd('mysql -u root -h 127.0.0.1 -e "exit" ', raise_err=False)
     if res['exitcode'] == 0:
         result.passed(False)
 

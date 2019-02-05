@@ -2,7 +2,7 @@
 
 import socket
 import tools
-import urllib2
+import urllib.request
 
 
 def _file_content_is(result, path, content):
@@ -159,7 +159,7 @@ def reverse_lookup_ip():
     )
 
     fqdn = socket.getfqdn()
-    external_ip = urllib2.urlopen("https://ident.me").read()
+    external_ip = urllib.request.urlopen("https://ident.me").read()
     reverse = socket.gethostbyaddr(external_ip)
 
     result.add_result("{} reverse resolves to {} (aliases: {}). We expected {}.".format(external_ip, reverse[0], reverse[1], fqdn))

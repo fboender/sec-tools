@@ -1,4 +1,4 @@
-import tools
+import morestd
 import common
 
 
@@ -13,7 +13,7 @@ def input_policy_drop():
         passed=False
     )
 
-    output = tools.cmd('iptables-save')['stdout']
+    output = morestd.shell.cmd('iptables-save')['stdout']
     iptables = common.IptablesParser(output).parse()
 
     if iptables["filter"]["INPUT"]["policy"] in ("DROP", "DENY"):
@@ -34,7 +34,7 @@ def forward_policy_drop():
         passed=False
     )
 
-    output = tools.cmd('iptables-save')['stdout']
+    output = morestd.shell.cmd('iptables-save')['stdout']
     iptables = common.IptablesParser(output).parse()
 
     if iptables["filter"]["FORWARD"]["policy"] in ("DROP", "DENY"):

@@ -5,6 +5,16 @@ import os
 import stat
 
 
+def _is_normal_user(user):
+    """
+    Check output of pwd.getpwall() entry to see if this is a normal user
+    instead of a system user.
+    """
+    is_dir = os.path.isdir(user.pw_dir)
+    is_normal_user = (user.pw_uid == 0 or user.pw_uid > 999)
+    return (is_dir and is_normal_user)
+
+
 def world_readable_homedirs():
     result = Result(
         desc="Non-system users whoms home dirs are world readable",
@@ -14,10 +24,7 @@ def world_readable_homedirs():
     )
     users = pwd.getpwall()
     for user in users:
-        if (
-            os.path.isdir(user.pw_dir) and
-            (user.pw_uid == 0 or (user.pw_uid > 999))
-        ):
+        if (_is_normal_user(user)):
             homedir_stat = os.stat(user.pw_dir)
             if homedir_stat.st_mode & stat.S_IROTH:
                 result.passed(False)
@@ -38,10 +45,7 @@ def world_writable_homedirs():
     )
     users = pwd.getpwall()
     for user in users:
-        if (
-            os.path.isdir(user.pw_dir) and
-            (user.pw_uid == 0 or (user.pw_uid > 999))
-        ):
+        if (_is_normal_user(user)):
             homedir_stat = os.stat(user.pw_dir)
             if homedir_stat.st_mode & stat.S_IWOTH:
                 result.passed(False)

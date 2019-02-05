@@ -8,6 +8,9 @@ import argparse
 import logging
 import json
 import copy
+
+import common
+import morestd
 import tools
 
 __VERSION__ = "0.1"
@@ -22,7 +25,8 @@ mysql_user_default = {
 
 def gather_connect():
     mysql_users = {}
-    hosts_out = tools.cmd('mysql -N -B -e "SELECT * FROM mysql.user"')['stdout']
+    cmd = 'mysql -N -B -e "SELECT * FROM mysql.user"'
+    hosts_out = morestd.shell.cmd(cmd)['stdout']
     for line in hosts_out.splitlines():
         fields = line.split("\t")
         if fields[0] == "%":
@@ -49,7 +53,7 @@ def gather_connect():
 def gather_db_access():
     mysql_users = {}
 
-    db_access = tools.cmd('mysql -N -B -e "SELECT * FROM mysql.db"')['stdout']
+    db_access = morestd.shell.cmd('mysql -N -B -e "SELECT * FROM mysql.db"')['stdout']
     for line in db_access.splitlines():
         fields = line.split("\t")
         db = fields[1]
@@ -91,7 +95,7 @@ if __name__ == "__main__":
 
     # Try MySQL connection
     if args.no_conn_error is True:
-        cmd_status = tools.cmd('mysql -N -B -e "SELECT 1"', raise_err=False)
+        cmd_status = morestd.shell.cmd('mysql -N -B -e "SELECT 1"', raise_err=False)
         if cmd_status['exitcode'] != 0:
             sys.exit(1)
 

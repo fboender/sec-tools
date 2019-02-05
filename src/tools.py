@@ -2,34 +2,11 @@
 
 import os
 import sys
-import subprocess
 import copy
 import re
 from mako import exceptions
 from mako.template import Template
 from mako.lookup import TemplateLookup
-
-
-def cmd(cmd, input=None, env=None, raise_err=True):
-    """
-    Run command `cmd` in a shell. `input` (string) is passed in the
-    process' STDIN.
-
-    Returns a dictionary: `{'stdout': <string>, 'stderr': <string>, 'exitcode':
-    <int>}`.
-    """
-    p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = p.communicate(input)
-
-    if p.returncode != 0 and raise_err:
-        raise Exception("Cmd '{}' returned with exit-code {} and stderr: {}".format(cmd, p.returncode, stderr))
-
-    return {
-        'stdout': stdout,
-        'stderr': stderr,
-        'exitcode': p.returncode
-    }
 
 
 def file_grep(path, match):
@@ -143,76 +120,10 @@ def plain_err(err):
     return "{} {}".format(str(type(err)).replace('<', '').replace('>', ''), str(err).replace('<', '').replace('>', ''))
 
 
-def get_os():
-    """
-    Use various files and LSB to figure out OS information such as the family and version.
-    See also https://www.freedesktop.org/software/systemd/man/os-release.html.
-    """
-    os_info = {
-        'family': 'unknown',
-        'os': 'unknown',
-        'version': (0, 0),
-    }
-
-    if os.path.exists('/etc/lsb-release'):
-        with open('/etc/lsb-release', 'r') as f:
-            for line in f:
-                if line.strip() == "":
-                    continue
-                key, value = line.strip().split('=', 1)
-                if key == 'DISTRIB_ID':
-                    os_info['os'] = value.strip('"\' ').lower()
-                    if value.lower().startswith('ubuntu'):
-                        os_info['family'] = 'debian'
-                if key == 'DISTRIB_RELEASE':
-                    version = value.strip('"\'').split('.')
-                    if len(version) > 1:
-                        os_info['version'] = (int(version[0]), int(version[1]))
-                    else:
-                        os_info['version'] = (int(version[0]), 0)
-
-    if os.path.exists('/etc/os-release'):
-        with open('/etc/os-release', 'r') as f:
-            for line in f:
-                if line.strip() == "":
-                    continue
-                key, value = line.strip().split('=', 1)
-                if key == 'ID_LIKE':
-                    os_info['family'] = value.strip('"\'').lower()
-                elif key == 'ID':
-                    os_info['os'] = value.strip('"\'').lower()
-                elif key == 'VERSION_ID':
-                    version = value.strip('"\'').split('.')
-                    if len(version) > 1:
-                        os_info['version'] = (int(version[0]), int(version[1]))
-                    else:
-                        os_info['version'] = (int(version[0]), 0)
-
-    if os.path.exists('/etc/redhat-release'):
-        os_reg = re.compile(r'^(.*?) release (\d+)\.(\d+).*$')
-        os_info['family'] = 'redhat'
-        with open('/etc/redhat-release', 'r') as f:
-            for line in f:
-                if line.strip() == "":
-                    continue
-                match = os_reg.match(line)
-                if match:
-                    if 'centos' in match.groups()[0].lower():
-                        os_info['os'] = 'centos'
-                    elif 'red hat' in match.groups()[0].lower():
-                        os_info['os'] = 'redhat'
-                    if len(match.groups()) > 1:
-                        os_info['version'] = (int(match.groups()[1]), int(match.groups()[2]))
-                    else:
-                        os_info['version'] = (int(version[0]), 0)
-
-    return os_info
-
-
 def abs_real_path(path):
     """
     Return the absolute (relative to /) real (symlink resolved) full path to
-    the given path. Note that it only resolves a symlink of `path` points to a
+    the given path. Note that it only resolves a symlink if `path` points to a
     symlink. Other symlinks are not resolved.
     """
     if os.path.islink(path):
@@ -223,7 +134,7 @@ def abs_real_path(path):
 def abs_real_dir(path):
     """
     Return the absolute (relative to /) real (symlink resolved) directory part
-    of the given path. Note that it only resolves a symlink of `path` points to
+    of the given path. Note that it only resolves a symlink if `path` points to
     a symlink. Other symlinks are not resolved.
     """
     path = abs_real_path(path)
