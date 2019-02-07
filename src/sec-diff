@@ -289,6 +289,11 @@ if __name__ == "__main__":
                         dest="exclude",
                         type=str,
                         help="Exclude keys")
+    parser.add_argument('--include-init',
+                        dest="include_init",
+                        action="store_true",
+                        default=False,
+                        help="Output initial results as 'added'")
     parser.add_argument('statefile',
                         metavar='STATEFILE',
                         type=str,
@@ -296,7 +301,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     common.configure_logger(args.debug)
 
-    if not os.path.exists(args.statefile):
+    if not os.path.exists(args.statefile) and \
+       args.include_init is False:
         # First time diff, write previous scan to disk
         with open(args.statefile, 'w') as f:
             f.write(sys.stdin.read())
@@ -305,9 +311,15 @@ if __name__ == "__main__":
     # Compare old from disk with new from stdin
     try:
         old_c = json.load(open(args.statefile, 'r'))
+    except FileNotFoundError:
+        if args.include_init is True:
+            old_c = {}
+        else:
+            raise
     except ValueError as err:
         sys.stderr.write("Invalid state file '{}': {}\n".format(args.statefile, err))
         sys.exit(1)
+
     new_c = json.load(sys.stdin)
     changes = diff(old_c, new_c)
 
