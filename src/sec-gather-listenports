@@ -43,7 +43,7 @@ def include_port(port, no_local=False, no_verified=False):
         return False
 
     # Do not include locally listening ports if requested
-    if no_local is True and port["local_address"] == "127.0.0.1":
+    if no_local is True and port["local_address"].startswith("127.0.0."):
         return False
 
     # Do not include ports that have been verified if no_verified is True
@@ -83,7 +83,7 @@ if __name__ == "__main__":
                         dest="no_local",
                         action='store_true',
                         default=False,
-                        help="No services listening locally")
+                        help="Don't include services listening locally (127.0.0.0/24)")
     parser.add_argument('--no-verified',
                         dest="no_verified",
                         action='store_true',
