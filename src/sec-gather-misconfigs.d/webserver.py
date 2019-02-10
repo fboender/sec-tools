@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import re
-import tools
 import ssl
 import sys
 import urllib.request
@@ -50,19 +49,16 @@ def _has_header(urls, header_name, result, present=True):
     header should be absent.
     """
     for url in urls:
-        try:
-            req = _urlopen_cache(url)
-            headers = req.info()
-            if header_name.lower() in headers:
-                result.add_result("URL {} sent header '{}: {}'".format(url, header_name, headers[header_name]))
-                if present is False:
-                    result.passed(False)
-            else:
-                result.add_result("URL {} did not send header '{}'".format(url, header_name))
-                if present is True:
-                    result.passed(False)
-        except urllib.error.URLError as err:
-            result.add_result("Error retrieving {}: {}".format(url, tools.plain_err(err)))
+        req = _urlopen_cache(url)
+        headers = req.info()
+        if header_name.lower() in headers:
+            result.add_result("URL {} sent header '{}: {}'".format(url, header_name, headers[header_name]))
+            if present is False:
+                result.passed(False)
+        else:
+            result.add_result("URL {} did not send header '{}'".format(url, header_name))
+            if present is True:
+                result.passed(False)
 
     return result
 
@@ -79,16 +75,13 @@ def version_in_header(urls=None):
     )
 
     for url in urls:
-        try:
-            req = _urlopen_cache(url)
-            headers = req.info()
-            if 'server' in headers:
-                result.add_result("URL {} sent header 'Server: {}'".format(url, headers['server']))
-                match = re.match(r'.*[0-9]+\..*', headers['server'].lower())
-                if match:
-                    result.passed(False)
-        except urllib.error.URLError as err:
-            result.add_result("Error retrieving {}: {}".format(url, tools.plain_err(err)))
+        req = _urlopen_cache(url)
+        headers = req.info()
+        if 'server' in headers:
+            result.add_result("URL {} sent header 'Server: {}'".format(url, headers['server']))
+            match = re.match(r'.*[0-9]+\..*', headers['server'].lower())
+            if match:
+                result.passed(False)
 
     return result
 
