@@ -3,6 +3,7 @@
 import socket
 import tools
 import urllib.request
+import morestd
 
 
 def _file_content_is(result, path, content):
@@ -143,6 +144,32 @@ def resolve_hostname():
     except socket.gaierror as err:
         result.passed(False)
         result.add_result("{} couldn't be resolved: {}".format(fqdn, tools.plain_err(err)))
+
+    return result
+
+
+def caa_record():
+    result = Result(
+        desc="Fully qualified hostnames should have a CAA DNS record",
+        explanation="""
+            CAA DNS records indicate to certificate authorities whether they
+            are authorized to issue digital certificates for a particular
+            domain name.
+        """,
+        severity=3,
+        passed=False
+    )
+
+    fqdn = socket.getfqdn()
+    fqdn_parts = fqdn.split('.')
+    for i in range(len(fqdn_parts)):
+        dns_name = ".".join(fqdn_parts[i:])
+        output = morestd.shell.cmd('dig +short {} type257'.format(dns_name))['stdout'].strip()
+        if output != "":
+            result.passed(True)
+            result.add_result("{} has CAA record '{}'".format(dns_name, output))
+        else:
+            result.add_result("No CAA record for '{}'".format(dns_name))
 
     return result
 
