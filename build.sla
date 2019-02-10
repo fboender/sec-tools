@@ -21,14 +21,12 @@ doc () {
 
 clean () {
     # Clean the repo
-    echo "Cleaning repo"
     find ./ -name "*.state" -delete
     find ./ -name "*.pyc" -delete
 }
 
-test () {
-    # Run some tests and code linting
-    clean
+test_tools () {
+    # Test sec-* tools
 
     # Gather scripts
     src/sec-gather-listenports > /dev/null
@@ -49,9 +47,20 @@ test () {
     # Generate report
     src/sec-gather-unixusers | src/sec-report sec-gather-unixusers.tpl > /dev/null
 
+}
+
+test_lint () {
     # Code quality tests
     flake8 --exclude src/sec-gather-misconfigs.d/ --ignore=E501 src/*.py
     flake8 --ignore=E501,F821 src/sec-gather-misconfigs.d/*.py
+}
+
+test () {
+    # Run all tests
+    clean
+
+    test_tools
+    test_lint
 }
 
 install () {
