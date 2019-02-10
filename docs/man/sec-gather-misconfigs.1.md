@@ -99,6 +99,18 @@ would look something like this for the *permit_root_login* and
       }
     }
 
+To apply a configuration option to all tests in a plugin, you can use the
+`_all` option. For example, the above `ssh` configuration would be better
+written as:
+
+    {
+      "ssh": {
+        "_all": {
+          "sshd_config": "/opt/patched_ssh/sshd_config"
+        }
+      }
+    }
+    
 A fully annotated configuration file can be found in
 *examples/sec-gather-misconfigs.conf*.
 

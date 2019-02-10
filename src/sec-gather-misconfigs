@@ -124,8 +124,10 @@ def gather(config, skip_passed, limit, debug):
             # Apply test configuration
             test_config = {}
             if plugin_name in config:
+                if '_all' in config[plugin_name]:
+                    test_config.update(config[plugin_name]['_all'])
                 if test_name in config[plugin_name]:
-                    test_config = config[plugin_name][test_name]
+                    test_config.update(config[plugin_name][test_name])
 
             # Execute test
             logging.info("Executing test {}:{}".format(plugin_name, test_name))
