@@ -164,7 +164,7 @@ def caa_record():
     fqdn_parts = fqdn.split('.')
     for i in range(len(fqdn_parts)):
         dns_name = ".".join(fqdn_parts[i:])
-        output = morestd.shell.cmd('dig +short {} type257'.format(dns_name))['stdout'].strip()
+        output = morestd.shell.cmd('dig +short @1.1.1.1 {} type257'.format(dns_name))['stdout'].strip()
         if output != "":
             result.passed(True)
             result.add_result("{} has CAA record '{}'".format(dns_name, output))
