@@ -49,7 +49,10 @@ def _has_header(urls, header_name, result, present=True):
     header should be absent.
     """
     for url in urls:
-        req = _urlopen_cache(url)
+        try:
+            req = _urlopen_cache(url)
+        except Exception as err:
+            raise Exception("{}: {}".format(url, err))
         headers = req.info()
         if header_name.lower() in headers:
             result.add_result("URL {} sent header '{}: {}'".format(url, header_name, headers[header_name]))
