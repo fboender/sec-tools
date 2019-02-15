@@ -159,3 +159,23 @@ def x_content_type_options_header(urls=None):
     )
 
     return _has_header(urls, 'X-Content-Type-Options', result)
+
+
+def strict_transport_security_header(urls=None):
+    if urls is None:
+        urls = default_urls
+
+    # Filter out non-https urls
+    urls = [
+        url for url in urls
+        if url.lower().startswith('https')
+    ]
+
+    result = Result(
+        desc="Web server doesn't specify Strict-Transport-Security header",
+        explanation="If a website accepts a connection through HTTP and redirects to HTTPS, visitors may initially communicate with the non-encrypted version of the site before being redirected. This creates an opportunity for a man-in-the-middle attack. The redirect could be exploited to direct visitors to a malicious site instead of the secure version of the original site. The HTTP Strict Transport Security header informs the browser that it should never load a site using HTTP and should automatically convert all attempts to access the site using HTTP to HTTPS requests instead.",
+        severity=3,
+        passed=True
+    )
+
+    return _has_header(urls, 'Strict-Transport-Security', result)
