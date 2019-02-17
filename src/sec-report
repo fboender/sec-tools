@@ -12,6 +12,7 @@ import socket
 
 import tools
 import common
+import morestd
 
 __VERSION__ = "0.1"
 
@@ -76,12 +77,12 @@ if __name__ == "__main__":
 
     # Check whether there is data on stdin
     if not sys.stdin.isatty():
-        tools.deepupdate(data, json.load(sys.stdin))
+        morestd.data.deepupdate(data, json.load(sys.stdin))
 
     # Load any data from assets provided
     for asset in args.assets:
         try:
-            tools.deepupdate(data, json.load(open(asset, 'r')))
+            morestd.data.deepupdate(data, json.load(open(asset, 'r')))
         except ValueError as err:
             sys.stderr.write("Error loading asset '{}': {}\n".format(asset, err))
             if args.debug is True:

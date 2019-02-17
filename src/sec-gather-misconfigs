@@ -16,6 +16,7 @@ import textwrap
 
 import tools
 import common
+import morestd
 
 __VERSION__ = "0.1"
 
@@ -140,7 +141,7 @@ def gather(config, skip_passed, limit, debug):
 
                 # Update all results with this result
                 if result.has_passed is False or skip_passed is False:
-                    tools.deepupdate(results, result.to_dict())
+                    morestd.data.deepupdate(results, result.to_dict())
             except Exception as err:
                 sys.stderr.write("Error executing test '{}:{}': {}: {}\n".format(plugin_name, test_name, type(err), err))
                 if debug is True:
@@ -151,7 +152,7 @@ def gather(config, skip_passed, limit, debug):
                 result.set_plugin_name(plugin_name)
                 result.set_test_name(test_name)
                 result.set_error(tools.plain_err(err))
-                tools.deepupdate(results, result.to_dict())
+                morestd.data.deepupdate(results, result.to_dict())
 
     return results
 

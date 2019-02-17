@@ -11,7 +11,7 @@ import subprocess
 import json
 from xml.etree import ElementTree as etree
 
-import tools
+import morestd
 import common
 
 __VERSION__ = "0.2"
@@ -148,7 +148,7 @@ def gather(targets, annotate=None, ports=None, all=False, ports_exclude=None):
         results.update(result_hosts)
 
         if target in annotations:
-            tools.deepupdate(results[target], annotations[target])
+            morestd.data.deepupdate(results[target], annotations[target])
 
     return results
 
