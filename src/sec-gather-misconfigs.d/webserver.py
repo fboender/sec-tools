@@ -96,7 +96,7 @@ def powered_by_header(urls=None):
     result = Result(
         desc="Web server exposes (X-)Powered-By header",
         explanation="Exposing a service's version makes it easier to mount attacks against it.",
-        severity=3,
+        severity=2,
         passed=True
     )
 
