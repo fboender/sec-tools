@@ -133,20 +133,6 @@ def content_security_policy_header(urls=None):
     return _has_header(urls, 'Content-Security-Policy', result)
 
 
-def strict_transport_security_header(urls=None):
-    if urls is None:
-        urls = default_urls
-
-    result = Result(
-        desc="Web server doesn't specify Strict-Transport-Security header",
-        explanation="The strict-transport-security header is a security enhancement that restricts web browsers to access web servers solely over HTTPS. This ensures the connection cannot be establish through an insecure HTTP connection which could be susceptible to attacks.",
-        severity=4,
-        passed=True
-    )
-
-    return _has_header(urls, 'Strict-Transport-Security', result)
-
-
 def x_content_type_options_header(urls=None):
     if urls is None:
         urls = default_urls
