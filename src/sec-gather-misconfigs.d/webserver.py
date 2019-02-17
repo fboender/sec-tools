@@ -179,3 +179,42 @@ def strict_transport_security_header(urls=None):
     )
 
     return _has_header(urls, 'Strict-Transport-Security', result)
+
+
+def redirect_to_https(urls=None):
+    if urls is None:
+        urls = default_urls
+
+    # Filter out https urls
+    urls = [
+        url for url in urls
+        if not url.lower().startswith('https')
+    ]
+
+    result = Result(
+        desc="Web server does not redirect to https",
+        explanation="Non-secure HTTP urls should redirect to a secure version.",
+        severity=3,
+        passed=False
+    )
+
+    class NoRedirection(urllib.request.HTTPErrorProcessor):
+        def http_response(self, request, response):
+            return response
+        https_response = http_response
+
+    opener = urllib.request.build_opener(NoRedirection)
+
+    for url in urls:
+        req = urllib.request.Request(url)
+        resp = opener.open(req)
+        headers = resp.info()
+
+        if 'location' in headers and 'https' in headers['location']:
+            result.passed(True)
+            result.add_result("{} sent 'location' header: {}".format(url, headers['location']))
+        elif re.search('.*refresh.*https', s):
+            result.passed(True)
+            result.add_result("{} includes <meta> refresh".format(url))
+
+    return result
