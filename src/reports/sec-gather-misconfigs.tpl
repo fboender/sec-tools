@@ -30,9 +30,13 @@
         <th>Severity</th>
         <th>Description</th>
     </tr>
-    % for plugin_name, scans in data["misconfigs"].items():
-        % for test_name, result in scans.items():
+    % for plugin_name in sorted(data["misconfigs"].keys()):
+        <%
+        scans = data["misconfigs"][plugin_name]
+        %>
+        % for test_name in sorted(scans.keys()):
             <%
+            result = scans[test_name]
             passed_text = "Failed"
             passed_class="failed"
             if "error" in result:
@@ -57,10 +61,14 @@
     </table>
 
     <h${ heading_offset + 2 }>Details</h${ heading_offset + 2 }>
-    % for plugin_name, scans in data["misconfigs"].items():
+    % for plugin_name in sorted(data["misconfigs"].keys()):
+        <%
+        scans = data["misconfigs"][plugin_name]
+        %>
         <h3 class="plugin_name">${ plugin_name }</h3>
-        % for test_name, result in scans.items():
+        % for test_name in sorted(scans.keys()):
             <%
+            result = scans[test_name]
             passed_text = "Failed"
             passed_class="failed"
             if "error" in result:
