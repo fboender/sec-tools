@@ -84,7 +84,9 @@ def plain_err(err):
     """
     Convert Exception message to plain text string
     """
-    return "{} {}".format(str(type(err)).replace('<', '').replace('>', ''), str(err).replace('<', '').replace('>', ''))
+    err_name = err.__class__.__name__
+    err_desc = str(err).replace('<', '').replace('>', '')
+    return "{}: {}".format(err_name, err_desc)
 
 
 def abs_real_path(path):
