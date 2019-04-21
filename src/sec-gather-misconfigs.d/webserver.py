@@ -51,8 +51,11 @@ def _has_header(urls, header_name, result, present=True):
     for url in urls:
         try:
             req = _urlopen_cache(url)
-        except Exception as err:
-            raise Exception("{}: {}".format(url, err))
+        except urllib.error.HTTPError as err:
+            # Some HTTP errors don't actually prevent us from running our
+            # tests, so we ignore those.
+            if err.code not in (403, 404):
+                raise Exception("{}: {}".format(url, err))
         headers = req.info()
         if header_name.lower() in headers:
             result.add_result("URL {} sent header '{}: {}'".format(url, header_name, headers[header_name]))
@@ -78,7 +81,13 @@ def version_in_header(urls=None):
     )
 
     for url in urls:
-        req = _urlopen_cache(url)
+        try:
+            req = _urlopen_cache(url)
+        except urllib.error.HTTPError as err:
+            # Some HTTP errors don't actually prevent us from running our
+            # tests, so we ignore those.
+            if err.code not in (403, 404):
+                raise Exception("{}: {}".format(url, err))
         headers = req.info()
         if 'server' in headers:
             result.add_result("URL {} sent header 'Server: {}'".format(url, headers['server']))
