@@ -69,6 +69,7 @@ test () {
 
 install () {
     clean
+    doc
 
     PREFIX=${PREFIX:-/usr/local}
     PREFIX_LIB=$PREFIX/lib/sec-tools
