@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+
+# Copyright 2017-2019, Ferry Boender.
+# Licensed under the GPL license. For more information, see the LICENSE file.
+
+import sys
+import os
+import argparse
+import inspect
+
+import binlink
+import bins
+
+__VERSION__= "0.1"
+
+
+if __name__ == "__main__":
+    basename = os.path.basename(sys.argv[0])
+    try:
+        binlink.run(basename, version=__VERSION__)
+    except binlink.BinLinkError as err:
+        sys.stderr.write("{}\n".format(err))
+        sys.exit(1)
