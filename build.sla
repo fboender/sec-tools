@@ -21,8 +21,12 @@ doc () {
 
 clean () {
     # Clean the repo
+    rm -rf sec-tools.spec
     find ./ -name "*.state" -delete
     find ./ -name "*.pyc" -delete
+    find ./ -name "__pycache__" -delete
+    rm -rf build
+    rm -rf dist
 }
 
 test_tools () {
