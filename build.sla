@@ -50,7 +50,6 @@ test_tools () {
 
     # Generate report
     src/sec-gather-unixusers | src/sec-report sec-gather-unixusers.tpl > /dev/null
-
 }
 
 test_lint () {
@@ -145,4 +144,28 @@ uninstall () {
     done
 
     echo "Uninstallation complete."
+}
+
+bin () {
+    # Generate standalone binary
+    pyinstaller -F -s src/sec-tool
+    if [ -f "sec-tool.spec" ]; then
+        rm sec-tool.spec
+    fi
+}
+
+dist () {
+    # Generate binary distribution
+    doc
+    bin
+
+    VERSION="$(src/sec-tool --version)"
+    DIST_DIR="dist/sec-tools-$VERSION"
+    mkdir -p "$DIST_DIR"
+    cp dist/sec-tool "$DIST_DIR"
+    find src -type l -exec cp -a '{}' "$DIST_DIR" \;
+    cp docs/man/*.1 "$DIST_DIR"
+    cd dist
+    tar -czf sec-tools-$VERSION.tar.gz sec-tools-$VERSION/
+    cd ..
 }
