@@ -131,6 +131,23 @@ It would look something like this for the \f[I]permit_root_login\f[] and
 \f[]
 .fi
 .PP
+To apply a configuration option to all tests in a plugin, you can use
+the \f[C]_all\f[] option.
+For example, the above \f[C]ssh\f[] configuration would be better
+written as:
+.IP
+.nf
+\f[C]
+{
+\ \ "ssh":\ {
+\ \ \ \ "_all":\ {
+\ \ \ \ \ \ "sshd_config":\ "/opt/patched_ssh/sshd_config"
+\ \ \ \ }
+\ \ }
+}
+\f[]
+.fi
+.PP
 A fully annotated configuration file can be found in
 \f[I]examples/sec\-gather\-misconfigs.conf\f[].
 .SH LIMITS

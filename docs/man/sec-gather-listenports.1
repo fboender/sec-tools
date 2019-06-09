@@ -6,11 +6,12 @@ sec\-gather\-listenports \[en] Output listening ports
 .SH SYNOPSIS
 .PP
 \f[B]sec\-gather\-listenports\f[] [\f[B]\-h\f[]] [\f[B]\-\-version\f[]]
-[\f[B]\-\-debug\f[]] [\f[B]\-\-annotate\f[] \f[I]ANNOTATIONFILE\f[]]
-[\f[B]\-\-no\-local\f[]]
+[\f[B]\-d\f[]] [\f[B]\-\-annotate\f[] \f[I]ANNOTATIONFILE\f[]]
+[\f[B]\-\-no\-udp\f[]] [\f[B]\-\-no\-local\f[]]
+[\f[B]\-\-no\-verified\f[]]
 .SH DESCRIPTION
 .PP
-\f[B]sec\-gather\-listenports\f[] outputs listening TCP ports on the
+\f[B]sec\-gather\-listenports\f[] outputs listening TCP/UDP ports on the
 current machine.
 .SH OPTIONS
 .TP
@@ -24,7 +25,7 @@ show program\[aq]s version number and exit
 .RS
 .RE
 .TP
-.B \f[B]\-\-debug\f[]
+.B \f[B]\-d\f[] / \f[B]\-\-debug\f[]
 Show debug info
 .RS
 .RE
@@ -34,6 +35,16 @@ Annotation file.
 A JSON file who\[aq]s information will be joined with the gathered
 results.
 This can be used to add custom information to results.
+.RS
+.RE
+.TP
+.B \f[B]\-\-no\-udp\f[]
+Do not include UDP ports.
+.RS
+.RE
+.TP
+.B \f[B]\-\-no\-verified\f[]
+Do not include verified services (as read from the annotations file)
 .RS
 .RE
 .TP
