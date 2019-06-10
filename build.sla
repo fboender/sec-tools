@@ -76,6 +76,7 @@ bin () {
 
 dist () {
     # Generate binary distribution
+    clean
     doc
     bin
 
