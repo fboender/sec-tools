@@ -30,12 +30,13 @@ Some examples of possible usage scenarios:
 
 * **[sec-gather-iptables](docs/man/sec-gather-iptables.1.md)**: Output firewall rules
 * **[sec-gather-listenports](docs/man/sec-gather-listenports.1.md)**: Output listening services / ports
+* **[sec-gather-misconfigs](docs/man/sec-gather-misconfigs.1.md)**: Scan for common security misconfigurations
 * **[sec-gather-mysqlusers](docs/man/sec-gather-mysqlusers.1.md)**: Output MySQL users and privileges
 * **[sec-gather-openvpnusers](docs/man/sec-gather-openvpnusers.1.md)**: Output OpenVPN client certificate status
-* **[sec-gather-unixgroups](docs/man/sec-gather-unixgroups.1.md)**: Output unix groups and their members
-* **[sec-gather-unixusers](docs/man/sec-gather-unixusers.1.md)**: Output unix users and their details
 * **[sec-gather-portscan](docs/man/sec-gather-portscan.1.md)**: Output open ports detected through a portscan of a host
-* **[sec-gather-misconfigs](docs/man/sec-gather-misconfigs.1.md)**: Scan for common security misconfigurations
+* **[sec-gather-unixgroups](docs/man/sec-gather-unixgroups.1.md)**: Output unix groups and their members
+* **[sec-gather-unixsessions](docs/man/sec-gather-unixsessions.1.md)**: Output info on login sessions
+* **[sec-gather-unixusers](docs/man/sec-gather-unixusers.1.md)**: Output unix users and their details
 * **[sec-diff](docs/man/sec-diff.1.md)**: Output changes in `sec-gather-*` script output since last time
 * **[sec-report](docs/man/sec-report.1.md)**: Generate HTML and PDF reports from gathered info
 * **[sec-mail](docs/man/sec-mail.1.md)**: Send alerts and reports.
