@@ -43,16 +43,12 @@ Some examples of possible usage scenarios:
 
 ## <a name="installation">Installation</a>
 
-sec-tools requires **Python v3.4+**.
+Fetch the latest static binary distribution from the
+[releases](https://github.com/fboender/sec-tools/releases) and:
 
-You must also install the required dependencies.
-
-Clone the `sec-tools` repository and run the install:
-
-    $ git clone ...
+    $ tar -vxzf sec-tools*.tar.gz
     $ cd sec-tools
-    $ pip install -r ./requirements.txt
-    $ sudo bash -c '. build.sla install'
+    $ sudo bash -c ". build.sla && install"
 
 This will install all the tools and the manual pages. 
 
@@ -61,8 +57,6 @@ This will install all the tools and the manual pages.
 The `gather` tools gather information and output JSON. Example usage:
 
     sec-gather-listenports --no-local --annotate listenports-annotation.json
-    sec-gather-unixusers --login
-    sec-gather-unixgroups --not-empty
 
 The JSON output would look something like:
 
@@ -87,7 +81,8 @@ The JSON output would look something like:
 
 The gather script generally provide options for additional filtering and
 manual annotations of gathered information. Reports to convert the JSON output
-to HTML are provided in the `reports` directory
+to HTML are provided in the `reports` directory. By default you can find it in
+`/usr/local/lib/sec-tools/reports/`
 
 For more information, check out the [manual pages](docs/man).
 
