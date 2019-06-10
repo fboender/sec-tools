@@ -4,9 +4,9 @@ Security Tools
 ## <a name="about">About</a>
 
 These are tools for reporting and alerting about security information and
-events. The focus is on gathering and annotating authentication, authorization
-and system configuration information and reporting and alerting based on this
-information.
+events on linux systems. The focus is on gathering and annotating
+authentication, authorization and system configuration information and
+reporting and alerting based on this information.
 
 Together, these tools provide means for:
 
