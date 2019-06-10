@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import tools
 
 sshd_config = "/etc/ssh/sshd_config"

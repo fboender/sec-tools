@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import pwd
 import os
 import stat

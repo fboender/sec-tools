@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-
-import os
-
 import morestd
 
 tmp_dirs = [
