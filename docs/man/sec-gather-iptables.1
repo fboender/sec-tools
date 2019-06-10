@@ -1,0 +1,120 @@
+.TH "SEC\-GATHER\-IPTABLES" "1" "May 2019" "" ""
+.hy
+.SH NAME
+.PP
+sec\-gather\-iptables \[en] Output firewall rules
+.SH SYNOPSIS
+.PP
+\f[B]sec\-gather\-iptables\f[] [\f[B]\-h\f[]] [\f[B]\-\-version\f[]]
+[\f[B]\-d\f[]] [\f[B]\-\-annotate\f[] \f[I]ANNOTATIONFILE\f[]]
+.SH DESCRIPTION
+.PP
+\f[B]sec\-gather\-iptables\f[] Gather iptables firewall status
+.SH OPTIONS
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Display this help message and exit
+.RS
+.RE
+.TP
+.B \f[B]\-\-version\f[]
+show program\[aq]s version number and exit
+.RS
+.RE
+.TP
+.B \f[B]\-d\f[] / \f[B]\-\-debug\f[]
+Show debug info
+.RS
+.RE
+.TP
+.B \f[B]\-\-annotate\f[] \f[I]ANNOTATIONFILE\f[]
+Annotation file.
+A JSON file who\[aq]s information will be joined with the gathered
+results.
+This can be used to add custom information to results.
+.RS
+.RE
+.SH EXAMPLES
+.PP
+The default output looks like this:
+.IP
+.nf
+\f[C]
+{
+\ \ \ \ "iptables":\ {
+\ \ \ \ \ \ \ \ "filter":\ {
+\ \ \ \ \ \ \ \ \ \ \ \ "INPUT":\ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "policy":\ "DROP",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "rules":\ [
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "chain":\ "INPUT",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "match":\ "state",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "state":\ "INVALID",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "jump":\ "DROP"
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ },
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "chain":\ "INPUT",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "match":\ "state",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "state":\ "RELATED,ESTABLISHED",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "jump":\ "ACCEPT"
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ },
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "chain":\ "INPUT",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "interface":\ "lo",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "jump":\ "ACCEPT"
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ },
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "chain":\ "INPUT",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "proto":\ "icmp",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "jump":\ "ACCEPT"
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ },
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "chain":\ "INPUT",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "src":\ "212.212.22.11/32",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "proto":\ "tcp",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "match":\ "tcp",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "dest_port":\ "22",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "jump":\ "ACCEPT"
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\ \ \ \ \ \ \ \ \ \ \ \ },
+\ \ \ \ \ \ \ \ \ \ \ \ "FORWARD":\ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "policy":\ "DROP",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "rules":\ [
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "chain":\ "FORWARD",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "match":\ "state",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "state":\ "INVALID",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "jump":\ "DROP"
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ },
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "chain":\ "FORWARD",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "match":\ "state",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "state":\ "RELATED,ESTABLISHED",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "jump":\ "ACCEPT"
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ]
+\ \ \ \ \ \ \ \ \ \ \ \ },
+\ \ \ \ \ \ \ \ \ \ \ \ "OUTPUT":\ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "policy":\ "ACCEPT",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "rules":\ [
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "chain":\ "OUTPUT",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "match":\ "state",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "state":\ "RELATED,ESTABLISHED",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "jump":\ "ACCEPT"
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ]
+\ \ \ \ \ \ \ \ \ \ \ \ }
+\ \ \ \ \ \ \ \ }
+\ \ \ \ }
+}
+\f[]
+.fi
+.SH COPYRIGHT
+.PP
+Copyright 2017\-2019, Ferry Boender.
+.PP
+Licensed under the MIT license.
+For more information, see the LICENSE file.
+.SH AUTHORS
+Ferry Boender.

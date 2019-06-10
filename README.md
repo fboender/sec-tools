@@ -28,6 +28,7 @@ Some examples of possible usage scenarios:
 
 ## <a name="overview">Overview of tools</a>
 
+* **[sec-gather-iptables](docs/man/sec-gather-iptables.1.md)**: Output firewall rules
 * **[sec-gather-listenports](docs/man/sec-gather-listenports.1.md)**: Output listening services / ports
 * **[sec-gather-mysqlusers](docs/man/sec-gather-mysqlusers.1.md)**: Output MySQL users and privileges
 * **[sec-gather-openvpnusers](docs/man/sec-gather-openvpnusers.1.md)**: Output OpenVPN client certificate status
