@@ -172,3 +172,8 @@ Example usage:
 For more information, check out the manual page:
 
 * **[sec-report](docs/man/sec-report.1.md)**
+
+# License
+
+Sec-tools are Open Source and released under the GNU AGPLv3 (GNU Affero General Public License
+v3.0). See the `LICENSE` file in this repo for more information.
