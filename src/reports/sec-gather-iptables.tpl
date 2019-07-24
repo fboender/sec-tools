@@ -22,7 +22,7 @@
             % for chain_name in sorted(chains.keys()):
                 <%
                 policy = chains[chain_name]["policy"]
-                _class=""
+                _class = ""
 
                 if (chain_name == "INPUT" or chain_name == "FORWARD"):
                     if policy in ("DROP", "DENY"):
