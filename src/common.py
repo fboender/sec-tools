@@ -92,10 +92,11 @@ def arg_add_defaults(parser, version, annotate=False):
                         action='store_true',
                         default=False,
                         help='Show debug info')
-    parser.add_argument('--annotate',
-                        dest="annotate",
-                        type=str,
-                        help="annotation file")
+    if annotate is True:
+        parser.add_argument('--annotate',
+                            dest="annotate",
+                            type=str,
+                            help="annotation file")
 
 
 def configure_logger(debug=False):
