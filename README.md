@@ -37,6 +37,7 @@ Some examples of possible usage scenarios:
 * **[sec-gather-unixgroups](docs/man/sec-gather-unixgroups.1.md)**: Output unix groups and their members
 * **[sec-gather-unixsessions](docs/man/sec-gather-unixsessions.1.md)**: Output info on login sessions
 * **[sec-gather-unixusers](docs/man/sec-gather-unixusers.1.md)**: Output unix users and their details
+* **[sec-gather-http-headers](docs/man/sec-gather-http-headers.1.md)**: Output HTTP security headers for URLs
 * **[sec-diff](docs/man/sec-diff.1.md)**: Output changes in `sec-gather-*` script output since last time
 * **[sec-report](docs/man/sec-report.1.md)**: Generate HTML and PDF reports from gathered info
 * **[sec-mail](docs/man/sec-mail.1.md)**: Send alerts and reports.

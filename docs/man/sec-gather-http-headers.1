@@ -1,0 +1,94 @@
+.TH "SEC\-GATHER\-HTTP\-HEADERS" "1" "July 2019" "" ""
+.hy
+.SH NAME
+.PP
+sec\-gather\-http\-headers \[en] Output HTTP security headers for URLs
+.SH SYNOPSIS
+.PP
+\f[B]sec\-gather\-http\-headers\f[] [\f[B]\-h\f[]]
+[\f[B]\-\-version\f[]] [\f[B]\-d\f[]] [\f[B]\-\-annotate\f[]
+\f[I]ANNOTATIONFILE\f[]]
+.SH DESCRIPTION
+.PP
+\f[B]sec\-gather\-http\-headers\f[] Gather http\-headers firewall status
+.SH OPTIONS
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Display this help message and exit
+.RS
+.RE
+.TP
+.B \f[B]\-\-version\f[]
+show program\[aq]s version number and exit
+.RS
+.RE
+.TP
+.B \f[B]\-d\f[] / \f[B]\-\-debug\f[]
+Show debug info
+.RS
+.RE
+.SH EXAMPLES
+.PP
+Executing:
+.IP
+.nf
+\f[C]
+$\ sec\-gather\-http\-headers\ https://github.com/\ https://gitlab.com/
+\f[]
+.fi
+.PP
+The default output looks like this:
+.IP
+.nf
+\f[C]
+{
+\ \ \ \ "http_headers":\ {
+\ \ \ \ \ \ \ \ "https://github.com/":\ {
+\ \ \ \ \ \ \ \ \ \ \ \ "Expect\-CT":\ "max\-age=2592000,\ report\-uri=\\"https://api.github.com/_private/browser/errors\\"",
+\ \ \ \ \ \ \ \ \ \ \ \ "Feature\-Policy":\ null,
+\ \ \ \ \ \ \ \ \ \ \ \ "Access\-Control\-Allow\-Origin":\ null,
+\ \ \ \ \ \ \ \ \ \ \ \ "X\-Frame\-Options":\ "deny",
+\ \ \ \ \ \ \ \ \ \ \ \ "Referrer\-Policy":\ "origin\-when\-cross\-origin,\ strict\-origin\-when\-cross\-origin",
+\ \ \ \ \ \ \ \ \ \ \ \ "Access\-Control\-Allow\-Headers":\ null,
+\ \ \ \ \ \ \ \ \ \ \ \ "X\-XSS\-Protection":\ "1;\ mode=block",
+\ \ \ \ \ \ \ \ \ \ \ \ "Strict\-Transport\-Security":\ "max\-age=31536000;\ includeSubdomains;\ preload",
+\ \ \ \ \ \ \ \ \ \ \ \ "Public\-key\-pins":\ null,
+\ \ \ \ \ \ \ \ \ \ \ \ "Content\-Security\-Policy":\ "default\-src\ \[aq]none\[aq];\ base\-uri\ \[aq]self\[aq];\ block\-all\-mixed\-content;\ connect\-src\ \[aq]self\[aq]\ uploads.github.com\ www.githubstatus.com\ collector.githubapp.com\ api.github.com\ www.google\-analytics.com\ github\-cloud.s3.amazonaws.com\ github\-production\-repository\-file\-5c1aeb.s3.amazonaws.com\ github\-production\-upload\-manifest\-file\-7fdce7.s3.amazonaws.com\ github\-production\-user\-asset\-6210df.s3.amazonaws.com\ wss://live.github.com;\ font\-src\ github.githubassets.com;\ form\-action\ \[aq]self\[aq]\ github.com\ gist.github.com;\ frame\-ancestors\ \[aq]none\[aq];\ frame\-src\ render.githubusercontent.com;\ img\-src\ \[aq]self\[aq]\ data:\ github.githubassets.com\ identicons.github.com\ collector.githubapp.com\ github\-cloud.s3.amazonaws.com\ *.githubusercontent.com\ customer\-stories\-feed.github.com;\ manifest\-src\ \[aq]self\[aq];\ media\-src\ \[aq]none\[aq];\ script\-src\ github.githubassets.com;\ style\-src\ \[aq]unsafe\-inline\[aq]\ github.githubassets.com",
+\ \ \ \ \ \ \ \ \ \ \ \ "X\-Content\-Type\-Options":\ "nosniff",
+\ \ \ \ \ \ \ \ \ \ \ \ "Access\-Control\-Allow\-Methods":\ null
+\ \ \ \ \ \ \ \ },
+\ \ \ \ \ \ \ \ "https://gitlab.com/":\ {
+\ \ \ \ \ \ \ \ \ \ \ \ "Expect\-CT":\ null,
+\ \ \ \ \ \ \ \ \ \ \ \ "Feature\-Policy":\ null,
+\ \ \ \ \ \ \ \ \ \ \ \ "Access\-Control\-Allow\-Origin":\ null,
+\ \ \ \ \ \ \ \ \ \ \ \ "X\-Frame\-Options":\ null,
+\ \ \ \ \ \ \ \ \ \ \ \ "Referrer\-Policy":\ null,
+\ \ \ \ \ \ \ \ \ \ \ \ "Access\-Control\-Allow\-Headers":\ null,
+\ \ \ \ \ \ \ \ \ \ \ \ "X\-XSS\-Protection":\ "1;\ mode=block",
+\ \ \ \ \ \ \ \ \ \ \ \ "Strict\-Transport\-Security":\ "max\-age=31536000;\ includeSubdomains",
+\ \ \ \ \ \ \ \ \ \ \ \ "Public\-key\-pins":\ null,
+\ \ \ \ \ \ \ \ \ \ \ \ "Content\-Security\-Policy":\ "frame\-ancestors\ \[aq]self\[aq]\ https://gitlab.lookbookhq.com\ https://learn.gitlab.com;",
+\ \ \ \ \ \ \ \ \ \ \ \ "X\-Content\-Type\-Options":\ "nosniff",
+\ \ \ \ \ \ \ \ \ \ \ \ "Access\-Control\-Allow\-Methods":\ null
+\ \ \ \ \ \ \ \ }
+\ \ \ \ }
+}
+\f[]
+.fi
+.PP
+You can use the \f[C]reports/sec\-gather\-http\-headers.tpl\f[] report
+to generate a HTML matrix overview of URLs and their security headers:
+.IP
+.nf
+\f[C]
+$\ sec\-gather\-http\-headers\ https://github.com/\ https://gitlab.com/\ |\ sec\-report\ reports/sec\-gather\-http\-headers.tpl\ >\ header_matrix.html
+\f[]
+.fi
+.SH COPYRIGHT
+.PP
+Copyright 2017\-2019, Ferry Boender.
+.PP
+Licensed under the MIT license.
+For more information, see the LICENSE file.
+.SH AUTHORS
+Ferry Boender.

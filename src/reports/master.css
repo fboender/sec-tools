@@ -10,6 +10,9 @@ table tr td { padding: 8px; }
 table tr td ul { padding-left: 20px; list-style-type: square; margin: 0px; }
 table a { color: #000000; text-decoration-color: #AAAACC; }
 
+dl dt { font-weight: bold; }
+dl dd { padding: 0.8em 0px 1em 32px; }
+
 .unimportant { color: #A0A0A0; }
 .important { color: #800000; }
 
