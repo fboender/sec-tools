@@ -1,9 +1,8 @@
 import sys
 import argparse
 import ssl
-import urllib.request
-import urllib.error
 import json
+import requests
 
 import binlink
 import common
@@ -26,15 +25,11 @@ headers = set([
 
 
 def get_url_headers(url):
-    ctx = ssl.create_default_context()
-    # Turn off SSL validation, because we don't care for headers
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
-    response = urllib.request.urlopen(url, context=ctx, timeout=4)
+    r = requests.get(url, headers={"User-Agent": "curl/7.58.0"})
 
     result = {}
     for header in headers:
-        result[header] = response.getheader(header)
+        result[header] = r.headers.get(header)
     return result
 
 
