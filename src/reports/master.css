@@ -6,7 +6,7 @@ table { border-collapse: collapse; margin-bottom: 32px; }
 table tr { vertical-align: top; border-bottom: 1px solid #C0C0C0; }
 table tr:last-child { border-bottom: none; }
 table tr th { text-align: left; padding: 8px; background-color: #F0F0F5; }
-table tr td { padding: 8px; }
+table tr td { padding: 8px; white-space: nowrap; }
 table tr td ul { padding-left: 20px; list-style-type: square; margin: 0px; }
 table a { color: #000000; text-decoration-color: #AAAACC; }
 
