@@ -90,7 +90,7 @@
             <tr>
                 <td><b>${url}</b></td>
                 % for header_full, header_abbr in sorted(headers.items()):
-                    <td class="${ passfailed(header_full, headers[header_full]) }">${headers[header_full]}</td>
+                    <td class="${ passfailed(header_full, headers[header_full]) }">${str(headers[header_full]).replace(";", ";<br>")}</td>
                 % endfor
             </tr>
         % endfor
