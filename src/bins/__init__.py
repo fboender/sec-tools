@@ -12,3 +12,4 @@ from . import gather_unixusers
 from . import gather_misconfigs
 from . import gather_http_headers
 from . import gather_sslscan
+from . import gather_perms
