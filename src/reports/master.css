@@ -25,6 +25,7 @@ dl dd { padding: 0.8em 0px 1em 32px; }
 .error { color: #660066; }
 
 p.description { color: #404040; max-width: 800px; margin-bottom: 32px; }
+p.generated-on { color: #606060; font-size: 0.8em; }
 
 table.test_result { width: 60em; }
 table.test_result .test_name { font-size: large; }

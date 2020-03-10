@@ -1,5 +1,10 @@
 <%inherit file="master.tpl"/>
 
+<%
+    import datetime
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+%>
+
 <%def name="passfailed(header_name, header_value)">
     % if header_value is None:
         failed
@@ -37,6 +42,10 @@
         HTTP Security Headers Matrix
     % endif
     </h${ heading_offset + 1 }>
+
+    <p class="generated-on">
+    Generated ${ now }.
+    </p>
 
     <p class="description">HTTP Security headers per URL.</p>
 
