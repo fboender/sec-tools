@@ -30,6 +30,12 @@ def get_url_headers(url):
     result = {}
     for header in headers:
         result[header] = r.headers.get(header)
+
+    r = requests.options(url, headers={"User-Agent": "curl/7.58.0"})
+    for header in headers:
+        if header not in result:
+            result[header] = r.headers.get(header)
+
     return result
 
 
