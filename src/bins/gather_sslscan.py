@@ -99,7 +99,7 @@ def xml_proto(node_table):
     return proto
 
 
-def scan_ip(ip, ports, nmap_extra_opts=""):
+def scan_host(host, ports, nmap_extra_opts=""):
     """
     Scan a host or IP's ports for SSL / TLS protocols and ciphers. Returns a
     list of supported protocols, cyphers and security warnings about the
@@ -112,7 +112,7 @@ def scan_ip(ip, ports, nmap_extra_opts=""):
         port_ssl_details = all_port_ssl_details.setdefault(port, [])
 
         # Run scan
-        res = run_nmap(ip, port, nmap_extra_opts=nmap_extra_opts)
+        res = run_nmap(host, port, nmap_extra_opts=nmap_extra_opts)
 
         # Parse XML output
         logging.debug("nmap XML output: {}".format(res))
@@ -143,7 +143,7 @@ def gather(targets, ports, annotate=None):
 
     results = {}
     for target in targets:
-        result_hosts = scan_ip(target, ports=ports)
+        result_hosts = scan_host(target, ports=ports)
         results.update(result_hosts)
 
         if target in annotations:
