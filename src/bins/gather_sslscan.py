@@ -4,6 +4,7 @@ import argparse
 import logging
 import subprocess
 import json
+import re
 from xml.etree import ElementTree as etree
 
 import binlink
@@ -14,6 +15,11 @@ import common
 # -Pn = No host discovery, just assume its online, even if it doesn't respond to ping.
 # -oX - = output to XML on stdout
 nmap_opts = "-Pn -oX - --script +ssl-enum-ciphers "
+
+WEAK_CIPHER_REGEX = [
+    ".*_CBC.*",
+    ".*_SHA$",
+]
 
 
 def xml_targets(node_root):
@@ -69,6 +75,26 @@ def xml_proto(node_table):
     return proto
 
 
+def post_process(results):
+    """
+    Post-process the results to fix outdated nmap's ssl-enum-ciphers outdated
+    strenght rating and such.
+    """
+    for host, scan_results in results.items():
+        for port, port_info in scan_results.items():
+            for proto in port_info:
+                for cipher in proto["ciphers"]:
+
+                    # Downgrade TLSv1.1 and CBC ciphers to grade "B"
+                    for weak_cipher_regex in WEAK_CIPHER_REGEX:
+                        weak_proto = proto["protocol"].lower() == "tlsv1.1"
+                        weak_cipher = re.match(weak_cipher_regex, cipher["name"])
+
+                        if cipher["strength"] < "B" and (weak_proto or weak_cipher):
+                            cipher["strength"] = "B"
+    return results
+
+
 def run_nmap(ip, port, nmap_extra_opts=""):
     """
     Scan <hostname|ip>:port and return XML results in nmap format.
@@ -102,8 +128,8 @@ def run_nmap(ip, port, nmap_extra_opts=""):
 def scan_host(host, ports, nmap_extra_opts=""):
     """
     Scan a host or IP's ports for SSL / TLS protocols and ciphers. Returns a
-    list of supported protocols, cyphers and security warnings about the
-    cyphers per port
+    list of supported protocols, ciphers and security warnings about the
+    ciphers per port
     """
 
     all_port_ssl_details = {}
@@ -157,7 +183,7 @@ def gather(targets, ports, annotate=None):
         if target in annotations:
             morestd.data.deepupdate(results[target], annotations[target])
 
-    return results
+    return post_process(results)
 
 
 @binlink.register("sec-gather-sslscan")
