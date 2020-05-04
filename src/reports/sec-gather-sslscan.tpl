@@ -1,7 +1,7 @@
 <%inherit file="master.tpl"/>
 
 <%def name="passfailed_proto(proto)">
-    % if proto.lower() not in ["tlsv1.1", "tlsv1.2", "tlsv1.3"]:
+    % if proto.lower() not in ["tlsv1.2", "tlsv1.3"]:
         failed
     % else:
         passed
