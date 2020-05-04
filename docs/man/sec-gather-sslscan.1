@@ -1,0 +1,109 @@
+.TH "SEC\-GATHER\-SSLSCAN" "1" "May 2020" "" ""
+.hy
+.SH NAME
+.PP
+sec\-gather\-sslscan \[en] Output SSL / TLS protocol and ciphers for
+ports
+.SH SYNOPSIS
+.PP
+\f[B]sec\-gather\-sslscan\f[] [\f[B]\-h\f[]] [\f[B]\-\-version\f[]]
+[\f[B]\-d\f[]] [\f[B]\-\-annotate\f[] \f[I]ANNOTATIONFILE\f[]]
+[\f[B]\-\-ports\f[] \f[I]PORTS\f[]] \f[I]target [target ...]\f[]
+.SH DESCRIPTION
+.PP
+\f[B]sec\-gather\-sslscan\f[] outputs a ports SSL / TLS protocol and
+ciphers for one or more hosts.
+It tries to follow the same grading as the Qualys SSL lab test.
+.PP
+It relies on \f[C]nmap\f[] and the \f[C]ssl\-enum\-ciphers\f[] nmap
+script, so both of these must be installed.
+The \f[C]ssl\-enum\-ciphers\f[] is, as of this date, slightly outdated
+with regards to the grading of ciphers.
+\f[B]sec\-gather\-sslscan\f[] does some post\-processing to apply
+stricter grading per Qualys SSL lab test.
+.SH OPTIONS
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Display this help message and exit
+.RS
+.RE
+.TP
+.B \f[B]\-\-version\f[]
+show program\[aq]s version number and exit
+.RS
+.RE
+.TP
+.B \f[B]\-d\f[] / \f[B]\-\-debug\f[]
+Show debug info
+.RS
+.RE
+.TP
+.B \f[B]\-\-annotate\f[] \f[I]ANNOTATIONFILE\f[]
+Annotation file.
+A JSON file who\[aq]s information will be joined with the gathered
+results.
+This can be used to add custom information to results.
+.RS
+.RE
+.TP
+.B \f[B]\-\-ports\f[] \f[I]PORTS\f[]
+TCP ports to scan in nmap format
+.RS
+.RE
+.TP
+.B \f[B]TARGET\f[]
+One or more hosts or IPs to scan
+.RS
+.RE
+.SH EXAMPLES
+.PP
+Executing:
+.IP
+.nf
+\f[C]
+$\ sec\-gather\-sslscan\ example.com\ www.example.com\ 192.168.1.10
+\f[]
+.fi
+.PP
+The default output looks like this:
+.IP
+.nf
+\f[C]
+{
+\ \ \ \ "sslscan":\ {
+\ \ \ \ \ \ \ \ "example.com":\ {
+\ \ \ \ \ \ \ \ \ \ \ \ "443":\ [
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "protocol":\ "TLSv1.1",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "ciphers":\ [
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "kex_info":\ "rsa\ 2048",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "name":\ "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ "strength":\ "B"
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ]
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\ \ \ \ \ \ \ \ \ \ \ \ ]
+\ \ \ \ \ \ \ \ }
+\ \ \ \ }
+}
+\f[]
+.fi
+.PP
+You can use the \f[C]reports/sec\-gather\-sslscan.tpl\f[] report to
+generate a HTML matrix overview of hosts and ports and their protocols
+and ciphers:
+.IP
+.nf
+\f[C]
+$\ sec\-gather\-sslscan\ example.com\ www.example.com\ 192.168.1.10\ |\ sec\-report\ reports/sec\-gather\-sslscan.tpl\ >\ ssl.html
+\f[]
+.fi
+.SH COPYRIGHT
+.PP
+Copyright 2017\-2020, Ferry Boender.
+.PP
+Licensed under the MIT license.
+For more information, see the LICENSE file.
+.SH AUTHORS
+Ferry Boender.

@@ -188,18 +188,18 @@ def gather(targets, ports, annotate=None):
 
 @binlink.register("sec-gather-sslscan")
 def cmdline(version):
-    parser = argparse.ArgumentParser(description='Scan for open ports on machine')
+    parser = argparse.ArgumentParser(description='Output SSL / TLS protocol and ciphers for ports')
     common.arg_add_defaults(parser, version=version, annotate=True)
     parser.add_argument('--ports',
                         dest="ports",
                         type=str,
                         default=[443],
-                        help="Port(s) to scan (nmap format)")
+                        help="Port(s) to scan in nmap format. Defaults to 443")
     parser.add_argument('targets',
                         metavar='target',
                         type=str,
                         nargs='+',
-                        help='Target(s) to scan')
+                        help='Target hosts to scan')
     args = parser.parse_args()
     common.configure_logger(args.debug)
 
