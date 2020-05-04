@@ -27,8 +27,10 @@
 
     <p class="description"></p>
 
-    <table>
-        % for port, port_info in data["portprotos"].items():
+    % for host, scanresults in data["sslscan"].items():
+      <h2>${host}</h2>
+      <table>
+        % for port, port_info in scanresults.items():
             % for proto in port_info:
                 % if "warnings" in proto and proto["warnings"]:
                     <tr>
@@ -61,7 +63,8 @@
                 % endfor
             % endfor
         % endfor
-    </table>
+      </table>
+    % endfor
 </%def>
 
 ${ results(title=title) }

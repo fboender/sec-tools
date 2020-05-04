@@ -45,6 +45,30 @@ def xml_port_protos(node_port):
                 yield node_proto
 
 
+def xml_proto(node_table):
+    proto = {
+        "protocol": node_table.attrib.get("key", "MISSING_PROTOCOL"),
+        "ciphers": [],
+        "warnings": [],
+    }
+
+    for table in node_table.findall("table"):
+        table_key = table.attrib.get("key")
+        if table_key == "warnings":
+            for elem in table.findall("elem"):
+                proto["warnings"].append(elem.text)
+        elif table_key == "ciphers":
+            for cipher_table in table.findall("table"):
+                cipher = {}
+                for elem in cipher_table.findall("elem"):
+                    elem_key = elem.attrib.get("key")
+                    elem_value = elem.text
+                    cipher[elem_key] = elem_value
+                proto["ciphers"].append(cipher)
+
+    return proto
+
+
 def run_nmap(ip, port, nmap_extra_opts=""):
     """
     Scan <hostname|ip>:port and return XML results in nmap format.
@@ -75,30 +99,6 @@ def run_nmap(ip, port, nmap_extra_opts=""):
         return stdout
 
 
-def xml_proto(node_table):
-    proto = {
-        "protocol": node_table.attrib.get("key", "MISSING_PROTOCOL"),
-        "ciphers": [],
-        "warnings": [],
-    }
-
-    for table in node_table.findall("table"):
-        table_key = table.attrib.get("key")
-        if table_key == "warnings":
-            for elem in table.findall("elem"):
-                proto["warnings"].append(elem.text)
-        elif table_key == "ciphers":
-            for cipher_table in table.findall("table"):
-                cipher = {}
-                for elem in cipher_table.findall("elem"):
-                    elem_key = elem.attrib.get("key")
-                    elem_value = elem.text
-                    cipher[elem_key] = elem_value
-                proto["ciphers"].append(cipher)
-
-    return proto
-
-
 def scan_host(host, ports, nmap_extra_opts=""):
     """
     Scan a host or IP's ports for SSL / TLS protocols and ciphers. Returns a
@@ -127,11 +127,18 @@ def scan_host(host, ports, nmap_extra_opts=""):
             sys.stderr.write("{}: {} ({})\n".format(specification, status, reason))
             sys.exit(3)
 
-        # Extract ssl details
-        for host in xml_hosts(node_root):
-            for port in xml_host_ports(host):
-                for port_proto in xml_port_protos(port):
-                    port_ssl_details.append(xml_proto(port_proto))
+        # Extract protocol and cipher details
+        logging.debug("xml parse: host '{}'".format(host))
+        for xml_host in xml_hosts(node_root):
+            logging.debug("xml parse:   {} {}".format(xml_host.tag, xml_host.items()))
+            for xml_port in xml_host_ports(xml_host):
+                logging.debug("xml parse:     {} {}".format(xml_port.tag, xml_port.items()))
+                proto_results = []
+                for xml_port_proto in xml_port_protos(xml_port):
+                    logging.debug("xml parse:       {} {}".format(xml_port_proto.tag, xml_port_proto.items()))
+                    proto = xml_proto(xml_port_proto)
+                    proto_results.append(proto)
+                all_port_ssl_details[port] = proto_results
 
     return all_port_ssl_details
 
@@ -143,9 +150,10 @@ def gather(targets, ports, annotate=None):
 
     results = {}
     for target in targets:
-        result_hosts = scan_host(target, ports=ports)
-        results.update(result_hosts)
+        result_host = scan_host(target, ports=ports)
+        results[target] = result_host
 
+        # FIXME: This is probably broken
         if target in annotations:
             morestd.data.deepupdate(results[target], annotations[target])
 
@@ -178,4 +186,4 @@ def cmdline(version):
             sys.exit(1)
 
     results = gather(args.targets, args.ports, args.annotate)
-    sys.stdout.write(json.dumps({"portprotos": results}, indent=4))
+    sys.stdout.write(json.dumps({"sslscan": results}, indent=4))
