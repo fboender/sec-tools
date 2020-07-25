@@ -42,13 +42,15 @@ def gather(root_dir):
 def cmdline(version):
     parser = argparse.ArgumentParser(description='Output files and dirs with dangerous permissions')
     common.arg_add_defaults(parser, version=version, annotate=True)
-    parser.add_argument('--root',
-                        dest="root",
+    parser.add_argument('dir',
+                        metavar='DIR',
                         type=str,
-                        default="/",
-                        help="Start from this dir")
+                        nargs='+',
+                        help='Dir to scan')
     args = parser.parse_args()
     common.configure_logger(args.debug)
 
-    results = gather(args.root)
+    results = []
+    for dir in args.dir:
+        results.extend(gather(dir))
     sys.stdout.write(json.dumps({"perms": results}, indent=4))

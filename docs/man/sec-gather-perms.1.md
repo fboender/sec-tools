@@ -8,7 +8,7 @@ sec-gather-perms – Output files and dirs with dangerous permissions
 
 # SYNOPSIS
 
-**sec-gather-perms** [**-h**] [**--version**] [**-d**] [**--annotate** *ANNOTATIONFILE*] [**--root** *ROOT*]
+**sec-gather-perms** [**-h**] [**--version**] [**-d**] [**--annotate** *ANNOTATIONFILE*] DIR [DIR ...]
 
 # DESCRIPTION
 
@@ -30,15 +30,17 @@ setuid bit set.
 **--annotate** *ANNOTATE*
 :   annotation file
 
-**--root** *ROOT*
-:   Start from this dir
+positional arguments:
+
+**DIR**
+:   Dir to scan
 
 
 # EXAMPLES
 
 Executing:
 
-    $ sec-gather-perms --root /bin
+    $ sec-gather-perms /bin
 
 The default output looks like this:
 
