@@ -19,6 +19,9 @@ def gather(root_dir):
                                     depth=None,
                                     on_error=on_find_error):
 
+        if fileinfo["type"] == "dir":
+            logging.debug("Scanning '{}'".format(fileinfo["path"]))
+
         is_suid = fileinfo["mode"] & stat.S_ISUID == stat.S_ISUID
         is_world_writable = fileinfo["type"] not in ("file", "link", "char", "socket") and \
                             not fileinfo["path"].startswith("/proc/") and \
