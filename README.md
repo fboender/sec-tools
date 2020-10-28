@@ -1,7 +1,7 @@
 Security Tools
 ==============
 
-## <a name="about">About</a>
+## About
 
 These are tools for reporting and alerting about security information and
 events on linux systems. The focus is on gathering and annotating
@@ -26,7 +26,7 @@ Some examples of possible usage scenarios:
 * Generate email alerts when users are created, modified or deleted.
 
 
-## <a name="overview">Overview of tools</a>
+## Overview of tools
 
 * **[sec-gather-iptables](docs/man/sec-gather-iptables.1.md)**: Output firewall rules
 * **[sec-gather-listenports](docs/man/sec-gather-listenports.1.md)**: Output listening services / ports
@@ -44,7 +44,7 @@ Some examples of possible usage scenarios:
 * **[sec-report](docs/man/sec-report.1.md)**: Generate HTML and PDF reports from gathered info
 * **[sec-mail](docs/man/sec-mail.1.md)**: Send alerts and reports.
 
-## <a name="installation">Installation</a>
+## Installation
 
 Fetch the latest static binary distribution from the
 [releases](https://github.com/fboender/sec-tools/releases) and:
@@ -55,7 +55,7 @@ Fetch the latest static binary distribution from the
 
 This will install all the tools and the manual pages. 
 
-## <a name="gather">Gather scripts</a>
+## Gather scripts
 
 The `gather` tools gather information and output JSON. Example usage:
 
@@ -89,7 +89,7 @@ to HTML are provided in the `reports` directory. By default you can find it in
 
 For more information, check out the [manual pages](docs/man).
 
-## <a name="alert">Diffing and alerting</a>
+## Diffing and alerting
 
 The [sec-diff](docs/man/sec-diff.1.md) tool can be used to diff JSON output
 from a `sec-gather` script with a previous run.
@@ -148,7 +148,7 @@ For more information, check out the manual pages for each tool:
 * **[sec-diff](docs/man/sec-diff.1.md)**
 * **[sec-mail](docs/man/sec-mail.1.md)**
 
-## <a name="report">Reporting</a>
+## Reporting
 
 The [sec-report](docs/man/sec-report.1.md) tool renders a [Mako
 template](http://www.makotemplates.org/) to HTML. The output is written to
