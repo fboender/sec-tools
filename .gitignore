@@ -1,5 +1,10 @@
-build/
-dist/
-.envrc
+# Python artifacts
 *.pyc
-*.state
+__pycache__
+
+# Development artifacts
+.tags
+.envrc
+
+# Runtime artifacts
+*.log
