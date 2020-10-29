@@ -18,7 +18,9 @@ _section () {
 }
 
 doc () {
-    # Convert Markdown man pages in docs/man/ to Groff formatted (real) man pages.
+    # Regenerate man pages from Markdown
+    # Convert Markdown man pages in docs/man/ to Groff formatted (real) man
+    # pages. The generated files should be committed to the repo.
     set -v
     MAN_DIR=docs/man
 
@@ -43,11 +45,14 @@ clean () {
 
 test_tools () {
     # Test sec-* tools
+    # Test sec-tools by actually running them. Not all tools can run, because
+    # they need root access. Those tools are skipped. Tools that require
+    # specific services, such as mysql, are also not executed.
+    # 
+    # There's room for improvement here.
 
     # Gather scripts
     src/sec-gather-listenports > /dev/null
-    #src/sec-gather-mysqlusers > /dev/null
-    #src/sec-gather-openvpnusers > /dev/null
     src/sec-gather-unixgroups > /dev/null
     src/sec-gather-unixusers > /dev/null
     src/sec-gather-unixsessions > /dev/null
@@ -63,6 +68,7 @@ test_tools () {
 
 test_lint () {
     # Code quality tests
+    # Run some code quality tests using flake8.
     flake8 --exclude src/sec-gather-misconfigs.d/ --ignore=E501 src/*.py
     flake8 --ignore=E501,F821 src/sec-gather-misconfigs.d/*.py
 }
