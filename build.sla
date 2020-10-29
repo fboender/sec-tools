@@ -17,6 +17,47 @@ _section () {
     eval $PREV_SHOPT
 }
 
+_release_check() {
+    # Verify and prepare for release
+
+    # Only run this rule once
+    if [ -z "$RELEASE_CHECK_DONE" ]; then
+        RELEASE_CHECK_DONE=1
+
+        _section "release_check: Verifying release requirements"
+
+        # Check that REL_VERSION is set
+        if [ ! -z "$REL_VERSION" ]; then
+            # Already set. No-op
+            :
+        elif [ ! -z "$1" ]; then
+            REL_VERSION="$1"
+            shift
+        else
+            echo "REL_VERSION not set. Aborting" >&2
+            exit 1
+        fi
+
+        # Check version semantics
+        if [ $(echo $REL_VERSION | cut -c 1) = "v" ]; then
+            echo "REL_VERSION shouldn't start with 'v'" >&2
+            exit 1
+        fi
+
+        # Check that version hasn't been used before
+        if [ $(git tag -l | grep "^$$REL_VERSION$") ]; then
+            echo "$REL_VERSION already exists as a tag" >&2
+            exit 1
+        fi
+
+        # Prepare project for release
+        clean
+
+        # Bump version number
+        sed -i "s/^__VERSION__.*/__VERSION__ = \"$REL_VERSION\"/" src/sec-tool
+    fi
+}
+
 doc () {
     # Regenerate man pages from Markdown
     # Convert Markdown man pages in docs/man/ to Groff formatted (real) man
@@ -79,47 +120,6 @@ test () {
 
     test_tools
     test_lint
-}
-
-_release_check() {
-    # Verify and prepare for release
-
-    # Only run this rule once
-    if [ -z "$RELEASE_CHECK_DONE" ]; then
-        RELEASE_CHECK_DONE=1
-
-        _section "release_check: Verifying release requirements"
-
-        # Check that REL_VERSION is set
-        if [ ! -z "$REL_VERSION" ]; then
-            # Already set. No-op
-            :
-        elif [ ! -z "$1" ]; then
-            REL_VERSION="$1"
-            shift
-        else
-            echo "REL_VERSION not set. Aborting" >&2
-            exit 1
-        fi
-
-        # Check version semantics
-        if [ $(echo $REL_VERSION | cut -c 1) = "v" ]; then
-            echo "REL_VERSION shouldn't start with 'v'" >&2
-            exit 1
-        fi
-
-        # Check that version hasn't been used before
-        if [ $(git tag -l | grep "^$$REL_VERSION$") ]; then
-            echo "$REL_VERSION already exists as a tag" >&2
-            exit 1
-        fi
-
-        # Prepare project for release
-        clean
-
-        # Bump version number
-        sed -i "s/^__VERSION__.*/__VERSION__ = \"$REL_VERSION\"/" src/sec-tool
-    fi
 }
 
 release () {
