@@ -6,6 +6,17 @@
 #   $ bash -c ". build.sla && test"
 #
 
+PROG="sec-tools"
+
+_section () {
+    PREV_SHOPT="$(set +o)"
+    set +x
+    echo "────────────────────────────────────────────────────────────────────────"
+    echo $*
+    echo "────────────────────────────────────────────────────────────────────────"
+    eval $PREV_SHOPT
+}
+
 doc () {
     # Convert Markdown man pages in docs/man/ to Groff formatted (real) man pages.
     set -v
@@ -27,6 +38,7 @@ clean () {
     find ./ -name "__pycache__" -delete
     rm -rf build
     rm -rf dist
+    rm -f *.spec
 }
 
 test_tools () {
@@ -39,9 +51,6 @@ test_tools () {
     src/sec-gather-unixgroups > /dev/null
     src/sec-gather-unixusers > /dev/null
     src/sec-gather-unixsessions > /dev/null
-    #src/sec-gather-iptables > /dev/null
-    src/sec-gather-misconfigs > /dev/null
-    src/sec-gather-portscan --ports 22 127.0.0.1 > /dev/null
 
     # sec-diff
     src/sec-gather-unixusers | src/sec-diff tmp.test
@@ -49,7 +58,7 @@ test_tools () {
     rm tmp.test
 
     # Generate report
-    src/sec-gather-unixusers | src/sec-report sec-gather-unixusers.tpl > /dev/null
+    src/sec-gather-unixusers | src/sec-report src/reports/sec-gather-unixusers.tpl > /dev/null
 }
 
 test_lint () {
@@ -66,33 +75,91 @@ test () {
     test_lint
 }
 
-bin () {
-    # Generate standalone binary
-    pyinstaller -F -s src/sec-tool
-    if [ -f "sec-tool.spec" ]; then
-        rm sec-tool.spec
+_release_check() {
+    # Verify and prepare for release
+
+    # Only run this rule once
+    if [ -z "$RELEASE_CHECK_DONE" ]; then
+        RELEASE_CHECK_DONE=1
+
+        _section "release_check: Verifying release requirements"
+
+        # Check that REL_VERSION is set
+        if [ ! -z "$REL_VERSION" ]; then
+            # Already set. No-op
+            :
+        elif [ ! -z "$1" ]; then
+            REL_VERSION="$1"
+            shift
+        else
+            echo "REL_VERSION not set. Aborting" >&2
+            exit 1
+        fi
+
+        # Check version semantics
+        if [ $(echo $REL_VERSION | cut -c 1) = "v" ]; then
+            echo "REL_VERSION shouldn't start with 'v'" >&2
+            exit 1
+        fi
+
+        # Check that version hasn't been used before
+        if [ $(git tag -l | grep "^$$REL_VERSION$") ]; then
+            echo "$REL_VERSION already exists as a tag" >&2
+            exit 1
+        fi
+
+        # Prepare project for release
+        clean
+
+        # Bump version number
+        sed -i "s/^__VERSION__.*/__VERSION__ = \"$REL_VERSION\"/" src/sec-tool
     fi
 }
 
-dist () {
-    # Generate binary distribution
-    clean
-    doc
-    bin
+release () {
+    # Build binary release
+    # Build a standalone binary using pyinstaller. We do this using docker and
+    # an image of an old OS (Ubuntu 16.04). This way we get an old Glic, which
+    # ensures the binary will run on as many platforms as possible.
+    _release_check "$*"
 
+    _section "release: Building standalone binary"
+    DOCKER_NAME="${PROG}-binbuild"
+    docker build -t "$DOCKER_NAME" -f contrib/Dockerfile.binbuild .
+
+    # Copy main program because PyInstaller doesn't like the name conflict
+    # between the python file and the module dir apparently.
+    _section "release: Building standalone binary"
+    #cp ${PROG}.py ${PROG}bin.py
+    docker run \
+        -it \
+        -v "$(pwd)":/src \
+        --rm \
+        --name $DOCKER_NAME $DOCKER_NAME:latest \
+        /bin/bash -c "cd /src && pip3 install -r requirements.txt && pyinstaller --strip --onefile src/sec-tool && rm -rf build/ && chown -R $(id -u):$(id -u) dist/"
+
+    # Generate tarball
+    _section "release: Generating standalone binary tarball release"
     VERSION="$(src/sec-tool --version)"
-    DIST_DIR="dist/sec-tools"
+    DIST_DIR="dist/${PROG}-${VERSION}"
     LIB_DIR="$DIST_DIR/lib"
     BIN_DIR="$DIST_DIR/bin"
     MAN_DIR="$DIST_DIR/man"
+    RELEASE_DIRNAME="${PROG}-${VERSION}"
     mkdir -p "$LIB_DIR" "$BIN_DIR" "$MAN_DIR"
     mv dist/sec-tool "$BIN_DIR"
+    # Copy symlinks to main executable from src/ to $BIN_DIR. This is a bit
+    # flaky and assumes no other symlinks will ever be added.
     find src -type l -exec cp -a '{}' "$BIN_DIR" \;
     cp docs/man/*.1 "$MAN_DIR"
     cp contrib/bindist.build.sla "$DIST_DIR/build.sla"
     cp -ar src/reports "$LIB_DIR"
     cd dist
-    tar -czf sec-tools-$VERSION.tar.gz sec-tools/
-    rm -rf sec-tools
+    tar -czf "${RELEASE_DIRNAME}-linux64.tar.gz" "${RELEASE_DIRNAME}"
+    rm -rf "${RELEASE_DIRNAME}"
     cd ..
+    echo "Generated dist/${RELEASE_DIRNAME}-linux64.tar.gz"
+
+    # Cleanup
+    _section "release: Cleanup"
 }
