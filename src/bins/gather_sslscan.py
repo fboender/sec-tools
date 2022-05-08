@@ -5,6 +5,7 @@ import logging
 import subprocess
 import json
 import re
+import shutil
 from xml.etree import ElementTree as etree
 
 import binlink
@@ -205,6 +206,9 @@ def cmdline(version):
 
     if args.targets is None:
         sys.stderr.write("Please specify one or more targets\n")
+        sys.exit(1)
+    if shutil.which("nmap") is None:
+        sys.stderr.write("nmap not found. Please install it.\n")
         sys.exit(1)
     for target in args.targets:
         if target.lower().startswith("http"):
